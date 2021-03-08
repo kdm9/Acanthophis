@@ -1,6 +1,6 @@
 # Acanthophis
 
-A comprehensive, opinionated plant variant calling pipeline in Snakemake
+A reusable, comprehensive, opinionated plant variant calling pipeline in Snakemake
 
 ## About & Authors
 

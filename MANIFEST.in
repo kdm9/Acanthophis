@@ -1,0 +1,4 @@
+include acantophis/rules/*.rules
+include acantophis/envs/*.yaml
+include acantophis/examples/*
+

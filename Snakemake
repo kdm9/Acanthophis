@@ -1,5 +1,5 @@
 configfile: "config.yml"
-import snkmk
+import acantophis
 RUNLIB2SAMP, SAMP2RUNLIB = snkmk.make_runlib2samp("metadata/sample2runlib.csv")
 SAMPLESETS = snkmk.make_samplesets(s2rl_file="metadata/sample2runlib.csv",
                                    setfile_glob="metadata/samplesets/*.txt")
