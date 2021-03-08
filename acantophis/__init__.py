@@ -55,8 +55,8 @@ def parsefai(fai):
 def make_regions(rdict, window=1e6, base=1):
     window = int(window)
     ret = {}
-    for refname, refpath in rdict.items():
-        fai = refpath+".fai"
+    for refname, refbits in rdict.items():
+        fai = refbits['fasta']+".fai"
         windows = []
         curwin = []
         curwinlen = 0
@@ -70,8 +70,8 @@ def make_regions(rdict, window=1e6, base=1):
 
 def make_chroms(rdict):
     ret = {}
-    for refname, refpath in rdict.items():
-        fai = refpath+".fai"
+    for refname, refbits in rdict.items():
+        fai = refbits['fasta']+".fai"
         ref = dict()
         for cname, clen in parsefai(fai):
             ref[cname] = clen

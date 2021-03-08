@@ -6,7 +6,9 @@ metadata:
 
 # Reference files
 refs:
-  sample1: "fake-dataset/data/genomes/S01.fa"
+  ancestral:
+    fasta: "fake-dataset/data/reference/genome.fa"
+    annotation: "fake-dataset/data/reference/genome.gff"
 
 # Paths to raw data. These should be consistent across all samples. Samples
 # must have either an R1 and R2, or an interleaved (il) fastq file per run and
@@ -37,7 +39,7 @@ align:
     - bwa
     - ngm
   refs:
-    - sample1
+    - ancestral
   samplesets:
     - all
   ngm: # tool specific settings
@@ -78,7 +80,7 @@ varcall:
         - mpileup
         - freebayes
       refs:
-        - sample1
+        - ancestral
     ## Example from our multispecies eucalyptus work
     # AdnatariaHighCoverage:
     #   theta_prior: 0.1

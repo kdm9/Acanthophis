@@ -4,7 +4,7 @@
 rule ngmap:
     input:
         reads="data/reads/runs/{run}/{lib}.fastq.gz",
-        ref=lambda wc: config['refs'][wc.ref],
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
         bam=temp("data/alignments/byrun.raw/ngm/{ref}/{run}/{lib}~{sample}.bam"),
     log:
@@ -48,8 +48,8 @@ rule bwaidx:
 rule bwamem:
     input:
         reads="data/reads/runs/{run}/{lib}.fastq.gz",
-        ref=lambda wc: config['refs'][wc.ref],
-        bwaidx=lambda wc: config['refs'][wc.ref]+ ".pac",
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
+        bwaidx=lambda wc: config['refs'][wc.ref]["fasta"]+ ".pac",
     output:
         bam=temp("data/alignments/byrun.raw/bwa/{ref}/{run}/{lib}~{sample}.bam"),
     log: "data/log/bwa/{ref}/{run}/{lib}~{sample}.log"
@@ -73,7 +73,7 @@ rule bwamem:
 rule bam_markdups_sort:
     input:
         bam="data/alignments/byrun.raw/{aligner}/{ref}/{run}/{lib}~{sample}.bam",
-        ref=lambda wc: config['refs'][wc.ref],
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
         bam=temp("data/alignments/byrun/{aligner}/{ref}/{run}/{lib}~{sample}.bam"),
     threads: 4

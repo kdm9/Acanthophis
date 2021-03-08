@@ -6,7 +6,7 @@ rule mpileup:
         bam="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
         bai="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai",
         sset="data/samplelists/{sampleset}.txt",
-        ref=lambda wc: config['refs'][wc.ref],
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
         bcf="data/variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf",
     log:
@@ -51,7 +51,7 @@ rule freebayes:
         bam="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",  # use the megabam, see above
         bai="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai",
         sset="data/samplelists/{sampleset}.txt",
-        ref=lambda wc: config['refs'][wc.ref],
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
         bcf="data/variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf",
     log:
@@ -94,7 +94,7 @@ rule freebayes:
 rule bcfnorm:
     input:
         bcf="data/variants/raw_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf",
-        ref=lambda wc: config['refs'][wc.ref],
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
         # Not a pipe! can't run multiple filters if a pipe
         bcf=temp("data/variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
@@ -129,7 +129,7 @@ rule bcfnorm:
 rule bcffilter:
     input:
         bcf="data/variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf",
-        ref=lambda wc: config['refs'][wc.ref],
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
         # Not a pipe! can't run all regions separately if this is a pipe into merge
         bcf=temp("data/variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf"),
