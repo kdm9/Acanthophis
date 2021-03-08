@@ -5,19 +5,21 @@ TOTAL_COV = 50
 CHROM_LENGTH = 100000
 Ne = 1000
 RECOMBINATION_RATE = 1e-8
-MU = 1e-9
+MU = 1e-8
 SEED = 1337
 READ_ERRRATE = 0.002  # q score of 27
 
+
+import msprime
+import numpy as np
 import string
+
 
 SAMPLES = [f"S{i+1:02d}" for i in range(N_SAMPLES)]
 LIBS = {S + l: S for S in SAMPLES for l in string.ascii_lowercase[:LIBS_PER_SAMP]}
 RUNS = [f"Run{i+1}" for i in range(RUNS_PER_LIB)]
 RUNLIB2SAMP = {(R, L): S for L, S in LIBS.items() for R in RUNS}
 
-import msprime
-import numpy as np
 
 rule all:
     input:
@@ -27,13 +29,16 @@ rule all:
         "data/samples.tsv",
         "data/setfiles/all.txt",
 
+
 rule faidx:
     input:
         "{path}.fa"
     output:
         "{path}.fa.fai"
+    priority: 10
     shell:
         "samtools faidx {input}"
+
 
 rule metadata:
     output:
@@ -70,6 +75,7 @@ rule genomes:
         genomes=expand("data/genomes/{sample}.fa", sample=SAMPLES),
         varpos="data/genomes/variantpos.txt",
     run:
+        print("TSDFJSDLKJ")
         # Simulate coalescent sequences
         tree_sequence = msprime.simulate(
                 sample_size=N_SAMPLES,
@@ -97,6 +103,7 @@ rule genomes:
             with open(output.genomes[i], "w") as file:
                 print(f">{sname}", file=file)
                 print("".join(S[i, :]), file=file)
+
         with open(output.varpos, "w") as file:
             for p in varpos:
                 print(p, file=file)
@@ -108,23 +115,30 @@ rule reads:
     input:
         lambda wc: expand("data/genomes/{sample}.fa", sample=RUNLIB2SAMP[(wc.run, wc.lib)])
     output:
-        r1="data/reads/{run}/{lib}_R1.fastq.gz",
-        r2="data/reads/{run}/{lib}_R2.fastq.gz",
+        r1="data/reads/{run}/{lib}_R1.fastq",
+        r2="data/reads/{run}/{lib}_R2.fastq",
     params:
         cov_per_run=cov_per_run,
         reads_per_rl=reads_per_rl,
     shell:
         "wgsim" 
         "   -e 0.005"
-        "   -D 500"
+        "   -d 500"
         "   -s 100"
         "   -N {params.reads_per_rl}"
         "   -r 0"
         "   -1 100"
         "   -2 100"
         "   {input}"
-        "   >(gzip >{output.r1})"
-        "   >(gzip >{output.r2})"
-        ">/dev/null 2>&1"
+        "   {output.r1}"
+        "   {output.r2}"
+        #">/dev/null 2>&1"
 
 
+rule gzipfq:
+    input:
+        "{path}.fastq",
+    output:
+        "{path}.fastq.gz",
+    shell:
+        "gzip {input}"
