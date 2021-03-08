@@ -1,0 +1,16 @@
+name: acantophis
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - python
+  - snakemake
+  - bwa
+  - samtools
+  - bcftools
+  - AdapterRemoval
+  - pynvim
+  - git-annex
+  - ncdu
+
