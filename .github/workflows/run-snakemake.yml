@@ -1,0 +1,39 @@
+name: Workflow CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  runsnkmk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: setup-conda
+        uses: s-weigand/setup-conda@v1.0.5
+        with:
+          activate-conda: true
+          update-conda: true
+          conda-channels:
+            - defaults 
+            - conda-forge
+            - bioconda
+            - kdm801
+      
+      - name: Install snakemake and mamba
+        run: conda install snakemake mamba
+      
+      - name: Create fake dataset
+        run: |
+          pushd fake-dataset
+          conda create -n fake-dataset -f conda.yml
+          snakemake -j 1
+          popd
+
+      - name: Run demo snakemake
+        run: |
+          snakemake -j 1 --ri --use-conda
