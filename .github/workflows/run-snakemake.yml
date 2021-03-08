@@ -28,9 +28,9 @@ jobs:
       - name: Create fake dataset
         run: |
           pushd fake-dataset
-          snakemake -j 1 --use-conda ----conda-frontend mamba
+          snakemake -j 1 --use-conda --conda-frontend mamba
           popd
 
       - name: Run demo snakemake
         run: |
-          snakemake -j 1 --use-conda ----conda-frontend mamba
+          snakemake -j 1 --use-conda --conda-frontend mamba
