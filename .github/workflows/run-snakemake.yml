@@ -24,6 +24,7 @@ jobs:
         run: |
           conda install mamba
           mamba env update -n base -f example/conda.yml
+          pip install -e .
       
       - name: Run snakemake
         run: |
