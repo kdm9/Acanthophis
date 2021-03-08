@@ -5,35 +5,43 @@ from os.path import basename, splitext
 import os
 from sys import stderr
 
-
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-
-class rules(object):
-    adaptorremoval = HERE + "/rules/adaptorremoval.rules"
-    aligntoref = HERE + "/rules/aligntoref.rules"
-    bamprocessing = HERE + "/rules/bamprocessing.rules"
-    bcfmerge = HERE + "/rules/bcfmerge.rules"
-    bcftools = HERE + "/rules/bcftools.rules"
-    freebayes = HERE + "/rules/freebayes.rules"
-    gatk = HERE + "/rules/gatk.rules"
-    kwip = HERE + "/rules/kwip.rules"
-    mash = HERE + "/rules/mash.rules"
-    mpileup = HERE + "/rules/mpileup.rules"
-    readstats = HERE + "/rules/readstats.rules"
-    samplefastq = HERE + "/rules/samplefastq.rules"
+class __Rules(object):
+    def __init__(self):
+        for rulefile in glob(f"{HERE}/rules/*.rules"):
+            rule = splitext(basename(rulefile))[0]
+            setattr(self, rule, rulefile)
 
 
-def populate_metadata(config, runlib2samp, sample_meta, setfile_glob):
+rules = __Rules()
+
+def get_resource(file):
+    return f"{HERE}/{file}"
+
+
+def populate_metadata(config, runlib2samp=None, sample_meta=None, setfile_glob=None):
+    try:
+        if runlib2samp is None:
+            runlib2samp = config["metadata"]["runlib2samp_file"]
+        if sample_meta is None:
+            sample_meta = config["metadata"]["sample_meta_file"]
+        if setfile_glob is None:
+            setfile_glob = config["metadata"]["setfile_glob"]
+    except KeyError as exc:
+        raise ValueError("ERROR: metadata files must be configured in config, or passed to populate_metadata()")
     RL2S, S2RL = make_runlib2samp(runlib2samp)
     config["RUNLIB2SAMP"] = RL2S
     config["SAMP2RUNLIB"] = S2RL
     config["SAMPLESETS"] = make_samplesets(runlib2samp, setfile_glob)
-    config["VARCALL_REGIONS"] = {
-        vc: make_regions(config["refs"], window=config["varcall"]["chunksize"][vc])
-        for vc in config["varcall"]["chunksize"]
-    } 
+    if "refs" not in config:
+        raise RuntimeError("ERROR: reference(s) must be configured in config file")
     config["CHROMS"] = make_chroms(config["refs"])
+    if "varcall" in config:
+        config["VARCALL_REGIONS"] = {
+            vc: make_regions(config["refs"], window=config["varcall"]["chunksize"][vc])
+            for vc in config["varcall"]["chunksize"]
+        } 
 
 
 def parsefai(fai):
@@ -73,7 +81,10 @@ def make_chroms(rdict):
 
 def _iter_metadata(s2rl_file):
     with open(s2rl_file) as fh:
-        for samp in csv.DictReader(fh):
+        dialect = "excel"
+        if s2rl_file.endswith(".tsv"):
+            dialect = "excel-tab"
+        for samp in csv.DictReader(fh, dialect=dialect):
             yield samp
 
 

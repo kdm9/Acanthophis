@@ -1,20 +1,11 @@
-# Paths to metadata files.
-metadata:
-  runlib2samp_file: "fake-dataset/data/rl2s.tsv"
-  sample_meta_file: "fake-dataset/data/samples.tsv"
-  setfile_glob: "fake-dataset/data/setfiles/*.txt"
-
-# Reference files
-refs:
-  sample1: "fake-dataset/data/genomes/S01.fa"
 
 # Paths to raw data. These should be consistent across all samples. Samples
 # must have either an R1 and R2, or an interleaved (il) fastq file per run and
 # library.
 raw_paths:
-  r1_path: "fake-dataset/data/reads/{run}/{lib}_R1.fastq.gz"
-  r2_path: "fake-dataset/data/reads/{run}/{lib}_R2.fastq.gz"
-  il_path: "fake-dataset/data/reads/{run}/{lib}_il.fastq.gz"
+  r1_path: "rawdata/runs/{run}/{lib}_R1.fastq.gz"
+  r2_path: "rawdata/runs/{run}/{lib}_R2.fastq.gz"
+  il_path: "rawdata/runs/{run}/{lib}_il.fastq.gz"
 
 
 # Adaptor trimming settings.
@@ -23,22 +14,9 @@ qc:
     # these settings match the NEB NextTera oligos.
     adapter1: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
     adapter2: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
-    minqual: 20
+    minqual: 25
   # Example special run
   # some_run:
   #   adapter1: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
   #   adapter2: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
   #   minqual: 25
-
-
-# Alignment to reference
-align:
-  aligners:
-    - bwa
-    - ngm
-  refs:
-    - sample1
-  samplesets:
-    - all
-  ngm: # tool specific settings
-    sensitivity: 0.5

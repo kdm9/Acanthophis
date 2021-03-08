@@ -1,0 +1,11 @@
+shell.prefix = "set -euo pipefail; "
+
+wildcard_constraints:
+    run="[^/]+",
+    lib="[^/]+",
+    aligner="[^/]+",
+    sample="[^/]+",
+    ref="[^/]+",
+    type="[^/]+",
+
+

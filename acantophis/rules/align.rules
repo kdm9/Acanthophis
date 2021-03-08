@@ -1,0 +1,207 @@
+#######################################################################
+#                                NGMap                                #
+#######################################################################
+rule ngmap:
+    input:
+        reads="data/reads/runs/{run}/{lib}.fastq.gz",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        bam=temp("data/alignments/byrun.raw/ngm/{ref}/{run}/{lib}~{sample}.bam"),
+    log:
+        "data/log/ngm/{ref}/{run}/{lib}~{sample}.log"
+    threads:
+        8
+    params:
+        sensitivity=config["align"]["ngm"]["sensitivity"],
+    conda: acantophis.get_resource("envs/align.yml")
+    shell:
+        "( ngm"
+        "   -q {input.reads}"
+        "   --paired --broken-pairs"
+        "   -r {input.ref}"
+        "   -t {threads}"
+        "   --rg-id {wildcards.run}_{wildcards.lib}_{wildcards.sample}"
+        "   --rg-sm {wildcards.sample}"
+        "   --sensitivity {params.sensitivity}" # this is the mean from a bunch of different runs
+        "| samtools view -Suh - >{output.bam}"
+        " ) >{log} 2>&1"
+
+
+#######################################################################
+#                               BWAMem                                #
+#######################################################################
+rule bwamem:
+    input:
+        reads="data/reads/runs/{run}/{lib}.fastq.gz",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        bam=temp("data/alignments/byrun.raw/bwa/{ref}/{run}/{lib}~{sample}.bam"),
+    log: "data/log/bwa/{ref}/{run}/{lib}~{sample}.log"
+    threads:
+        12
+    conda: acantophis.get_resource("envs/align.yml")
+    shell:
+        "( bwa mem"
+        "   -p" # paired input
+        "   -t {threads}"
+        "   -R '@RG\\tID:{wildcards.run}_{wildcards.lib}_{wildcards.sample}\\tSM:{wildcards.sample}'"
+        "   {input.ref}"
+        "   {input.reads}"
+        "| samtools view -Suh - >{output.bam}"
+        " ) >{log} 2>&1"
+
+
+#######################################################################
+#                        samtools sort/markdup                        #
+#######################################################################
+rule bam_markdups_sort:
+    input:
+        bam="data/alignments/byrun.raw/{aligner}/{ref}/{run}/{lib}~{sample}.bam",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        bam=temp("data/alignments/byrun/{aligner}/{ref}/{run}/{lib}~{sample}.bam"),
+    threads: 4
+    log: "data/log/markdup/{aligner}/{ref}/{run}/{lib}~{sample}.log"
+    conda: acantophis.get_resource("envs/align.yml")
+    shell:
+        "( samtools fixmate "
+        "   -m"
+        "   -@ {threads}"
+        "   --output-fmt bam,level=0"
+        "   {input.bam}"
+        "   -"
+        " | samtools sort"
+        "   -T ${{TMPDIR:-/tmp}}/{wildcards.run}_{wildcards.lib}_sort_$RANDOM"
+        "   --output-fmt bam,level=0"
+        "   -@ {threads}"
+        "   -m 1g"
+        "   -"
+        " | samtools markdup"
+        "   -T ${{TMPDIR:-/tmp}}/{wildcards.run}_{wildcards.lib}_markdup_$RANDOM"
+        "   -s" # report stats
+        "   -@ {threads}"
+        "   --output-fmt bam,level=3"
+        "   -"
+        "   {output.bam}"
+        " ) >{log} 2>&1"
+
+
+#######################################################################
+#                     Merge runlib -> sample bams                     #
+#######################################################################
+rule mergebam_samp:
+    input:
+        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}/{lib}~{sample}.bam".format(
+                            run=r, lib=l, aln=wc.aligner, ref=wc.ref, sample=wc.sample)
+	                for r, l in config["SAMP2RUNLIB"][wc.sample]]
+    output:
+        bam="data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+    log:
+        "data/log/mergesamplebam/{aligner}/{ref}/{sample}.log"
+    threads: 8
+    priority: 1 # so the temps get cleaned sooner
+    conda: acantophis.get_resource("envs/align.yml")
+    shell:
+        "( samtools merge"
+        "   -@ {threads}"
+        "   --output-fmt bam,level=4"
+        "   {output.bam}"
+        "   {input}"
+        " ) >{log} 2>&1"
+
+
+
+#######################################################################
+#                     Merge samples -> samplesets                     #
+#######################################################################
+localrules: mergebam_set_bamlist
+rule mergebam_set_bamlist:
+    input:
+        bam=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
+        bai=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam.bai",
+                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
+    output:
+        temp("data/alignments/sets/{aligner}~{ref}~{sampleset}.bamlist"),
+    run:
+        with open(output[0], "w") as fh:
+            for s in input.bam:
+                print(s, file=fh)
+
+rule mergebam_set:
+    input:
+        lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
+    output:
+        bam="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
+        bai="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai",
+    log:
+        "data/log/mergesetbam/{aligner}/{ref}/{sampleset}.log"
+    threads: 16
+    conda: acantophis.get_resource("envs/align.yml")
+    shell:
+        "( samtools merge"
+        "   --output-fmt bam,level=7"
+        "   -@ {threads}"
+        "   -"
+        "   {input}"
+        " | tee {output.bam}"
+        " | samtools index - {output.bai}"  # indexing takes bloody ages, we may as well do this on the fly
+        " ) >{log} 2>&1"
+
+
+#######################################################################
+#                              Bam Index                              #
+#######################################################################
+# Ruleorder needed here as we index on the fly for sets. prefer the BAI from
+# the on-the-fly indexing for merged set bams, 
+ruleorder: mergebam_set > bamidx
+rule bamidx:
+    input:
+        "{path}.bam"
+    output:
+        "{path}.bam.bai"
+    log:
+        "data/log/bamindex/{path}.log"
+    conda: acantophis.get_resource("envs/align.yml")
+    shell:
+        "samtools index {input}"
+
+
+
+#######################################################################
+#                         Align Target Rules                          #
+#######################################################################
+localrules: align_librun
+rule align_librun:
+    input:
+        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}/{lib}.bam".
+                        format(run=r, lib=l, aln=a, ref=ref)
+                        for r, l in config["RUNLIB2SAMP"]
+                        for a in config["align"]["aligners"]
+                        for ref in config["align"]["refs"]],
+
+
+localrules: align_samples
+rule align_samples:
+    input:
+        expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+               ref=config["align"]["refs"],
+               aligner=config["align"]["aligners"],
+               sample=config["SAMP2RUNLIB"]),
+
+
+
+localrules: align_samplesets
+rule align_samplesets:
+    input:
+        expand("data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
+               ref=config["align"]["refs"],
+               aligner=config["align"]["aligners"],
+               sampleset=config["align"]["samplesets"])
+
+localrules: align
+rule align:
+   input:
+        rules.align_samples.input,
+        rules.align_samplesets.input,

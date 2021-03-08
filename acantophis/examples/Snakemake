@@ -1,15 +1,13 @@
 configfile: "config.yml"
+
 import acantophis
-RUNLIB2SAMP, SAMP2RUNLIB = snkmk.make_runlib2samp("metadata/sample2runlib.csv")
-SAMPLESETS = snkmk.make_samplesets(s2rl_file="metadata/sample2runlib.csv",
-                                   setfile_glob="metadata/samplesets/*.txt")
 
-VARCALL_REGIONS = {
-    vc: snkmk.make_regions(config["refs"], window=config["varcall"]["chunksize"][vc])
-    for vc in config["varcall"]["chunksize"]
-}
 
-CHROMS = snkmk.make_chroms(config["refs"])
+acantophis.populate_metadata(config,
+		runlib="metadata/runlib2sample.tsv",
+		sample_meta="metadata/samples.tsv",
+		setfile_glob="metadata/samplesets/*.txt")
+
 shell.prefix = "set -euo pipefail; "
 
 wildcard_constraints:
@@ -21,133 +19,12 @@ wildcard_constraints:
     type="[^/]+",
 
 
-#######################################################################
-#                            Read-level QC                            #
-#######################################################################
-
-rule qc_runlib:
-    input:
-        ["data/reads/runs/{run}/{lib}.fastq.gz".format(run=run, lib=lib) for run, lib in RUNLIB2SAMP],
-        expand("data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.dist", 
-               ksize=config["denovodist"]["ksize"], sketchsize=config["denovodist"]["mash_sketchsize"]),
-
-rule read_stats:
-    input:
-        "data/stats/reads/readnum_librun.tsv",
-        #"data/stats/reads/readnum_samples.tsv",
-
-rule reads:
-    input:
-        rules.qc_runlib.input,
-        rules.read_stats.input,
-
-localrules: sample_fastqs
-rule sample_fastqs:
-    input:
-        [expand("data/reads/samples/{sample}.fastq.gz", sample=SAMPLESETS[sset])
-            for sset in config["persample_reads"]["samplesets"]]
-
-rule kwip:
-    input:
-        expand("data/kwip/k{ksize}-s{sketchsize}/{set}.dist",
-               ksize=config["denovodist"]["ksize"],
-               sketchsize=config["denovodist"]["kwip_sketchsize"],
-               set=config["denovodist"]["kwip_sets"]),
-
-
-rule mash:
-    input:
-        expand("data/mash/k{ksize}-s{sketchsize}/{set}.dist",
-               ksize=config["denovodist"]["ksize"],
-               sketchsize=config["denovodist"]["mash_sketchsize"],
-               set=config["denovodist"]["mash_sets"]),
-
-rule denovo:
-    input:
-        rules.kwip.input,
-        rules.mash.input,
 
 #######################################################################
 #                       Alignment to Reference                        #
 #######################################################################
 
 
-### Align targets
-
-rule align_librun:
-    input:
-        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}/{lib}.bam".
-                        format(run=r, lib=l, aln=a, ref=ref)
-                        for r, l in RUNLIB2SAMP
-                        for a in config["mapping"]["aligners"]
-                        for ref in config["mapping"]["refs"]],
-
-localrules: align_samples
-rule align_samples:
-    input:
-        expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
-               ref=config["mapping"]["refs"],
-               aligner=config["mapping"]["aligners"],
-               sample=SAMP2RUNLIB),
-
-localrules: align_qualimap_samples
-rule align_qualimap_samples:
-    input:
-        expand("data/alignments/qualimap/samples/{aligner}~{ref}~{sample}/",
-               aligner=config["mapping"]["aligners"],
-               ref=config["mapping"]["refs"],
-               sample=SAMP2RUNLIB),
-
-localrules: align_stats
-rule align_stats:
-    input:
-        expand("data/alignments/bamstats/sample/{aligner}~{ref}~{sample}.tsv",
-               aligner=config["mapping"]["aligners"],
-               ref=config["mapping"]["refs"],
-               sample=SAMPLESETS["all_samples"]),
-    output:
-        expand("data/alnstats/everything_{type}.csv",
-               type=["SN", "IS", "COV"])
-    log: "data/log/bamstats/mergeallbamstats.log"
-    shell:
-        "python3 ./scripts/tidybamstat.py"
-        "   -o data/alnstats/everything"  # prefix
-        "   {input}"
-        " >{log} 2>&1"
-
-
-allsets = set(
-    list(config["mapping"]["samplesets"]) +
-    list(config["varcall"]["samplesets"]) +
-    list(config["sample_sets"])
-)
-rule align_samplesets_all:
-    # Currently there's no real need for this, as all variant calling uses the mega-bam
-    # and ANGSD uses a list of filenames (which will be generated on the fly
-    # for each ANGSD sample set)
-    input:
-        expand("data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
-               ref=config["mapping"]["refs"],
-               aligner=config["mapping"]["aligners"],
-               sampleset=allsets),
-        expand("data/alignments/bamlists/{aligner}~{ref}~all_samples.bamlist",
-               ref=config["mapping"]["refs"],
-               aligner=config["mapping"]["aligners"],
-               sampleset=allsets),
-
-rule align:
-   input:
-        rules.align_samples.input,
-        rules.align_stats.input,
-        expand("data/alignments/sets/{aligner}~{ref}~all_samples.bam",
-               ref=config["mapping"]["refs"],
-               aligner=config["mapping"]["aligners"]),
-        expand("data/alignments/bamlists/{aligner}~{ref}~all_samples.bamlist",
-               ref=config["mapping"]["refs"],
-               aligner=config["mapping"]["aligners"]),
-        expand("data/alignments/sets/{aligner}~{ref}~all_samples.bam.bai",
-               ref=config["mapping"]["refs"],
-               aligner=config["mapping"]["aligners"]),
 
 #######################################################################
 #                           Variant Calling                           #
