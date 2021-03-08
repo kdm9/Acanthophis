@@ -1,0 +1,113 @@
+N_SAMPLES = 10
+LIBS_PER_SAMP = 2
+RUNS_PER_LIB = 2
+TOTAL_COV = 50
+CHROM_LENGTH = 10000
+Ne = 1000
+RECOMBINATION_RATE = 1e-8
+MU = 1e-9
+SEED = 1331
+
+import string
+
+SAMPLES = [f"S{i+1:02d}" for i in range(N_SAMPLES)]
+LIBS = {S + l: S for S in SAMPLES for l in string.ascii_lowercase[:LIBS_PER_SAMP]}
+RUNS = [f"R{i+1}" for i in range(RUNS_PER_LIB)]
+RUNLIB2SAMP = {(R, L): S for L, S in LIBS.items() for R in RUNS}
+
+import msprime
+import numpy as np
+
+import argparse
+
+
+rule all:
+    input:
+        expand("data/reads/{run}/{lib}_{R}.fastq.gz", run=RUNS, lib=LIBS, R=["R1", "R2"]),
+        "data/rl2s.tsv",
+        "data/samples.tsv",
+
+
+rule metadata:
+    output:
+        rl2s="data/rl2s.tsv",
+        samples="data/samples.tsv",
+    run:
+        with open(output.rl2s, "w") as file:
+            print("run", "library", "sample", "include", sep="\t", file=file)
+            for (R, L), S in RUNLIB2SAMP.items():
+                print(R, L, S, "Y", sep="\t", file=file)
+
+        def genfakella():
+            tue = (48.52, 9.055556, 341)
+            lat = np.random.normal(loc=tue[0], scale=0.5, size=1)[0]
+            lon = np.random.normal(loc=tue[1], scale=0.5, size=1)[0]
+            alt = np.random.normal(loc=tue[2], scale=100, size=1)[0]
+            return lat, lon, alt
+
+        with open(output.samples, "w") as file:
+            print("sample", "species", "latitude", "longitude", "altitude", "datum", sep="\t", file=file)
+            for sample in SAMPLES:
+                lat, lon, alt = genfakella()
+                sp = "Pseudoplantus harddrivensis"
+                print(sample, sp, lat, lon, alt, "WGS84", sep="\t", file=file)
+
+
+rule genomes:
+    output:
+        expand("data/genomes/{sample}.fa", sample=SAMPLES)
+    run:
+        # Simulate coalescent sequences
+        tree_sequence = msprime.simulate(
+                sample_size=N_SAMPLES,
+                Ne=Ne,
+                length=CHROM_LENGTH,
+                recombination_rate=RECOMBINATION_RATE,
+                mutation_rate=MU,
+                random_seed=SEED)
+
+        # Fill a random sequence for all sites
+        np.random.seed(SEED)
+        anc_seq = np.random.choice(list("ACGT"), size=CHROM_LENGTH).reshape((1, CHROM_LENGTH))
+        S = np.repeat(anc_seq, repeats=N_SAMPLES, axis=0)
+
+        # Per variant site, update allele matrix
+        nucs = list("ACGT")
+        for variant in tree_sequence.variants():
+            np.random.shuffle(nucs)
+            pos = int(np.round(variant.site.position))
+            for i, gt in enumerate(variant.genotypes):
+                S[i, pos] = nucs[gt]
+        for i, sname in enumerate(SAMPLES):
+            with open(output[i], "w") as file:
+                print(f">{sname}", file=file)
+                print("".join(S[i, :]), file=file)
+
+
+
+cov_per_run = int(np.ceil(TOTAL_COV / (RUNS_PER_LIB * LIBS_PER_SAMP)))
+reads_per_rl = int(np.ceil(cov_per_run * CHROM_LENGTH / (2 * 100)))
+rule reads:
+    input:
+        lambda wc: expand("data/genomes/{sample}.fa", sample=RUNLIB2SAMP[(wc.run, wc.lib)])
+    output:
+        r1="data/reads/{run}/{lib}_R1.fastq.gz",
+        r2="data/reads/{run}/{lib}_R2.fastq.gz",
+    params:
+        cov_per_run=cov_per_run,
+        reads_per_rl=reads_per_rl,
+    shell:
+        "pywgsim" 
+        "   -e 0.005"
+        "   -D 500"
+        "   -s 100"
+        "   -N {params.reads_per_rl}"
+        "   -r 0"
+        "   -1 100"
+        "   -2 100"
+        "   {input}"
+        "   >(gzip >{output.r1})"
+        "   >(gzip >{output.r2})"
+        ">/dev/null 2>&1"
+
+
