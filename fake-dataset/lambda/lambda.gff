@@ -1,0 +1,1483 @@
+##gff-version 3
+##sequence-region NC_001416 1 48502
+# conversion-by bp_genbank2gff3.pl
+# organism Escherichia virus Lambda
+# Note Enterobacteria phage lambda, complete genome.
+# date 20-DEC-2020
+NC_001416	GenBank	region	1	48502	.	+	1	ID=NC_001416;Dbxref=BioProject:PRJNA485481,taxon:10710;Name=NC_001416;Note=Enterobacteria phage lambda%2C complete genome.,PROVISIONAL REFSEQ: This record has not yet been subject to final NCBI review. The reference sequence was derived from J02459.  [36] r-strand.  [72] fragments.  [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W. andWeisberg,R.A.  (Eds.),Lambda II: 4] review,complete genome.  [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W. and Weisberg,R.A.(Eds.),Lambda II: 5] review,complete genome with annotation.  [2] both strands.  [4] sites,fragments at the 3'-terminus.  [24] comp strand.  [30] fragments.  [22] sites,transcription termination sites.  [84] sites,cohesive ends.  [91] sites,Pre-promoter mutations.  [87] sites,attP recombination site.  [88] sites,major leftward transcription unit.  [89] sites,prohead binding.  [90] sites,cII binding site mutations.  [92] sites,nutR mutations.  [93] sites,light chain oligonucleotides.  [94] sites,nutL antiterminator.  [95] sites,rho utilization sites A and B.  Contributed on tape by F.Sanger via D.L.Daniels. Most of references  [3] through [85] are either annotated by [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W. andWeisberg,R.A. (Eds.),Lambda II: 4] and  [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W. and Weisberg,R.A.(Eds.),Lambda II: 5],which are  the immediate sources for the annotation below,or they are cited  in Table 3 of [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W.  andWeisberg,R.A. (Eds.),Lambda II: 4]. Only references [27] through  [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W. and Weisberg,R.A.(Eds.),Lambda II: 5] are represented  in the features table herein.  This is the best representation to date of the wild-type lambda  l-strand,though much of the sequence was determined for the  cI857s7 strain and changed to wild-type [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W. andWeisberg,R.A. (Eds.),Lambda II: 4]. All  reported  variations leading to the strains cI857s7,imm21,imm434,lac5,Nin5 and b2 are included in the annotation. The first twelve bases  are the sticky ends. A significant fraction of the known mutations  affecting replication and transcription have been annotated below,a large number of point mutations,deletions and substitutions have  not. For a complete account of lambda mutations in relation to the  sequence,see [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W.  andWeisberg,R.A. (Eds.),Lambda II: 4].  Each coding sequence belongs to a reading frame (orf) whose number,given in parentheses,should indicate the number of amino acids  coded. The starting points for translation are known with varying  degrees of certainty,for example,the start site for the N  protein,given here as 35438,may turn out to be downstream (on the  complementary strand) at 35360. When direct empirical evidence such  as mutation or amino acid sequence is lacking,the start point is  said to be putative. For a summary of the evidence bearing upon the  coding sequences,see [72],[(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W. andWeisberg,R.A. (Eds.),Lambda II: 4]. Intergenic spaces in  lambda are  typically short and overlapping: the multiple reading frames (mult)  range between a span of 1 and a span of 103. In most cases,a start  codon precedes a termination codon,exceptions being the m-l  boundary (13429) and the 314-194 boundary (21973) which show the  E.coli trp operon pattern of 'translational coupling' (see  <ecotrp>).  Transcription in the central region,bases 22686 to 37940,is  leftward off the l-strand. In our annotation,this is indicated by  the letter 'c' and the descriptive term 'comp strand'. Signals and  recognition sites in this region,without judgement made about  their polarity,are treated accordingly,hence their span should be  read toward the left rather than toward the right. Furthermore some  leftward transcription is located outside the central region,and  that is also indicated by 'c' and 'comp strand'. In general,the  estimates for the extent or span of signals (e.g. operators),binding sites (e.g. Nutr,int-binding sites,etc.) and of the  attachment site (att) vary in the literature. This annotation  follows [(in) Hendrix,R.W.,Roberts,J.W.,Stahl,F.W. andWeisberg,R.A. (Eds.),Lambda II: 4]. No attempt is made to annotate promoters  as signals  because of the indefiniteness of their span,however known promoter  mutants are given. The cII protein is known to bind in the -35  regions of p-i (29091) and pre(38369). Transcript termination sites  must be understood to be conditional on the N and Q proteins and  less than 100%25 efficient. There remain terminators to be found and  some of those annotated may have significance only in vitro.  COMPLETENESS: full length. ;comment1=PROVISIONAL REFSEQ: This record has not yet been subject to final NCBI review. The reference sequence was derived from J02459.  [36] r-strand.  [72] fragments.  [(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2CF.W. andWeisberg%2CR.A.  (Eds.)%3BLambda II: 4] review%3B complete genome.  [(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2CF.W. and Weisberg%2C  R.A.(Eds.)%3BLambda II: 5] review%3B complete genome with annotation.  [2] both strands.  [4] sites%3B fragments at the 3'-terminus.  [24] comp strand.  [30] fragments.  [22] sites%3B transcription termination sites.  [84] sites%3B cohesive ends.  [91] sites%3B Pre-promoter mutations.  [87] sites%3B attP recombination site.  [88] sites%3B major leftward transcription unit.  [89] sites%3B prohead binding.  [90] sites%3B cII binding site mutations.  [92] sites%3B nutR mutations.  [93] sites%3B light chain oligonucleotides.  [94] sites%3B nutL antiterminator.  [95] sites%3B rho utilization sites A and B.  Contributed on tape by F.Sanger via D.L.Daniels. Most of references  [3] through [85] are either annotated by [(in) Hendrix%2CR.W.%2C  Roberts%2CJ.W.%2C Stahl%2CF.W. andWeisberg%2CR.A. (Eds.)%3BLambda II: 4] and  [(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2CF.W. and Weisberg%2C  R.A.(Eds.)%3BLambda II: 5]%2C which are  the immediate sources for the annotation below%2C or they are cited  in Table 3 of [(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2CF.W.  andWeisberg%2CR.A. (Eds.)%3BLambda II: 4]. Only references [27] through  [(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2CF.W. and Weisberg%2C  R.A.(Eds.)%3BLambda II: 5] are represented  in the features table herein.  This is the best representation to date of the wild-type lambda  l-strand%2C though much of the sequence was determined for the  cI857s7 strain and changed to wild-type [(in) Hendrix%2CR.W.%2C  Roberts%2CJ.W.%2C Stahl%2CF.W. andWeisberg%2CR.A. (Eds.)%3BLambda II: 4]. All  reported  variations leading to the strains cI857s7%2C imm21%2C imm434%2C lac5%2C  Nin5 and b2 are included in the annotation. The first twelve bases  are the sticky ends. A significant fraction of the known mutations  affecting replication and transcription have been annotated below%3B  a large number of point mutations%2C deletions and substitutions have  not. For a complete account of lambda mutations in relation to the  sequence%2C see [(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2CF.W.  andWeisberg%2CR.A. (Eds.)%3BLambda II: 4].  Each coding sequence belongs to a reading frame (orf) whose number%2C  given in parentheses%2C should indicate the number of amino acids  coded. The starting points for translation are known with varying  degrees of certainty%3B for example%2C the start site for the N  protein%2C given here as 35438%2C may turn out to be downstream (on the  complementary strand) at 35360. When direct empirical evidence such  as mutation or amino acid sequence is lacking%2C the start point is  said to be putative. For a summary of the evidence bearing upon the  coding sequences%2C see [72]%2C[(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2C  F.W. andWeisberg%2CR.A. (Eds.)%3BLambda II: 4]. Intergenic spaces in  lambda are  typically short and overlapping: the multiple reading frames (mult)  range between a span of 1 and a span of 103. In most cases%2C a start  codon precedes a termination codon%2C exceptions being the m-l  boundary (13429) and the 314-194 boundary (21973) which show the  E.coli trp operon pattern of 'translational coupling' (see  <ecotrp>).  Transcription in the central region%2C bases 22686 to 37940%2C is  leftward off the l-strand. In our annotation%2C this is indicated by  the letter 'c' and the descriptive term 'comp strand'. Signals and  recognition sites in this region%2C without judgement made about  their polarity%2C are treated accordingly%2C hence their span should be  read toward the left rather than toward the right. Furthermore some  leftward transcription is located outside the central region%2C and  that is also indicated by 'c' and 'comp strand'. In general%2C the  estimates for the extent or span of signals (e.g. operators)%2C  binding sites (e.g. Nutr%2C int-binding sites%2C etc.) and of the  attachment site (att) vary in the literature. This annotation  follows [(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2CF.W. andWeisberg%2C  R.A. (Eds.)%3BLambda II: 4]. No attempt is made to annotate promoters  as signals  because of the indefiniteness of their span%2C however known promoter  mutants are given. The cII protein is known to bind in the -35  regions of p-i (29091) and pre(38369). Transcript termination sites  must be understood to be conditional on the N and Q proteins and  less than 100%25 efficient. There remain terminators to be found and  some of those annotated may have significance only in vitro.  COMPLETENESS: full length. ;date=20-DEC-2020;host=Escherichia coli;mol_type=genomic DNA;organism=Escherichia virus Lambda
+NC_001416	GenBank	CDS	191	736	.	+	1	ID=lambdap01;Dbxref=GeneID:2703523;Name=nu1;codon_start=1;locus_tag=lambdap01;product=DNA-packaging protein;protein_id=NP_040580.1;transl_table=11;translation=length.181
+NC_001416	GenBank	gene	191	736	.	+	1	ID=lambdap01.gene;Alias=lambdap01;Dbxref=GeneID:2703523;Name=nu1;locus_tag=lambdap01
+NC_001416	GenBank	CDS	711	2636	.	+	1	ID=lambdap02;Dbxref=GeneID:2703524;Name=A;codon_start=1;locus_tag=lambdap02;product=terminase large subunit family protein;protein_id=NP_040581.1;transl_table=11;translation=length.641
+NC_001416	GenBank	gene	711	2636	.	+	1	ID=lambdap02.gene;Alias=lambdap02;Dbxref=GeneID:2703524;Name=A;locus_tag=lambdap02
+NC_001416	GenBank	CDS	2633	2839	.	+	1	ID=lambdap03;Dbxref=GeneID:2703525;Name=W;codon_start=1;locus_tag=lambdap03;product=gpW family protein;protein_id=NP_040582.1;transl_table=11;translation=length.68
+NC_001416	GenBank	gene	2633	2839	.	+	1	ID=lambdap03.gene;Alias=lambdap03;Dbxref=GeneID:2703525;Name=W;locus_tag=lambdap03
+NC_001416	GenBank	mature_protein_region	2902	4434	.	+	1	ID=lambdap04;Name=B;locus_tag=lambdap04;product=processed B;protein_id=NP_955536.1
+NC_001416	GenBank	CDS	2836	4437	.	+	1	ID=lambdap04.CDS;Alias=lambdap04;Dbxref=GeneID:2703526;Name=B;codon_start=1;locus_tag=lambdap04;product=portal protein;protein_id=NP_040583.1;transl_table=11;translation=length.533
+NC_001416	GenBank	gene	2836	4437	.	+	1	ID=lambdap04.gene;Alias=lambdap04;Dbxref=GeneID:2703526;Name=B;locus_tag=lambdap04
+NC_001416	GenBank	signal_peptide	2836	2901	.	+	1	Parent=lambdap04;Name=B;Note=leader peptide;locus_tag=lambdap04;product=hypothetical protein
+NC_001416	GenBank	CDS	4418	5737	.	+	1	ID=lambdap05;Dbxref=GeneID:2703527;Name=C;codon_start=1;locus_tag=lambdap05;product=S49 family peptidase;protein_id=NP_040584.1;transl_table=11;translation=length.439
+NC_001416	GenBank	gene	4418	5737	.	+	1	ID=lambdap05.gene;Alias=lambdap05;Dbxref=GeneID:2703527;Name=C;locus_tag=lambdap05
+NC_001416	GenBank	CDS	5132	5737	.	+	1	ID=lambdap06;Dbxref=GeneID:2703528;Name=nu3;codon_start=1;locus_tag=lambdap06;product=capsid assembly protein;protein_id=NP_040585.1;transl_table=11;translation=length.201
+NC_001416	GenBank	gene	5132	5737	.	+	1	ID=lambdap06.gene;Alias=lambdap06;Dbxref=GeneID:2703528;Name=nu3;locus_tag=lambdap06
+NC_001416	GenBank	CDS	5747	6079	.	+	1	ID=lambdap07;Dbxref=GeneID:2703529;Name=D;codon_start=1;locus_tag=lambdap07;product=head decoration protein;protein_id=NP_040586.1;transl_table=11;translation=length.110
+NC_001416	GenBank	gene	5747	6079	.	+	1	ID=lambdap07.gene;Alias=lambdap07;Dbxref=GeneID:2703529;Name=D;locus_tag=lambdap07
+NC_001416	GenBank	CDS	6135	7160	.	+	1	ID=lambdap08;Dbxref=GeneID:2703482;Name=E;codon_start=1;locus_tag=lambdap08;product=major capsid protein;protein_id=NP_040587.1;transl_table=11;translation=length.341
+NC_001416	GenBank	gene	6135	7160	.	+	1	ID=lambdap08.gene;Alias=lambdap08;Dbxref=GeneID:2703482;Name=E;locus_tag=lambdap08
+NC_001416	GenBank	CDS	7202	7600	.	+	1	ID=lambdap09;Dbxref=GeneID:2703483;Name=Fi;codon_start=1;locus_tag=lambdap09;product=DNA-packaging protein FI;protein_id=NP_040588.1;transl_table=11;translation=length.132
+NC_001416	GenBank	gene	7202	7600	.	+	1	ID=lambdap09.gene;Alias=lambdap09;Dbxref=GeneID:2703483;Name=Fi;locus_tag=lambdap09
+NC_001416	GenBank	CDS	7612	7965	.	+	1	ID=lambdap10;Dbxref=GeneID:2703484;Name=Fii;codon_start=1;locus_tag=lambdap10;product=head-tail joining protein;protein_id=NP_040589.1;transl_table=11;translation=length.117
+NC_001416	GenBank	gene	7612	7965	.	+	1	ID=lambdap10.gene;Alias=lambdap10;Dbxref=GeneID:2703484;Name=Fii;locus_tag=lambdap10
+NC_001416	GenBank	CDS	7977	8555	.	+	1	ID=lambdap11;Dbxref=GeneID:2703485;Name=Z;codon_start=1;locus_tag=lambdap11;product=tail protein;protein_id=NP_040590.1;transl_table=11;translation=length.192
+NC_001416	GenBank	gene	7977	8555	.	+	1	ID=lambdap11.gene;Alias=lambdap11;Dbxref=GeneID:2703485;Name=Z;locus_tag=lambdap11
+NC_001416	GenBank	CDS	8552	8947	.	+	1	ID=lambdap12;Dbxref=GeneID:2703486;Name=U;codon_start=1;locus_tag=lambdap12;product=tail protein;protein_id=NP_040591.1;transl_table=11;translation=length.131
+NC_001416	GenBank	gene	8552	8947	.	+	1	ID=lambdap12.gene;Alias=lambdap12;Dbxref=GeneID:2703486;Name=U;locus_tag=lambdap12
+NC_001416	GenBank	CDS	8955	9695	.	+	1	ID=lambdap13;Dbxref=GeneID:2703487;Name=V;codon_start=1;locus_tag=lambdap13;product=tail protein;protein_id=NP_040592.1;transl_table=11;translation=length.246
+NC_001416	GenBank	gene	8955	9695	.	+	1	ID=lambdap13.gene;Alias=lambdap13;Dbxref=GeneID:2703487;Name=V;locus_tag=lambdap13
+NC_001416	GenBank	CDS	9711	10133	.	+	1	ID=lambdap14;Dbxref=GeneID:2703488;Name=G;codon_start=1;locus_tag=lambdap14;product=minor tail protein G;protein_id=NP_040593.1;transl_table=11;translation=length.140
+NC_001416	GenBank	gene	9711	10133	.	+	1	ID=lambdap14.gene;Alias=lambdap14;Dbxref=GeneID:2703488;Name=G;locus_tag=lambdap14
+NC_001416	GenBank	CDS	10115	10549	.	+	1	ID=lambdap15;Dbxref=GeneID:2703489;Name=T;codon_start=1;locus_tag=lambdap15;product=tail assembly protein T;protein_id=NP_040594.1;transl_table=11;translation=length.144
+NC_001416	GenBank	gene	10115	10549	.	+	1	ID=lambdap15.gene;Alias=lambdap15;Dbxref=GeneID:2703489;Name=T;locus_tag=lambdap15
+NC_001416	GenBank	CDS	10542	13103	.	+	1	ID=lambdap16;Dbxref=GeneID:2703511;Name=H;codon_start=1;locus_tag=lambdap16;product=tail tape measure protein;protein_id=NP_040595.1;transl_table=11;translation=length.853
+NC_001416	GenBank	gene	10542	13103	.	+	1	ID=lambdap16.gene;Alias=lambdap16;Dbxref=GeneID:2703511;Name=H;locus_tag=lambdap16
+NC_001416	GenBank	CDS	13100	13429	.	+	1	ID=lambdap17;Dbxref=GeneID:2703512;Name=M;codon_start=1;locus_tag=lambdap17;product=tail protein;protein_id=NP_040596.1;transl_table=11;translation=length.109
+NC_001416	GenBank	gene	13100	13429	.	+	1	ID=lambdap17.gene;Alias=lambdap17;Dbxref=GeneID:2703512;Name=M;locus_tag=lambdap17
+NC_001416	GenBank	CDS	13429	14127	.	+	1	ID=lambdap18;Dbxref=GeneID:2703513;Name=L;codon_start=1;locus_tag=lambdap18;product=minor tail protein L;protein_id=NP_040597.1;transl_table=11;translation=length.232
+NC_001416	GenBank	gene	13429	14127	.	+	1	ID=lambdap18.gene;Alias=lambdap18;Dbxref=GeneID:2703513;Name=L;locus_tag=lambdap18
+NC_001416	GenBank	CDS	14276	14875	.	+	1	ID=lambdap19;Dbxref=GeneID:2703514;Name=K;codon_start=1;locus_tag=lambdap19;product=tail protein;protein_id=NP_040598.1;transl_table=11;translation=length.199
+NC_001416	GenBank	gene	14276	14875	.	+	1	ID=lambdap19.gene;Alias=lambdap19;Dbxref=GeneID:2703514;Name=K;locus_tag=lambdap19
+NC_001416	GenBank	CDS	14773	15444	.	+	1	ID=lambdap20;Dbxref=GeneID:2703515;Name=I;codon_start=1;locus_tag=lambdap20;product=tail component;protein_id=NP_040599.1;transl_table=11;translation=length.223
+NC_001416	GenBank	gene	14773	15444	.	+	1	ID=lambdap20.gene;Alias=lambdap20;Dbxref=GeneID:2703515;Name=I;locus_tag=lambdap20
+NC_001416	GenBank	CDS	15505	18903	.	+	1	ID=lambdap21;Dbxref=GeneID:2703516;Name=J;codon_start=1;locus_tag=lambdap21;product=host specificity protein J;protein_id=NP_040600.1;transl_table=11;translation=length.1132
+NC_001416	GenBank	gene	15505	18903	.	+	1	ID=lambdap21.gene;Alias=lambdap21;Dbxref=GeneID:2703516;Name=J;locus_tag=lambdap21
+NC_001416	GenBank	gene	18482	35582	.	-	1	ID=lambdap22;Dbxref=GeneID:2703502;Name=lambdap22
+NC_001416	GenBank	mRNA	18482	35582	.	-	1	ID=lambdap22.t01;Parent=lambdap22;Dbxref=GeneID:2703502;Name=lambdap22;product=mRNA-pl (alt.%3B via t'j4 terminator)
+NC_001416	GenBank	exon	18482	35582	.	-	1	Parent=lambdap22.t01;Name=lambdap22
+NC_001416	GenBank	gene	18597	35582	.	-	1	ID=lambdap23;Dbxref=GeneID:2703536;Name=lambdap23
+NC_001416	GenBank	mRNA	18597	35582	.	-	1	ID=lambdap23.t01;Parent=lambdap23;Dbxref=GeneID:2703536;Name=lambdap23;product=mRNA-pl (alt.%3B via t'j3 terminator)
+NC_001416	GenBank	exon	18597	35582	.	-	1	Parent=lambdap23.t01;Name=lambdap23
+NC_001416	GenBank	gene	18637	35582	.	-	1	ID=lambdap24;Dbxref=GeneID:2703468;Name=lambdap24
+NC_001416	GenBank	mRNA	18637	35582	.	-	1	ID=lambdap24.t01;Parent=lambdap24;Dbxref=GeneID:2703468;Name=lambdap24;product=mRNA-pl (alt.%3B via t'j2 terminator)
+NC_001416	GenBank	exon	18637	35582	.	-	1	Parent=lambdap24.t01;Name=lambdap24
+NC_001416	GenBank	gene	18671	35582	.	-	1	ID=lambdap25;Dbxref=GeneID:2703472;Name=lambdap25
+NC_001416	GenBank	mRNA	18671	35582	.	-	1	ID=lambdap25.t01;Parent=lambdap25;Dbxref=GeneID:2703472;Name=lambdap25;product=mRNA-pl (alt.%3B via t'j1 terminator)
+NC_001416	GenBank	sequence_variant	19368	23278	.	+	1	Parent=lambdap25;Name=lambdap25;Note=lac5 substitution
+NC_001416	GenBank	sequence_variant	27537	27537	.	+	1	Parent=lambdap25;Name=lambdap25;Note=t in sib3%3B c in wild-type;replace=t
+NC_001416	GenBank	exon	18671	35582	.	-	1	Parent=lambdap25.t01;Name=lambdap25
+NC_001416	GenBank	CDS	18965	19585	.	+	1	ID=lambdap26;Dbxref=GeneID:2703517;Name=lom;codon_start=1;locus_tag=lambdap26;product=outer membrane beta-barrel protein Lom;protein_id=NP_040601.1;transl_table=11;translation=length.206
+NC_001416	GenBank	gene	18965	19585	.	+	1	ID=lambdap26.gene;Alias=lambdap26;Dbxref=GeneID:2703517;Name=lom;locus_tag=lambdap26
+NC_001416	GenBank	CDS	19650	20855	.	+	1	ID=lambdap27;Dbxref=GeneID:2703518;Name=orf-401;codon_start=1;locus_tag=lambdap27;product=protail fiber N-terminal domain-containing protein;protein_id=NP_040602.1;transl_table=11;translation=length.401
+NC_001416	GenBank	gene	19650	20855	.	+	1	ID=lambdap27.gene;Alias=lambdap27;Dbxref=GeneID:2703518;Name=orf-401;locus_tag=lambdap27
+NC_001416	GenBank	CDS	20147	20767	.	-	1	ID=lambdap90;Dbxref=GeneID:3827061;Name=orf206b;codon_start=1;locus_tag=lambdap90;product=hypothetical protein;protein_id=NP_040603.1;transl_table=11;translation=length.206
+NC_001416	GenBank	gene	20147	20767	.	-	1	ID=lambdap90.gene;Alias=lambdap90;Dbxref=GeneID:3827061;Name=orf206b;locus_tag=lambdap90
+NC_001416	GenBank	CDS	21029	21973	.	+	1	ID=lambdap28;Dbxref=GeneID:2703519;Name=orf-314;codon_start=1;locus_tag=lambdap28;product=tail fiber protein;protein_id=NP_040604.1;transl_table=11;translation=length.314
+NC_001416	GenBank	gene	21029	21973	.	+	1	ID=lambdap28.gene;Alias=lambdap28;Dbxref=GeneID:2703519;Name=orf-314;locus_tag=lambdap28
+NC_001416	GenBank	sequence_variant	21737	21737	.	+	1	Parent=lambdap28;Name=orf-314;Note=b2 substitution terminating at the att site;locus_tag=lambdap28
+NC_001416	GenBank	CDS	21973	22557	.	+	1	ID=lambdap29;Dbxref=GeneID:2703503;Name=orf-194;codon_start=1;locus_tag=lambdap29;product=tail fiber assembly protein;protein_id=NP_040605.1;transl_table=11;translation=length.194
+NC_001416	GenBank	gene	21973	22557	.	+	1	ID=lambdap29.gene;Alias=lambdap29;Dbxref=GeneID:2703503;Name=orf-194;locus_tag=lambdap29
+NC_001416	GenBank	CDS	22686	23918	.	-	1	ID=lambdap80;Dbxref=GeneID:3827051;Name=ea47;codon_start=1;locus_tag=lambdap80;product=ea47;protein_id=NP_040606.1;transl_table=11;translation=length.410
+NC_001416	GenBank	gene	22686	23918	.	-	1	ID=lambdap80.gene;Alias=lambdap80;Dbxref=GeneID:3827051;Name=ea47;locus_tag=lambdap80
+NC_001416	GenBank	recombination_feature	24389	24390	.	+	1	ID=GenBank:recombination_feature:NC_001416:24389:24390;organism=Bacteriophage lambda
+NC_001416	GenBank	gene	23231	23231	.	-	1	ID=lambdap30;Dbxref=GeneID:2703520;Name=lambdap30
+NC_001416	GenBank	mRNA	23231	23231	.	-	1	ID=lambdap30.t01;Parent=lambdap30;Dbxref=GeneID:2703520;Name=lambdap30;product=mRNA-pbl
+NC_001416	GenBank	exon	23231	23231	.	-	1	Parent=lambdap30.t01;Name=lambdap30
+NC_001416	GenBank	CDS	24509	25399	.	-	1	ID=lambdap81;Dbxref=GeneID:3827052;Name=ea31;codon_start=1;locus_tag=lambdap81;product=HNH endonuclease;protein_id=NP_040607.1;transl_table=11;translation=length.296
+NC_001416	GenBank	gene	24509	25399	.	-	1	ID=lambdap81.gene;Alias=lambdap81;Dbxref=GeneID:3827052;Name=ea31;locus_tag=lambdap81
+NC_001416	GenBank	CDS	25396	26973	.	-	1	ID=lambdap82;Dbxref=GeneID:3827053;Name=ea59;codon_start=1;locus_tag=lambdap82;product=AAA family ATPase;protein_id=NP_040608.1;transl_table=11;translation=length.525
+NC_001416	GenBank	gene	25396	26973	.	-	1	ID=lambdap82.gene;Alias=lambdap82;Dbxref=GeneID:3827053;Name=ea59;locus_tag=lambdap82
+NC_001416	GenBank	gene	27538	35582	.	-	1	ID=lambdap31;Dbxref=GeneID:2703469;Name=xis;locus_tag=lambdap31
+NC_001416	GenBank	mRNA	27538	35582	.	-	1	ID=lambdap31.t01;Parent=lambdap31;Dbxref=GeneID:2703469;Name=xis;locus_tag=lambdap31;product=mRNA-pl (alt.%3B via ti terminator)
+NC_001416	GenBank	exon	27538	35582	.	-	1	Parent=lambdap31.t01;Name=xis;locus_tag=lambdap31
+NC_001416	GenBank	binding_site	27583	27602	.	+	1	ID=GenBank:binding_site:NC_001416:27583:27602;bound_moiety=int 1
+NC_001416	GenBank	binding_site	27615	27634	.	+	1	ID=GenBank:binding_site:NC_001416:27615:27634;bound_moiety=int 2
+NC_001416	GenBank	binding_site	27714	27747	.	+	1	ID=GenBank:binding_site:NC_001416:27714:27747;bound_moiety=int 3
+NC_001416	GenBank	recombination_feature	27724	27738	.	+	1	ID=GenBank:recombination_feature:NC_001416:27724:27738;citation=[78];organism=Bacteriophage lambda
+NC_001416	GenBank	gene	27538	29065	.	-	1	ID=lambdap32;Dbxref=GeneID:2703464;Name=lambdap32
+NC_001416	GenBank	mRNA	27538	29065	.	-	1	ID=lambdap32.t01;Parent=lambdap32;Dbxref=GeneID:2703464;Name=lambdap32;product=mRNA int (integration%3B 356%3B via ti terminator)
+NC_001416	GenBank	sequence_variant	27547	27547	.	+	1	Parent=lambdap32;Name=lambdap32;Note=a in hef13%3B g in wild-type;replace=a
+NC_001416	GenBank	sequence_variant	27568	27568	.	+	1	Parent=lambdap32;Name=lambdap32;Note=a in sib2%3B c in wild-type
+NC_001416	GenBank	sequence_variant	27573	27573	.	+	1	Parent=lambdap32;Name=lambdap32;Note=t in sib1%3B g in wild-type
+NC_001416	GenBank	exon	27538	29065	.	-	1	Parent=lambdap32.t01;Name=lambdap32
+NC_001416	GenBank	CDS	27812	28882	.	-	1	ID=lambdap33;Dbxref=GeneID:2703470;Name=int;codon_start=1;locus_tag=lambdap33;product=tyrosine-type recombinase/integrase;protein_id=NP_040609.1;transl_table=11;translation=length.356
+NC_001416	GenBank	binding_site	27814	27854	.	+	1	ID=GenBank:binding_site:NC_001416:27814:27854;bound_moiety=int 4
+NC_001416	GenBank	gene	27812	28882	.	-	1	ID=lambdap33.gene;Alias=lambdap33;Dbxref=GeneID:2703470;Name=int;locus_tag=lambdap33
+NC_001416	GenBank	CDS	28860	29078	.	-	1	ID=lambdap34;Dbxref=GeneID:2703504;Name=xis;codon_start=1;locus_tag=lambdap34;product=excisionase;protein_id=NP_040610.1;transl_table=11;translation=length.72
+NC_001416	GenBank	gene	28860	29078	.	-	1	ID=lambdap34.gene;Alias=lambdap34;Dbxref=GeneID:2703504;Name=xis;locus_tag=lambdap34
+NC_001416	GenBank	sequence_variant	29063	29063	.	+	1	Parent=lambdap34;Name=xis;Note=a in xis am6%3B g in wild-type;locus_tag=lambdap34;replace=a
+NC_001416	GenBank	CDS	29118	29285	.	-	1	ID=lambdap35;Dbxref=GeneID:2703530;Name=lambdap35;Note=Predicted by GeneMark;codon_start=1;product=hypothetical protein;protein_id=NP_597778.1;transl_table=11;translation=length.55
+NC_001416	GenBank	gene	29118	29285	.	-	1	ID=lambdap35.gene;Alias=lambdap35;Dbxref=GeneID:2703530;Name=lambdap35
+NC_001416	GenBank	CDS	29374	29655	.	-	1	ID=lambdap36;Dbxref=GeneID:2703505;Name=ea8.5;codon_start=1;locus_tag=lambdap36;product=ea8.5;protein_id=NP_040611.1;transl_table=11;translation=length.93
+NC_001416	GenBank	gene	29374	29655	.	-	1	ID=lambdap36.gene;Alias=lambdap36;Dbxref=GeneID:2703505;Name=ea8.5;locus_tag=lambdap36
+NC_001416	GenBank	CDS	29847	30395	.	-	1	ID=lambdap83;Dbxref=GeneID:3827054;Name=ea22;codon_start=1;locus_tag=lambdap83;product=ead/Ea22-like family protein;protein_id=NP_040612.1;transl_table=11;translation=length.182
+NC_001416	GenBank	gene	29847	30395	.	-	1	ID=lambdap83.gene;Alias=lambdap83;Dbxref=GeneID:3827054;Name=ea22;locus_tag=lambdap83
+NC_001416	GenBank	CDS	30839	31024	.	-	1	ID=lambdap37;Dbxref=GeneID:2703506;Name=orf61;codon_start=1;locus_tag=lambdap37;product=hypothetical protein;protein_id=NP_040613.1;transl_table=11;translation=length.61
+NC_001416	GenBank	gene	30839	31024	.	-	1	ID=lambdap37.gene;Alias=lambdap37;Dbxref=GeneID:2703506;Name=orf61;locus_tag=lambdap37
+NC_001416	GenBank	CDS	31005	31196	.	-	1	ID=lambdap38;Dbxref=GeneID:2703507;Name=orf63;codon_start=1;locus_tag=lambdap38;product=DUF1382 family protein;protein_id=NP_040614.1;transl_table=11;translation=length.63
+NC_001416	GenBank	gene	31005	31196	.	-	1	ID=lambdap38.gene;Alias=lambdap38;Dbxref=GeneID:2703507;Name=orf63;locus_tag=lambdap38
+NC_001416	GenBank	CDS	31169	31351	.	-	1	ID=lambdap39;Dbxref=GeneID:2703508;Name=orf60a;codon_start=1;locus_tag=lambdap39;product=DUF1317 domain-containing protein;protein_id=NP_040615.1;transl_table=11;translation=length.60
+NC_001416	GenBank	gene	31169	31351	.	-	1	ID=lambdap39.gene;Alias=lambdap39;Dbxref=GeneID:2703508;Name=orf60a;locus_tag=lambdap39
+NC_001416	GenBank	recombination_feature	31266	31267	.	+	1	ID=GenBank:recombination_feature:NC_001416:31266:31267;organism=Bacteriophage lambda
+NC_001416	GenBank	gene	31262	35582	.	-	1	ID=lambdap40;Dbxref=GeneID:2703535;Name=lambdap40
+NC_001416	GenBank	mRNA	31262	35582	.	-	1	ID=lambdap40.t01;Parent=lambdap40;Dbxref=GeneID:2703535;Name=lambdap40;product=mRNA-pl (alt.%3B via tl3 terminator)
+NC_001416	GenBank	exon	31262	35582	.	-	1	Parent=lambdap40.t01;Name=lambdap40
+NC_001416	GenBank	CDS	31348	32028	.	-	1	ID=lambdap41;Dbxref=GeneID:2703522;Name=exo;codon_start=1;locus_tag=lambdap41;product=YqaJ viral recombinase family protein;protein_id=NP_040616.1;transl_table=11;translation=length.226
+NC_001416	GenBank	gene	31348	32028	.	-	1	ID=lambdap41.gene;Alias=lambdap41;Dbxref=GeneID:2703522;Name=exo;locus_tag=lambdap41
+NC_001416	GenBank	CDS	32025	32810	.	-	1	ID=lambdap84;Dbxref=GeneID:3827055;Name=bet;codon_start=1;locus_tag=lambdap84;product=recombination protein Bet;protein_id=NP_040617.1;transl_table=11;translation=length.261
+NC_001416	GenBank	gene	32025	32810	.	-	1	ID=lambdap84.gene;Alias=lambdap84;Dbxref=GeneID:3827055;Name=bet;locus_tag=lambdap84
+NC_001416	GenBank	CDS	32816	33232	.	-	1	ID=lambdap42;Dbxref=GeneID:2703509;Name=gam;codon_start=1;locus_tag=lambdap42;product=host-nuclease inhibitor protein Gam;protein_id=NP_040618.1;transl_table=11;translation=length.138
+NC_001416	GenBank	gene	32816	33232	.	-	1	ID=lambdap42.gene;Alias=lambdap42;Dbxref=GeneID:2703509;Name=gam;locus_tag=lambdap42
+NC_001416	GenBank	gene	33100	35582	.	-	1	ID=lambdap43;Dbxref=GeneID:2703542;Name=lambdap43
+NC_001416	GenBank	mRNA	33100	35582	.	-	1	ID=lambdap43.t01;Parent=lambdap43;Dbxref=GeneID:2703542;Name=lambdap43;product=mRNA-pl (alt.%3B via tl2d terminator)
+NC_001416	GenBank	exon	33100	35582	.	-	1	Parent=lambdap43.t01;Name=lambdap43
+NC_001416	GenBank	gene	33141	35582	.	-	1	ID=lambdap44;Dbxref=GeneID:2703471;Name=lambdap44
+NC_001416	GenBank	mRNA	33141	35582	.	-	1	ID=lambdap44.t01;Parent=lambdap44;Dbxref=GeneID:2703471;Name=lambdap44;product=mRNA-pl (alt.%3B via tl2c terminator)
+NC_001416	GenBank	exon	33141	35582	.	-	1	Parent=lambdap44.t01;Name=lambdap44
+NC_001416	GenBank	CDS	33187	33330	.	-	1	ID=lambdap85;Dbxref=GeneID:3827057;Name=kil;codon_start=1;locus_tag=lambdap85;product=host cell division inhibitory peptide Kil;protein_id=NP_040619.1;transl_table=11;translation=length.47
+NC_001416	GenBank	gene	33187	33330	.	-	1	ID=lambdap85.gene;Alias=lambdap85;Dbxref=GeneID:3827057;Name=kil;locus_tag=lambdap85
+NC_001416	GenBank	CDS	33299	33463	.	-	1	ID=lambdap86;Dbxref=GeneID:3827056;Name=cIII;codon_start=1;locus_tag=lambdap86;product=protease FtsH-inhibitory lysogeny factor CIII;protein_id=NP_040620.1;transl_table=11;translation=length.54
+NC_001416	GenBank	gene	33299	33463	.	-	1	ID=lambdap86.gene;Alias=lambdap86;Dbxref=GeneID:3827056;Name=cIII;locus_tag=lambdap86
+NC_001416	GenBank	gene	33494	35582	.	-	1	ID=lambdap45;Dbxref=GeneID:2703541;Name=ea10;locus_tag=lambdap45
+NC_001416	GenBank	mRNA	33494	35582	.	-	1	ID=lambdap45.t01;Parent=lambdap45;Dbxref=GeneID:2703541;Name=ea10;locus_tag=lambdap45;product=mRNA-pl (alt.%3B via tl2b terminator)
+NC_001416	GenBank	CDS	33536	33904	.	-	1	ID=lambdap45.p01;Parent=lambdap45.t01;Dbxref=GeneID:2703541;Name=ea10;codon_start=1;locus_tag=lambdap45;product=DUF2528 family protein;protein_id=NP_040621.1;transl_table=11;translation=length.122
+NC_001416	GenBank	exon	33494	35582	.	-	1	Parent=lambdap45.t01;Name=ea10;locus_tag=lambdap45
+NC_001416	GenBank	gene	33930	35582	.	-	1	ID=lambdap46;Dbxref=GeneID:2703473;Name=ral;locus_tag=lambdap46
+NC_001416	GenBank	mRNA	33930	35582	.	-	1	ID=lambdap46.t01;Parent=lambdap46;Dbxref=GeneID:2703473;Name=ral;locus_tag=lambdap46;product=mRNA-pl (alt.%3B via tl2a terminator)
+NC_001416	GenBank	CDS	34087	34287	.	-	1	ID=lambdap46.p01;Parent=lambdap46.t01;Dbxref=GeneID:2703473;Name=ral;codon_start=1;locus_tag=lambdap46;product=Restriction inhibitor protein ral;protein_id=NP_040622.1;transl_table=11;translation=length.66
+NC_001416	GenBank	exon	33930	35582	.	-	1	Parent=lambdap46.t01;Name=ral;locus_tag=lambdap46
+NC_001416	GenBank	CDS	34271	34357	.	-	1	ID=lambdap47;Dbxref=GeneID:2703510;Name=orf28;codon_start=1;locus_tag=lambdap47;product=hypothetical protein;protein_id=NP_040623.1;transl_table=11;translation=length.28
+NC_001416	GenBank	sequence_variant	34378	38617	.	+	1	ID=GenBank:sequence_variant:NC_001416:34378:38617;Note=imm21 region
+NC_001416	GenBank	gene	34271	34357	.	-	1	ID=lambdap47.gene;Alias=lambdap47;Dbxref=GeneID:2703510;Name=orf28;locus_tag=lambdap47
+NC_001416	GenBank	CDS	34482	35036	.	+	1	ID=lambdap48;Dbxref=GeneID:2703531;Name=lambdap48;Note=Predicted by GeneMark;codon_start=1;product=Superinfection exclusion protein B;protein_id=NP_597779.1;transl_table=11;translation=length.184
+NC_001416	GenBank	gene	34482	35036	.	+	1	ID=lambdap48.gene;Alias=lambdap48;Dbxref=GeneID:2703531;Name=lambdap48
+NC_001416	GenBank	sequence_variant	35583	38245	.	+	1	ID=GenBank:sequence_variant:NC_001416:35583:38245;Note=imm434 region
+NC_001416	GenBank	regulatory	35591	35607	.	-	1	ID=GenBank:regulatory:NC_001416:35591:35607;Note=operator-l1 (first base on comp strand);regulatory_class=other
+NC_001416	GenBank	sequence_variant	35596	35596	.	+	1	ID=GenBank:sequence_variant:NC_001416:35596:35596;Note=a in vir2%2C t in v003%2C c in wild-type
+NC_001416	GenBank	sequence_variant	35606	35606	.	+	1	ID=GenBank:sequence_variant:NC_001416:35606:35606;Note=c in vir101%3B t in wild-type;replace=c
+NC_001416	GenBank	regulatory	35615	35631	.	-	1	ID=GenBank:regulatory:NC_001416:35615:35631;Note=operator-l2 (first base on comp strand);regulatory_class=other
+NC_001416	GenBank	sequence_variant	35621	35621	.	+	1	ID=GenBank:sequence_variant:NC_001416:35621:35621;Note=t in v305%2C c in wild-type;replace=t
+NC_001416	GenBank	sequence_variant	35622	35622	.	+	1	ID=GenBank:sequence_variant:NC_001416:35622:35622;Note=t in v305%2C g in wild-type;replace=t
+NC_001416	GenBank	regulatory	35635	35651	.	-	1	ID=GenBank:regulatory:NC_001416:35635:35651;Note=operator-l3 (first base on comp strand);regulatory_class=other
+NC_001416	GenBank	gene	34560	35582	.	-	1	ID=lambdap49;Dbxref=GeneID:2703540;Name=N;locus_tag=lambdap49
+NC_001416	GenBank	mRNA	34560	35582	.	-	1	ID=lambdap49.t01;Parent=lambdap49;Dbxref=GeneID:2703540;Name=N;locus_tag=lambdap49;product=mRNA-pl (alt.%3B via tl1 terminator)
+NC_001416	GenBank	binding_site	35518	35534	.	-	1	Parent=lambdap49;Name=N;Note=N-utilization leftward.%3B putative;bound_moiety=Nutl;locus_tag=lambdap49
+NC_001416	GenBank	sequence_variant	35528	35528	.	+	1	Parent=lambdap49;Name=N;Note=a in Nutl63%3B c in wild-type;locus_tag=lambdap49;replace=a
+NC_001416	GenBank	sequence_variant	35528	35528	.	+	1	Parent=lambdap49;Name=N;Note=g in Nutl96%3B c in wild-type;locus_tag=lambdap49;replace=g
+NC_001416	GenBank	sequence_variant	35528	35528	.	+	1	Parent=lambdap49;Name=N;Note=t in Nutl18%3B c in wild-type;locus_tag=lambdap49;replace=t
+NC_001416	GenBank	sequence_variant	35529	35531	.	+	1	Parent=lambdap49;Name=N;Note=agg in wild-type%3B ag in Nutl3;locus_tag=lambdap49;replace=ag
+NC_001416	GenBank	CDS	35037	35438	.	-	1	ID=lambdap49.p01;Parent=lambdap49.t01;Dbxref=GeneID:2703540;Name=N;codon_start=1;locus_tag=lambdap49;product=antitermination protein N;protein_id=NP_040625.1;transl_table=11;translation=length.133
+NC_001416	GenBank	exon	34560	35582	.	-	1	Parent=lambdap49.t01;Name=N;locus_tag=lambdap49
+NC_001416	GenBank	gene	35798	38343	.	-	1	ID=lambdap50;Dbxref=GeneID:2703537;Name=lambdap50
+NC_001416	GenBank	mRNA	35798	38343	.	-	1	ID=lambdap50.t01;Parent=lambdap50;Dbxref=GeneID:2703537;Name=lambdap50;product=mRNA-pre (via timm terminator)
+NC_001416	GenBank	sequence_variant	37954	37954	.	+	1	Parent=lambdap50;Name=lambdap50;Note=t in prm-e37%3B c in wild-type;replace=t
+NC_001416	GenBank	sequence_variant	37955	37955	.	+	1	Parent=lambdap50;Name=lambdap50;Note=g in vc3%3B%2C a in wild-type;replace=g
+NC_001416	GenBank	sequence_variant	37957	37957	.	+	1	Parent=lambdap50;Name=lambdap50;Note=t in or3-r1%3B c in wild-type;replace=t
+NC_001416	GenBank	sequence_variant	37958	37958	.	+	1	Parent=lambdap50;Name=lambdap50;Note=a in or 3-r3 mutants%3B g in wild-type;replace=a
+NC_001416	GenBank	sequence_variant	37965	37965	.	+	1	Parent=lambdap50;Name=lambdap50;Note=g in or3-c12%3B a in wild-type;replace=g
+NC_001416	GenBank	sequence_variant	37966	37966	.	+	1	Parent=lambdap50;Name=lambdap50;Note=c in or3-c10%3B t in wild-type;replace=c
+NC_001416	GenBank	sequence_variant	37971	37971	.	+	1	Parent=lambdap50;Name=lambdap50;Note=g inp-rmup-1%3B a in wild-type;replace=g
+NC_001416	GenBank	sequence_variant	37973	37973	.	+	1	Parent=lambdap50;Name=lambdap50;Note=t in prm-m104%3B 116%3B u31 mutants%2C c in wild-type;replace=t
+NC_001416	GenBank	sequence_variant	37978	37978	.	+	1	Parent=lambdap50;Name=lambdap50;Note=g in vc3%3B a in wild-type;replace=g
+NC_001416	GenBank	sequence_variant	37978	37978	.	+	1	Parent=lambdap50;Name=lambdap50;Note=t in prm-e104%3B a in wild-type;replace=t
+NC_001416	GenBank	sequence_variant	37979	37979	.	+	1	Parent=lambdap50;Name=lambdap50;Note=t in prm-e93%3B c in wild-type;replace=t
+NC_001416	GenBank	sequence_variant	37985	37985	.	+	1	Parent=lambdap50;Name=lambdap50;Note=t in vn%3B g in wild-type;replace=t
+NC_001416	GenBank	sequence_variant	37988	37990	.	+	1	Parent=lambdap50;Name=lambdap50;Note=tg in mah4 mutant%3B ttg in wt;replace=tg
+NC_001416	GenBank	sequence_variant	37989	37991	.	+	1	Parent=lambdap50;Name=lambdap50;Note=ta in mch9 mutant%3B tga in wt;replace=ta
+NC_001416	GenBank	sequence_variant	37991	37991	.	+	1	Parent=lambdap50;Name=lambdap50;Note=g in pr-x3%3B a in wild-type;replace=g
+NC_001416	GenBank	sequence_variant	38003	38003	.	+	1	Parent=lambdap50;Name=lambdap50;Note=a in vs326%3B c in wild-type;replace=a
+NC_001416	GenBank	sequence_variant	38007	38007	.	+	1	Parent=lambdap50;Name=lambdap50;Note=a in vir3%3B c in wild-type;replace=a
+NC_001416	GenBank	sequence_variant	38007	38007	.	+	1	Parent=lambdap50;Name=lambdap50;Note=t in prm-uv8%3B c in wild-type;replace=t
+NC_001416	GenBank	sequence_variant	38009	38009	.	+	1	Parent=lambdap50;Name=lambdap50;Note=t in vc1%3B g in wild-type;replace=t
+NC_001416	GenBank	exon	35798	38343	.	-	1	Parent=lambdap50.t01;Name=lambdap50
+NC_001416	GenBank	gene	35798	37940	.	-	1	ID=lambdap51;Dbxref=GeneID:2703538;Name=lambdap51
+NC_001416	GenBank	mRNA	35798	37940	.	-	1	ID=lambdap51.t01;Parent=lambdap51;Dbxref=GeneID:2703538;Name=lambdap51;product=mRNA-prm (via timm terminator)
+NC_001416	GenBank	exon	35798	37940	.	-	1	Parent=lambdap51.t01;Name=lambdap51
+NC_001416	GenBank	gene	35798	36256	.	-	1	ID=lambdap52;Dbxref=GeneID:2703465;Name=lambdap52
+NC_001416	GenBank	mRNA	35798	36256	.	-	1	ID=lambdap52.t01;Parent=lambdap52;Dbxref=GeneID:2703465;Name=lambdap52;product=mRNA-plit (via timm terminator)
+NC_001416	GenBank	exon	35798	36256	.	-	1	Parent=lambdap52.t01;Name=lambdap52
+NC_001416	GenBank	CDS	35825	36259	.	-	1	ID=lambdap53;Dbxref=GeneID:2703493;Name=rexb;codon_start=1;locus_tag=lambdap53;product=protein rexB;protein_id=NP_040626.1;transl_table=11;translation=length.144
+NC_001416	GenBank	gene	35825	36259	.	-	1	ID=lambdap53.gene;Alias=lambdap53;Dbxref=GeneID:2703493;Name=rexb;locus_tag=lambdap53
+NC_001416	GenBank	sequence_variant	35940	35940	.	+	1	Parent=lambdap53;Name=rexb;Note=a in rex209%2C g in wild-type;locus_tag=lambdap53;replace=a
+NC_001416	GenBank	sequence_variant	35947	35947	.	+	1	Parent=lambdap53;Name=rexb;Note=a in rex111%2C g in wild-type;locus_tag=lambdap53;replace=a
+NC_001416	GenBank	CDS	36275	37114	.	-	1	ID=lambdap87;Dbxref=GeneID:3827058;Name=rexa;codon_start=1;locus_tag=lambdap87;product=protein rexA;protein_id=NP_040627.1;transl_table=11;translation=length.279
+NC_001416	GenBank	gene	36275	37114	.	-	1	ID=lambdap87.gene;Alias=lambdap87;Dbxref=GeneID:3827058;Name=rexa;locus_tag=lambdap87
+NC_001416	GenBank	CDS	37227	37940	.	-	1	ID=lambdap88;Dbxref=GeneID:3827059;Name=cI;codon_start=1;locus_tag=lambdap88;product=LexA family transcriptional regulator;protein_id=NP_040628.1;transl_table=11;translation=length.237
+NC_001416	GenBank	regulatory	37951	37967	.	+	1	ID=GenBank:regulatory:NC_001416:37951:37967;Note=operator-r3;regulatory_class=other
+NC_001416	GenBank	regulatory	37974	37990	.	+	1	ID=GenBank:regulatory:NC_001416:37974:37990;Note=operator-r2;regulatory_class=other
+NC_001416	GenBank	regulatory	37998	38014	.	+	1	ID=GenBank:regulatory:NC_001416:37998:38014;Note=operator-r1;regulatory_class=other
+NC_001416	GenBank	gene	37227	37940	.	-	1	ID=lambdap88.gene;Alias=lambdap88;Dbxref=GeneID:3827059;Name=cI;locus_tag=lambdap88
+NC_001416	GenBank	sequence_variant	37287	37287	.	+	1	Parent=lambdap88;Name=cI;Note=a in cIam14%2C c in wild-type;locus_tag=lambdap88;replace=a
+NC_001416	GenBank	sequence_variant	37308	37308	.	+	1	Parent=lambdap88;Name=cI;Note=c in cIam504%2C g in wild-type;locus_tag=lambdap88;replace=c
+NC_001416	GenBank	sequence_variant	37313	37313	.	+	1	Parent=lambdap88;Name=cI;Note=a in cIam505%2C g in wild-type;locus_tag=lambdap88;replace=a
+NC_001416	GenBank	sequence_variant	37589	37589	.	+	1	Parent=lambdap88;Name=cI;Note=t in ind1%3B c in wild-type;locus_tag=lambdap88;replace=t
+NC_001416	GenBank	sequence_variant	37629	37629	.	+	1	Parent=lambdap88;Name=cI;Note=c in cIam499%3B g in wild-type;locus_tag=lambdap88;replace=c
+NC_001416	GenBank	sequence_variant	37635	37635	.	+	1	Parent=lambdap88;Name=cI;Note=c in cIam212%2C a in wild-type;locus_tag=lambdap88;replace=c
+NC_001416	GenBank	sequence_variant	37680	37680	.	+	1	Parent=lambdap88;Name=cI;Note=a in cIam34%3B c in wild-type;locus_tag=lambdap88;replace=a
+NC_001416	GenBank	sequence_variant	37742	37742	.	+	1	Parent=lambdap88;Name=cI;Note=t in strain ci857s7([25])%3B c in wild-type;locus_tag=lambdap88;replace=t
+NC_001416	GenBank	sequence_variant	37808	37808	.	+	1	Parent=lambdap88;Name=cI;Note=a in cIam282%3B g in wild-type;locus_tag=lambdap88;replace=a
+NC_001416	GenBank	sequence_variant	37872	37872	.	+	1	Parent=lambdap88;Name=cI;Note=c in cIam302%3B a in wild-type;locus_tag=lambdap88;replace=c
+NC_001416	GenBank	gene	38023	40624	.	+	1	ID=lambdap54;Dbxref=GeneID:2703490;Name=lambdap54
+NC_001416	GenBank	mRNA	38023	40624	.	+	1	ID=lambdap54.t01;Parent=lambdap54;Dbxref=GeneID:2703490;Name=lambdap54;product=mRNA-pr (alt.%3B via tr2 terminator)
+NC_001416	GenBank	exon	38023	40624	.	+	1	Parent=lambdap54.t01;Name=lambdap54
+NC_001416	GenBank	gene	38023	38370	.	+	1	ID=lambdap55;Dbxref=GeneID:2703491;Name=lambdap55
+NC_001416	GenBank	mRNA	38023	38370	.	+	1	ID=lambdap55.t01;Parent=lambdap55;Dbxref=GeneID:2703491;Name=lambdap55;product=mRNA-pr (alt.%3B via tr1c terminator)
+NC_001416	GenBank	sequence_variant	38350	38350	.	+	1	Parent=lambdap55;Name=lambdap55;Note=g in cy3048%3B a in wild-type;replace=g
+NC_001416	GenBank	sequence_variant	38354	38354	.	+	1	Parent=lambdap55;Name=lambdap55;Note=c in cy2001%3B t in wild-type;replace=c
+NC_001416	GenBank	sequence_variant	38357	38357	.	+	1	Parent=lambdap55;Name=lambdap55;Note=t in cy3019%3B c in wild-type;replace=t
+NC_001416	GenBank	exon	38023	38370	.	+	1	Parent=lambdap55.t01;Name=lambdap55
+NC_001416	GenBank	gene	38023	38337	.	+	1	ID=lambdap56;Dbxref=GeneID:2703466;Name=lambdap56
+NC_001416	GenBank	mRNA	38023	38337	.	+	1	ID=lambdap56.t01;Parent=lambdap56;Dbxref=GeneID:2703466;Name=lambdap56;product=mRNA-pr (alt.%3B via tr1b terminator)
+NC_001416	GenBank	exon	38023	38337	.	+	1	Parent=lambdap56.t01;Name=lambdap56
+NC_001416	GenBank	gene	38023	38315	.	+	1	ID=lambdap57;Dbxref=GeneID:2703467;Name=cro;locus_tag=lambdap57
+NC_001416	GenBank	gene_component_region	38249	38266	.	+	1	Parent=lambdap57;Name=cro;Note=rho utilization site A (rutA);locus_tag=lambdap57
+NC_001416	GenBank	gene_component_region	38282	38301	.	+	1	Parent=lambdap57;Name=cro;Note=rho utilization site B (rutB);locus_tag=lambdap57
+NC_001416	GenBank	mRNA	38023	38315	.	+	1	ID=lambdap57.t01;Parent=lambdap57;Dbxref=GeneID:2703467;Name=cro;locus_tag=lambdap57;product=mRNA-pr (alt.%3B via tr1a terminator)
+NC_001416	GenBank	binding_site	38265	38281	.	+	1	Parent=lambdap57;Name=cro;Note=N-utilization rightward%3B putative;bound_moiety=Nutr;locus_tag=lambdap57
+NC_001416	GenBank	sequence_variant	38302	38302	.	+	1	Parent=lambdap57;Name=cro;Note=a in cin-1%3B g in wild-type;locus_tag=lambdap57;replace=a
+NC_001416	GenBank	sequence_variant	38306	38306	.	+	1	Parent=lambdap57;Name=cro;Note=c in cnc1%3B t in wild-type;locus_tag=lambdap57;replace=c
+NC_001416	GenBank	sequence_variant	38307	38307	.	+	1	Parent=lambdap57;Name=cro;Note=g in cnc8%3B a in wild-type;locus_tag=lambdap57;replace=g
+NC_001416	GenBank	CDS	38041	38241	.	+	1	ID=lambdap57.p01;Parent=lambdap57.t01;Dbxref=GeneID:2703467;Name=cro;codon_start=1;locus_tag=lambdap57;product=antirepressor;protein_id=NP_040629.1;transl_table=11;translation=length.66
+NC_001416	GenBank	exon	38023	38315	.	+	1	Parent=lambdap57.t01;Name=cro;locus_tag=lambdap57
+NC_001416	GenBank	gene	38023	38135	.	+	1	ID=lambdap58;Dbxref=GeneID:2703539;Name=lambdap58
+NC_001416	GenBank	mRNA	38023	38135	.	+	1	ID=lambdap58.t01;Parent=lambdap58;Dbxref=GeneID:2703539;Name=lambdap58;product=mRNA-pr (alt.%3B via tr0 terminator)
+NC_001416	GenBank	exon	38023	38135	.	+	1	Parent=lambdap58.t01;Name=lambdap58
+NC_001416	GenBank	CDS	38360	38653	.	+	1	ID=lambdap59;Dbxref=GeneID:2703494;Name=cII;codon_start=1;function=transcriptional activator;locus_tag=lambdap59;product=lambdagCII protein family protein;protein_id=NP_040630.1;transl_table=11;translation=length.97
+NC_001416	GenBank	gene	38360	38653	.	+	1	ID=lambdap59.gene;Alias=lambdap59;Dbxref=GeneID:2703494;Name=cII;locus_tag=lambdap59
+NC_001416	GenBank	regulatory	38543	38557	.	+	1	Parent=lambdap59;Name=cII;Note=ice(inceptor signal for DNA replication);locus_tag=lambdap59;regulatory_class=other
+NC_001416	GenBank	sequence_variant	38364	38364	.	+	1	Parent=lambdap59;Name=cII;Note=g in can1%3B t in wild-type;locus_tag=lambdap59;replace=g
+NC_001416	GenBank	sequence_variant	38370	38370	.	+	1	Parent=lambdap59;Name=cII;Note=t in cy3003%3B c in wild-type;locus_tag=lambdap59;replace=t
+NC_001416	GenBank	sequence_variant	38371	38371	.	+	1	Parent=lambdap59;Name=cII;Note=t in cy42%3B a in wild-type;locus_tag=lambdap59;replace=t
+NC_001416	GenBank	sequence_variant	38376	38376	.	+	1	Parent=lambdap59;Name=cII;Note=g in cy844%3B a in wild-type;locus_tag=lambdap59;replace=g
+NC_001416	GenBank	sequence_variant	38379	38379	.	+	1	Parent=lambdap59;Name=cII;Note=a in cy3008%3B g in wild-type;locus_tag=lambdap59;replace=a
+NC_001416	GenBank	sequence_variant	38380	38380	.	+	1	Parent=lambdap59;Name=cII;Note=t in cy3001%3B c in wild-type;locus_tag=lambdap59;replace=t
+NC_001416	GenBank	sequence_variant	38430	38430	.	+	1	Parent=lambdap59;Name=cII;Note=c in cII2002%3B t in wild-type;locus_tag=lambdap59;replace=c
+NC_001416	GenBank	gene	38599	38675	.	-	1	ID=lambdap60;Dbxref=GeneID:2703492;Name=lambdap60
+NC_001416	GenBank	mRNA	38599	38675	.	-	1	ID=lambdap60.t01;Parent=lambdap60;Dbxref=GeneID:2703492;Name=lambdap60;product=mRNA-oop transcription mRNA
+NC_001416	GenBank	exon	38599	38675	.	-	1	Parent=lambdap60.t01;Name=lambdap60
+NC_001416	GenBank	CDS	38686	39585	.	+	1	ID=lambdap89;Dbxref=GeneID:3827060;Name=O;codon_start=1;locus_tag=lambdap89;product=replication protein;protein_id=NP_040631.1;transl_table=11;translation=length.299
+NC_001416	GenBank	gene	38686	39585	.	+	1	ID=lambdap89.gene;Alias=lambdap89;Dbxref=GeneID:3827060;Name=O;locus_tag=lambdap89
+NC_001416	GenBank	binding_site	39034	39051	.	+	1	Parent=lambdap89;Name=O;bound_moiety=ori iteron 1(O;locus_tag=lambdap89
+NC_001416	GenBank	binding_site	39054	39071	.	+	1	Parent=lambdap89;Name=O;bound_moiety=ori iteron 2(O;locus_tag=lambdap89
+NC_001416	GenBank	binding_site	39078	39095	.	+	1	Parent=lambdap89;Name=O;bound_moiety=ori iteron 3(O;locus_tag=lambdap89
+NC_001416	GenBank	binding_site	39101	39118	.	+	1	Parent=lambdap89;Name=O;bound_moiety=ori iteron 4(O;locus_tag=lambdap89
+NC_001416	GenBank	recombination_feature	39157	39158	.	+	1	Parent=lambdap89;Name=O;locus_tag=lambdap89;organism=Bacteriophage lambda
+NC_001416	GenBank	recombination_feature	39165	39166	.	+	1	Parent=lambdap89;Name=O;locus_tag=lambdap89;organism=Bacteriophage lambda
+NC_001416	GenBank	sequence_variant	39122	39122	.	+	1	Parent=lambdap89;Name=O;Note=a in ti-12%3B c in wild-type;locus_tag=lambdap89;replace=a
+NC_001416	GenBank	sequence_variant	39268	39268	.	+	1	Parent=lambdap89;Name=O;Note=t in ric5b%3B c in wild-type;locus_tag=lambdap89;replace=t
+NC_001416	GenBank	sequence_variant	39292	39292	.	+	1	Parent=lambdap89;Name=O;Note=a in ric5b%3B g in wild-type;locus_tag=lambdap89;replace=a
+NC_001416	GenBank	CDS	39582	40283	.	+	1	ID=lambdap61;Dbxref=GeneID:2703495;Name=P;codon_start=1;locus_tag=lambdap61;product=DNA replication protein;protein_id=NP_040632.1;transl_table=11;translation=length.233
+NC_001416	GenBank	gene	39582	40283	.	+	1	ID=lambdap61.gene;Alias=lambdap61;Dbxref=GeneID:2703495;Name=P;locus_tag=lambdap61
+NC_001416	GenBank	CDS	40280	40570	.	+	1	ID=lambdap62;Dbxref=GeneID:2703496;Name=ren;codon_start=1;locus_tag=lambdap62;product=protein ren;protein_id=NP_040633.1;transl_table=11;translation=length.96
+NC_001416	GenBank	sequence_variant	40501	43307	.	+	1	ID=GenBank:sequence_variant:NC_001416:40501:43307;Note=Nin5 substitution
+NC_001416	GenBank	gene	40280	40570	.	+	1	ID=lambdap62.gene;Alias=lambdap62;Dbxref=GeneID:2703496;Name=ren;locus_tag=lambdap62
+NC_001416	GenBank	CDS	40644	41084	.	+	1	ID=lambdap63;Dbxref=GeneID:2703497;Name=NinB;codon_start=1;locus_tag=lambdap63;product=recombination protein NinB;protein_id=NP_040634.1;transl_table=11;translation=length.146
+NC_001416	GenBank	gene	40644	41084	.	+	1	ID=lambdap63.gene;Alias=lambdap63;Dbxref=GeneID:2703497;Name=NinB;locus_tag=lambdap63
+NC_001416	GenBank	CDS	41081	41953	.	+	1	ID=lambdap64;Dbxref=GeneID:2703498;Name=NinC;codon_start=1;locus_tag=lambdap64;product=phosphoadenosine phosphosulfate reductase family protein;protein_id=NP_040635.1;transl_table=11;translation=length.290
+NC_001416	GenBank	gene	41081	41953	.	+	1	ID=lambdap64.gene;Alias=lambdap64;Dbxref=GeneID:2703498;Name=NinC;locus_tag=lambdap64
+NC_001416	GenBank	CDS	41950	42123	.	+	1	ID=lambdap65;Dbxref=GeneID:2703499;Name=NinD;codon_start=1;locus_tag=lambdap65;product=NinD protein;protein_id=NP_040636.1;transl_table=11;translation=length.57
+NC_001416	GenBank	gene	41950	42123	.	+	1	ID=lambdap65.gene;Alias=lambdap65;Dbxref=GeneID:2703499;Name=NinD;locus_tag=lambdap65
+NC_001416	GenBank	CDS	42090	42272	.	+	1	ID=lambdap66;Dbxref=GeneID:2703500;Name=NinE;codon_start=1;locus_tag=lambdap66;product=NinE family protein;protein_id=NP_040637.1;transl_table=11;translation=length.60
+NC_001416	GenBank	gene	42090	42272	.	+	1	ID=lambdap66.gene;Alias=lambdap66;Dbxref=GeneID:2703500;Name=NinE;locus_tag=lambdap66
+NC_001416	GenBank	CDS	42269	42439	.	+	1	ID=lambdap67;Dbxref=GeneID:2703501;Name=NinF;codon_start=1;locus_tag=lambdap67;product=protein ninF;protein_id=NP_040638.1;transl_table=11;translation=length.56
+NC_001416	GenBank	gene	42269	42439	.	+	1	ID=lambdap67.gene;Alias=lambdap67;Dbxref=GeneID:2703501;Name=NinF;locus_tag=lambdap67
+NC_001416	GenBank	CDS	42429	43043	.	+	1	ID=lambdap68;Dbxref=GeneID:2703474;Name=NinG;codon_start=1;locus_tag=lambdap68;product=recombination protein NinG;protein_id=NP_040639.1;transl_table=11;translation=length.204
+NC_001416	GenBank	gene	42429	43043	.	+	1	ID=lambdap68.gene;Alias=lambdap68;Dbxref=GeneID:2703474;Name=NinG;locus_tag=lambdap68
+NC_001416	GenBank	CDS	43040	43246	.	+	1	ID=lambdap69;Dbxref=GeneID:2703475;Name=NinH;codon_start=1;locus_tag=lambdap69;product=protein ninH;protein_id=NP_040640.1;transl_table=11;translation=length.68
+NC_001416	GenBank	gene	43040	43246	.	+	1	ID=lambdap69.gene;Alias=lambdap69;Dbxref=GeneID:2703475;Name=NinH;locus_tag=lambdap69
+NC_001416	GenBank	gene_component_region	43082	43082	.	+	1	Parent=lambdap69;Name=NinH;Note=g or a%2C cited in [(in) Hendrix%2CR.W.%2C Roberts%2CJ.W.%2C Stahl%2CF.W. andWeisberg%2CR.A. (Eds.)%3BLambda II: 4];locus_tag=lambdap69;replace=a
+NC_001416	GenBank	sequence_variant	43082	43082	.	+	1	Parent=lambdap69;Name=NinH;Note=a in strain cI857s7 ([25])%3B g in wild-type;locus_tag=lambdap69;replace=a
+NC_001416	GenBank	CDS	43224	43889	.	+	1	ID=lambdap70;Dbxref=GeneID:2703476;Name=NinI;codon_start=1;function=serine/threonine phosphatase;locus_tag=lambdap70;product=serine/threonine protein phosphatase;protein_id=NP_040641.1;transl_table=11;translation=length.221
+NC_001416	GenBank	gene	43224	43889	.	+	1	ID=lambdap70.gene;Alias=lambdap70;Dbxref=GeneID:2703476;Name=NinI;locus_tag=lambdap70
+NC_001416	GenBank	recombination_feature	43884	43885	.	+	1	Parent=lambdap70;Name=NinI;locus_tag=lambdap70;organism=Bacteriophage lambda
+NC_001416	GenBank	CDS	43886	44509	.	+	1	ID=lambdap71;Dbxref=GeneID:2703477;Name=Q;codon_start=1;locus_tag=lambdap71;product=antitermination protein;protein_id=NP_040642.1;transl_table=11;translation=length.207
+NC_001416	GenBank	gene	43886	44509	.	+	1	ID=lambdap71.gene;Alias=lambdap71;Dbxref=GeneID:2703477;Name=Q;locus_tag=lambdap71
+NC_001416	GenBank	gene	44587	44780	.	+	1	ID=lambdap72;Dbxref=GeneID:2703521;Name=lambdap72
+NC_001416	GenBank	mRNA	44587	44780	.	+	1	ID=lambdap72.t01;Parent=lambdap72;Dbxref=GeneID:2703521;Name=lambdap72;product=mRNA-pr' transcription (late genes) mRNA
+NC_001416	GenBank	exon	44587	44780	.	+	1	Parent=lambdap72.t01;Name=lambdap72
+NC_001416	GenBank	CDS	44621	44815	.	+	1	ID=lambdap73;Dbxref=GeneID:2703478;Name=orf-64;codon_start=1;locus_tag=lambdap73;product=hypothetical protein;protein_id=NP_040643.1;transl_table=11;translation=length.64
+NC_001416	GenBank	gene	44621	44815	.	+	1	ID=lambdap73.gene;Alias=lambdap73;Dbxref=GeneID:2703478;Name=orf-64;locus_tag=lambdap73
+NC_001416	GenBank	CDS	45186	45509	.	+	1	ID=lambdap74;Dbxref=GeneID:2703479;Name=S;codon_start=1;locus_tag=lambdap74;product=holin%2C lambda family;protein_id=NP_040644.1;transl_table=11;translation=length.107
+NC_001416	GenBank	gene	45186	45509	.	+	1	ID=lambdap74.gene;Alias=lambdap74;Dbxref=GeneID:2703479;Name=S;locus_tag=lambdap74
+NC_001416	GenBank	CDS	45192	45509	.	+	1	ID=lambdap92;Dbxref=GeneID:5740919;Name=S';codon_start=1;locus_tag=lambdap92;product=holin;protein_id=YP_001551775.1;transl_table=11;translation=length.105
+NC_001416	GenBank	gene	45192	45509	.	+	1	ID=lambdap92.gene;Alias=lambdap92;Dbxref=GeneID:5740919;Name=S';locus_tag=lambdap92
+NC_001416	GenBank	sequence_variant	45352	45352	.	+	1	Parent=lambdap92;Name=S';Note=a in sam7%3B g in wild-type;locus_tag=lambdap92;replace=a
+NC_001416	GenBank	sequence_variant	45352	45352	.	+	1	Parent=lambdap92;Name=S';Note=a in strain cI857s7 ([25])%3B g in wild-type;locus_tag=lambdap92;replace=a
+NC_001416	GenBank	CDS	45493	45969	.	+	1	ID=lambdap75;Dbxref=GeneID:2703480;Name=R;codon_start=1;locus_tag=lambdap75;product=glycoside hydrolase family protein;protein_id=NP_040645.1;transl_table=11;translation=length.158
+NC_001416	GenBank	gene	45493	45969	.	+	1	ID=lambdap75.gene;Alias=lambdap75;Dbxref=GeneID:2703480;Name=R;locus_tag=lambdap75
+NC_001416	GenBank	CDS	45966	46427	.	+	1	ID=lambdap76;Dbxref=GeneID:2703481;Name=Rz;codon_start=1;locus_tag=lambdap76;product=proendopeptidase RzpD;protein_id=NP_040646.1;transl_table=11;translation=length.153
+NC_001416	GenBank	gene	45966	46427	.	+	1	ID=lambdap76.gene;Alias=lambdap76;Dbxref=GeneID:2703481;Name=Rz;locus_tag=lambdap76
+NC_001416	GenBank	CDS	46186	46368	.	+	1	ID=lambdap91;Dbxref=GeneID:5739319;Name=Rz1;codon_start=1;locus_tag=lambdap91;product=prolysis lipoprotein RzoD;protein_id=YP_001551744.1;transl_table=11;translation=length.60
+NC_001416	GenBank	gene	46186	46368	.	+	1	ID=lambdap91.gene;Alias=lambdap91;Dbxref=GeneID:5739319;Name=Rz1;locus_tag=lambdap91
+NC_001416	GenBank	CDS	46459	46752	.	-	1	ID=lambdap77;Dbxref=GeneID:2703532;Name=bor;Note=Predicted by GeneMark;codon_start=1;function=confers serum resistance upon the host;locus_tag=lambdap77;product=serum resistance lipoprotein Bor;protein_id=NP_597780.1;transl_table=11;translation=length.97
+NC_001416	GenBank	gene	46459	46752	.	-	1	ID=lambdap77.gene;Alias=lambdap77;Dbxref=GeneID:2703532;Name=bor;locus_tag=lambdap77
+NC_001416	GenBank	CDS	47042	47575	.	-	1	ID=lambdap78;Dbxref=GeneID:2703533;Name=lambdap78;Note=Predicted by GeneMark;codon_start=1;product=putative envelope protein;protein_id=NP_597781.1;transl_table=11;translation=length.177
+NC_001416	GenBank	gene	47042	47575	.	-	1	ID=lambdap78.gene;Alias=lambdap78;Dbxref=GeneID:2703533;Name=lambdap78
+NC_001416	GenBank	CDS	47738	47944	.	+	1	ID=lambdap79;Dbxref=GeneID:2703534;Name=lambdap79;Note=Predicted by GeneMark;codon_start=1;product=hypothetical protein;protein_id=NP_597782.1;transl_table=11;translation=length.68
+NC_001416	GenBank	gene	47738	47944	.	+	1	ID=lambdap79.gene;Alias=lambdap79;Dbxref=GeneID:2703534;Name=lambdap79
+##FASTA
+>NC_001416
+GGGCGGCGACCTCGCGGGTTTTCGCTATTTATGAAAATTTTCCGGTTTAAGGCGTTTCCG
+TTCTTCTTCGTCATAACTTAATGTTTTTATTTAAAATACCCTCTGAAAAGAAAGGAAACG
+ACAGGTGCTGAAAGCGAGGCTTTTTGGCCTCTGTCGTTTCCTTTCTCTGTTTTTGTCCGT
+GGAATGAACAATGGAAGTCAACAAAAAGCAGCTGGCTGACATTTTCGGTGCGAGTATCCG
+TACCATTCAGAACTGGCAGGAACAGGGAATGCCCGTTCTGCGAGGCGGTGGCAAGGGTAA
+TGAGGTGCTTTATGACTCTGCCGCCGTCATAAAATGGTATGCCGAAAGGGATGCTGAAAT
+TGAGAACGAAAAGCTGCGCCGGGAGGTTGAAGAACTGCGGCAGGCCAGCGAGGCAGATCT
+CCAGCCAGGAACTATTGAGTACGAACGCCATCGACTTACGCGTGCGCAGGCCGACGCACA
+GGAACTGAAGAATGCCAGAGACTCCGCTGAAGTGGTGGAAACCGCATTCTGTACTTTCGT
+GCTGTCGCGGATCGCAGGTGAAATTGCCAGTATTCTCGACGGGCTCCCCCTGTCGGTGCA
+GCGGCGTTTTCCGGAACTGGAAAACCGACATGTTGATTTCCTGAAACGGGATATCATCAA
+AGCCATGAACAAAGCAGCCGCGCTGGATGAACTGATACCGGGGTTGCTGAGTGAATATAT
+CGAACAGTCAGGTTAACAGGCTGCGGCATTTTGTCCGCGCCGGGCTTCGCTCACTGTTCA
+GGCCGGAGCCACAGACCGCCGTTGAATGGGCGGATGCTAATTACTATCTCCCGAAAGAAT
+CCGCATACCAGGAAGGGCGCTGGGAAACACTGCCCTTTCAGCGGGCCATCATGAATGCGA
+TGGGCAGCGACTACATCCGTGAGGTGAATGTGGTGAAGTCTGCCCGTGTCGGTTATTCCA
+AAATGCTGCTGGGTGTTTATGCCTACTTTATAGAGCATAAGCAGCGCAACACCCTTATCT
+GGTTGCCGACGGATGGTGATGCCGAGAACTTTATGAAAACCCACGTTGAGCCGACTATTC
+GTGATATTCCGTCGCTGCTGGCGCTGGCCCCGTGGTATGGCAAAAAGCACCGGGATAACA
+CGCTCACCATGAAGCGTTTCACTAATGGGCGTGGCTTCTGGTGCCTGGGCGGTAAAGCGG
+CAAAAAACTACCGTGAAAAGTCGGTGGATGTGGCGGGTTATGATGAACTTGCTGCTTTTG
+ATGATGATATTGAACAGGAAGGCTCTCCGACGTTCCTGGGTGACAAGCGTATTGAAGGCT
+CGGTCTGGCCAAAGTCCATCCGTGGCTCCACGCCAAAAGTGAGAGGCACCTGTCAGATTG
+AGCGTGCAGCCAGTGAATCCCCGCATTTTATGCGTTTTCATGTTGCCTGCCCGCATTGCG
+GGGAGGAGCAGTATCTTAAATTTGGCGACAAAGAGACGCCGTTTGGCCTCAAATGGACGC
+CGGATGACCCCTCCAGCGTGTTTTATCTCTGCGAGCATAATGCCTGCGTCATCCGCCAGC
+AGGAGCTGGACTTTACTGATGCCCGTTATATCTGCGAAAAGACCGGGATCTGGACCCGTG
+ATGGCATTCTCTGGTTTTCGTCATCCGGTGAAGAGATTGAGCCACCTGACAGTGTGACCT
+TTCACATCTGGACAGCGTACAGCCCGTTCACCACCTGGGTGCAGATTGTCAAAGACTGGA
+TGAAAACGAAAGGGGATACGGGAAAACGTAAAACCTTCGTAAACACCACGCTCGGTGAGA
+CGTGGGAGGCGAAAATTGGCGAACGTCCGGATGCTGAAGTGATGGCAGAGCGGAAAGAGC
+ATTATTCAGCGCCCGTTCCTGACCGTGTGGCTTACCTGACCGCCGGTATCGACTCCCAGC
+TGGACCGCTACGAAATGCGCGTATGGGGATGGGGGCCGGGTGAGGAAAGCTGGCTGATTG
+ACCGGCAGATTATTATGGGCCGCCACGACGATGAACAGACGCTGCTGCGTGTGGATGAGG
+CCATCAATAAAACCTATACCCGCCGGAATGGTGCAGAAATGTCGATATCCCGTATCTGCT
+GGGATACTGGCGGGATTGACCCGACCATTGTGTATGAACGCTCGAAAAAACATGGGCTGT
+TCCGGGTGATCCCCATTAAAGGGGCATCCGTCTACGGAAAGCCGGTGGCCAGCATGCCAC
+GTAAGCGAAACAAAAACGGGGTTTACCTTACCGAAATCGGTACGGATACCGCGAAAGAGC
+AGATTTATAACCGCTTCACACTGACGCCGGAAGGGGATGAACCGCTTCCCGGTGCCGTTC
+ACTTCCCGAATAACCCGGATATTTTTGATCTGACCGAAGCGCAGCAGCTGACTGCTGAAG
+AGCAGGTCGAAAAATGGGTGGATGGCAGGAAAAAAATACTGTGGGACAGCAAAAAGCGAC
+GCAATGAGGCACTCGACTGCTTCGTTTATGCGCTGGCGGCGCTGCGCATCAGTATTTCCC
+GCTGGCAGCTGGATCTCAGTGCGCTGCTGGCGAGCCTGCAGGAAGAGGATGGTGCAGCAA
+CCAACAAGAAAACACTGGCAGATTACGCCCGTGCCTTATCCGGAGAGGATGAATGACGCG
+ACAGGAAGAACTTGCCGCTGCCCGTGCGGCACTGCATGACCTGATGACAGGTAAACGGGT
+GGCAACAGTACAGAAAGACGGACGAAGGGTGGAGTTTACGGCCACTTCCGTGTCTGACCT
+GAAAAAATATATTGCAGAGCTGGAAGTGCAGACCGGCATGACACAGCGACGCAGGGGACC
+TGCAGGATTTTATGTATGAAAACGCCCACCATTCCCACCCTTCTGGGGCCGGACGGCATG
+ACATCGCTGCGCGAATATGCCGGTTATCACGGCGGTGGCAGCGGATTTGGAGGGCAGTTG
+CGGTCGTGGAACCCACCGAGTGAAAGTGTGGATGCAGCCCTGTTGCCCAACTTTACCCGT
+GGCAATGCCCGCGCAGACGATCTGGTACGCAATAACGGCTATGCCGCCAACGCCATCCAG
+CTGCATCAGGATCATATCGTCGGGTCTTTTTTCCGGCTCAGTCATCGCCCAAGCTGGCGC
+TATCTGGGCATCGGGGAGGAAGAAGCCCGTGCCTTTTCCCGCGAGGTTGAAGCGGCATGG
+AAAGAGTTTGCCGAGGATGACTGCTGCTGCATTGACGTTGAGCGAAAACGCACGTTTACC
+ATGATGATTCGGGAAGGTGTGGCCATGCACGCCTTTAACGGTGAACTGTTCGTTCAGGCC
+ACCTGGGATACCAGTTCGTCGCGGCTTTTCCGGACACAGTTCCGGATGGTCAGCCCGAAG
+CGCATCAGCAACCCGAACAATACCGGCGACAGCCGGAACTGCCGTGCCGGTGTGCAGATT
+AATGACAGCGGTGCGGCGCTGGGATATTACGTCAGCGAGGACGGGTATCCTGGCTGGATG
+CCGCAGAAATGGACATGGATACCCCGTGAGTTACCCGGCGGGCGCGCCTCGTTCATTCAC
+GTTTTTGAACCCGTGGAGGACGGGCAGACTCGCGGTGCAAATGTGTTTTACAGCGTGATG
+GAGCAGATGAAGATGCTCGACACGCTGCAGAACACGCAGCTGCAGAGCGCCATTGTGAAG
+GCGATGTATGCCGCCACCATTGAGAGTGAGCTGGATACGCAGTCAGCGATGGATTTTATT
+CTGGGCGCGAACAGTCAGGAGCAGCGGGAAAGGCTGACCGGCTGGATTGGTGAAATTGCC
+GCGTATTACGCCGCAGCGCCGGTCCGGCTGGGAGGCGCAAAAGTACCGCACCTGATGCCG
+GGTGACTCACTGAACCTGCAGACGGCTCAGGATACGGATAACGGCTACTCCGTGTTTGAG
+CAGTCACTGCTGCGGTATATCGCTGCCGGGCTGGGTGTCTCGTATGAGCAGCTTTCCCGG
+AATTACGCCCAGATGAGCTACTCCACGGCACGGGCCAGTGCGAACGAGTCGTGGGCGTAC
+TTTATGGGGCGGCGAAAATTCGTCGCATCCCGTCAGGCGAGCCAGATGTTTCTGTGCTGG
+CTGGAAGAGGCCATCGTTCGCCGCGTGGTGACGTTACCTTCAAAAGCGCGCTTCAGTTTT
+CAGGAAGCCCGCAGTGCCTGGGGGAACTGCGACTGGATAGGCTCCGGTCGTATGGCCATC
+GATGGTCTGAAAGAAGTTCAGGAAGCGGTGATGCTGATAGAAGCCGGACTGAGTACCTAC
+GAGAAAGAGTGCGCAAAACGCGGTGACGACTATCAGGAAATTTTTGCCCAGCAGGTCCGT
+GAAACGATGGAGCGCCGTGCAGCCGGTCTTAAACCGCCCGCCTGGGCGGCTGCAGCATTT
+GAATCCGGGCTGCGACAATCAACAGAGGAGGAGAAGAGTGACAGCAGAGCTGCGTAATCT
+CCCGCATATTGCCAGCATGGCCTTTAATGAGCCGCTGATGCTTGAACCCGCCTATGCGCG
+GGTTTTCTTTTGTGCGCTTGCAGGCCAGCTTGGGATCAGCAGCCTGACGGATGCGGTGTC
+CGGCGACAGCCTGACTGCCCAGGAGGCACTCGCGACGCTGGCATTATCCGGTGATGATGA
+CGGACCACGACAGGCCCGCAGTTATCAGGTCATGAACGGCATCGCCGTGCTGCCGGTGTC
+CGGCACGCTGGTCAGCCGGACGCGGGCGCTGCAGCCGTACTCGGGGATGACCGGTTACAA
+CGGCATTATCGCCCGTCTGCAACAGGCTGCCAGCGATCCGATGGTGGACGGCATTCTGCT
+CGATATGGACACGCCCGGCGGGATGGTGGCGGGGGCATTTGACTGCGCTGACATCATCGC
+CCGTGTGCGTGACATAAAACCGGTATGGGCGCTTGCCAACGACATGAACTGCAGTGCAGG
+TCAGTTGCTTGCCAGTGCCGCCTCCCGGCGTCTGGTCACGCAGACCGCCCGGACAGGCTC
+CATCGGCGTCATGATGGCTCACAGTAATTACGGTGCTGCGCTGGAGAAACAGGGTGTGGA
+AATCACGCTGATTTACAGCGGCAGCCATAAGGTGGATGGCAACCCCTACAGCCATCTTCC
+GGATGACGTCCGGGAGACACTGCAGTCCCGGATGGACGCAACCCGCCAGATGTTTGCGCA
+GAAGGTGTCGGCATATACCGGCCTGTCCGTGCAGGTTGTGCTGGATACCGAGGCTGCAGT
+GTACAGCGGTCAGGAGGCCATTGATGCCGGACTGGCTGATGAACTTGTTAACAGCACCGA
+TGCGATCACCGTCATGCGTGATGCACTGGATGCACGTAAATCCCGTCTCTCAGGAGGGCG
+AATGACCAAAGAGACTCAATCAACAACTGTTTCAGCCACTGCTTCGCAGGCTGACGTTAC
+TGACGTGGTGCCAGCGACGGAGGGCGAGAACGCCAGCGCGGCGCAGCCGGACGTGAACGC
+GCAGATCACCGCAGCGGTTGCGGCAGAAAACAGCCGCATTATGGGGATCCTCAACTGTGA
+GGAGGCTCACGGACGCGAAGAACAGGCACGCGTGCTGGCAGAAACCCCCGGTATGACCGT
+GAAAACGGCCCGCCGCATTCTGGCCGCAGCACCACAGAGTGCACAGGCGCGCAGTGACAC
+TGCGCTGGATCGTCTGATGCAGGGGGCACCGGCACCGCTGGCTGCAGGTAACCCGGCATC
+TGATGCCGTTAACGATTTGCTGAACACACCAGTGTAAGGGATGTTTATGACGAGCAAAGA
+AACCTTTACCCATTACCAGCCGCAGGGCAACAGTGACCCGGCTCATACCGCAACCGCGCC
+CGGCGGATTGAGTGCGAAAGCGCCTGCAATGACCCCGCTGATGCTGGACACCTCCAGCCG
+TAAGCTGGTTGCGTGGGATGGCACCACCGACGGTGCTGCCGTTGGCATTCTTGCGGTTGC
+TGCTGACCAGACCAGCACCACGCTGACGTTCTACAAGTCCGGCACGTTCCGTTATGAGGA
+TGTGCTCTGGCCGGAGGCTGCCAGCGACGAGACGAAAAAACGGACCGCGTTTGCCGGAAC
+GGCAATCAGCATCGTTTAACTTTACCCTTCATCACTAAAGGCCGCCTGTGCGGCTTTTTT
+TACGGGATTTTTTTATGTCGATGTACACAACCGCCCAACTGCTGGCGGCAAATGAGCAGA
+AATTTAAGTTTGATCCGCTGTTTCTGCGTCTCTTTTTCCGTGAGAGCTATCCCTTCACCA
+CGGAGAAAGTCTATCTCTCACAAATTCCGGGACTGGTAAACATGGCGCTGTACGTTTCGC
+CGATTGTTTCCGGTGAGGTTATCCGTTCCCGTGGCGGCTCCACCTCTGAATTTACGCCGG
+GATATGTCAAGCCGAAGCATGAAGTGAATCCGCAGATGACCCTGCGTCGCCTGCCGGATG
+AAGATCCGCAGAATCTGGCGGACCCGGCTTACCGCCGCCGTCGCATCATCATGCAGAACA
+TGCGTGACGAAGAGCTGGCCATTGCTCAGGTCGAAGAGATGCAGGCAGTTTCTGCCGTGC
+TTAAGGGCAAATACACCATGACCGGTGAAGCCTTCGATCCGGTTGAGGTGGATATGGGCC
+GCAGTGAGGAGAATAACATCACGCAGTCCGGCGGCACGGAGTGGAGCAAGCGTGACAAGT
+CCACGTATGACCCGACCGACGATATCGAAGCCTACGCGCTGAACGCCAGCGGTGTGGTGA
+ATATCATCGTGTTCGATCCGAAAGGCTGGGCGCTGTTCCGTTCCTTCAAAGCCGTCAAGG
+AGAAGCTGGATACCCGTCGTGGCTCTAATTCCGAGCTGGAGACAGCGGTGAAAGACCTGG
+GCAAAGCGGTGTCCTATAAGGGGATGTATGGCGATGTGGCCATCGTCGTGTATTCCGGAC
+AGTACGTGGAAAACGGCGTCAAAAAGAACTTCCTGCCGGACAACACGATGGTGCTGGGGA
+ACACTCAGGCACGCGGTCTGCGCACCTATGGCTGCATTCAGGATGCGGACGCACAGCGCG
+AAGGCATTAACGCCTCTGCCCGTTACCCGAAAAACTGGGTGACCACCGGCGATCCGGCGC
+GTGAGTTCACCATGATTCAGTCAGCACCGCTGATGCTGCTGGCTGACCCTGATGAGTTCG
+TGTCCGTACAACTGGCGTAATCATGGCCCTTCGGGGCCATTGTTTCTCTGTGGAGGAGTC
+CATGACGAAAGATGAACTGATTGCCCGTCTCCGCTCGCTGGGTGAACAACTGAACCGTGA
+TGTCAGCCTGACGGGGACGAAAGAAGAACTGGCGCTCCGTGTGGCAGAGCTGAAAGAGGA
+GCTTGATGACACGGATGAAACTGCCGGTCAGGACACCCCTCTCAGCCGGGAAAATGTGCT
+GACCGGACATGAAAATGAGGTGGGATCAGCGCAGCCGGATACCGTGATTCTGGATACGTC
+TGAACTGGTCACGGTCGTGGCACTGGTGAAGCTGCATACTGATGCACTTCACGCCACGCG
+GGATGAACCTGTGGCATTTGTGCTGCCGGGAACGGCGTTTCGTGTCTCTGCCGGTGTGGC
+AGCCGAAATGACAGAGCGCGGCCTGGCCAGAATGCAATAACGGGAGGCGCTGTGGCTGAT
+TTCGATAACCTGTTCGATGCTGCCATTGCCCGCGCCGATGAAACGATACGCGGGTACATG
+GGAACGTCAGCCACCATTACATCCGGTGAGCAGTCAGGTGCGGTGATACGTGGTGTTTTT
+GATGACCCTGAAAATATCAGCTATGCCGGACAGGGCGTGCGCGTTGAAGGCTCCAGCCCG
+TCCCTGTTTGTCCGGACTGATGAGGTGCGGCAGCTGCGGCGTGGAGACACGCTGACCATC
+GGTGAGGAAAATTTCTGGGTAGATCGGGTTTCGCCGGATGATGGCGGAAGTTGTCATCTC
+TGGCTTGGACGGGGCGTACCGCCTGCCGTTAACCGTCGCCGCTGAAAGGGGGATGTATGG
+CCATAAAAGGTCTTGAGCAGGCCGTTGAAAACCTCAGCCGTATCAGCAAAACGGCGGTGC
+CTGGTGCCGCCGCAATGGCCATTAACCGCGTTGCTTCATCCGCGATATCGCAGTCGGCGT
+CACAGGTTGCCCGTGAGACAAAGGTACGCCGGAAACTGGTAAAGGAAAGGGCCAGGCTGA
+AAAGGGCCACGGTCAAAAATCCGCAGGCCAGAATCAAAGTTAACCGGGGGGATTTGCCCG
+TAATCAAGCTGGGTAATGCGCGGGTTGTCCTTTCGCGCCGCAGGCGTCGTAAAAAGGGGC
+AGCGTTCATCCCTGAAAGGTGGCGGCAGCGTGCTTGTGGTGGGTAACCGTCGTATTCCCG
+GCGCGTTTATTCAGCAACTGAAAAATGGCCGGTGGCATGTCATGCAGCGTGTGGCTGGGA
+AAAACCGTTACCCCATTGATGTGGTGAAAATCCCGATGGCGGTGCCGCTGACCACGGCGT
+TTAAACAAAATATTGAGCGGATACGGCGTGAACGTCTTCCGAAAGAGCTGGGCTATGCGC
+TGCAGCATCAACTGAGGATGGTAATAAAGCGATGAAACATACTGAACTCCGTGCAGCCGT
+ACTGGATGCACTGGAGAAGCATGACACCGGGGCGACGTTTTTTGATGGTCGCCCCGCTGT
+TTTTGATGAGGCGGATTTTCCGGCAGTTGCCGTTTATCTCACCGGCGCTGAATACACGGG
+CGAAGAGCTGGACAGCGATACCTGGCAGGCGGAGCTGCATATCGAAGTTTTCCTGCCTGC
+TCAGGTGCCGGATTCAGAGCTGGATGCGTGGATGGAGTCCCGGATTTATCCGGTGATGAG
+CGATATCCCGGCACTGTCAGATTTGATCACCAGTATGGTGGCCAGCGGCTATGACTACCG
+GCGCGACGATGATGCGGGCTTGTGGAGTTCAGCCGATCTGACTTATGTCATTACCTATGA
+AATGTGAGGACGCTATGCCTGTACCAAATCCTACAATGCCGGTGAAAGGTGCCGGGACCA
+CCCTGTGGGTTTATAAGGGGAGCGGTGACCCTTACGCGAATCCGCTTTCAGACGTTGACT
+GGTCGCGTCTGGCAAAAGTTAAAGACCTGACGCCCGGCGAACTGACCGCTGAGTCCTATG
+ACGACAGCTATCTCGATGATGAAGATGCAGACTGGACTGCGACCGGGCAGGGGCAGAAAT
+CTGCCGGAGATACCAGCTTCACGCTGGCGTGGATGCCCGGAGAGCAGGGGCAGCAGGCGC
+TGCTGGCGTGGTTTAATGAAGGCGATACCCGTGCCTATAAAATCCGCTTCCCGAACGGCA
+CGGTCGATGTGTTCCGTGGCTGGGTCAGCAGTATCGGTAAGGCGGTGACGGCGAAGGAAG
+TGATCACCCGCACGGTGAAAGTCACCAATGTGGGACGTCCGTCGATGGCAGAAGATCGCA
+GCACGGTAACAGCGGCAACCGGCATGACCGTGACGCCTGCCAGCACCTCGGTGGTGAAAG
+GGCAGAGCACCACGCTGACCGTGGCCTTCCAGCCGGAGGGCGTAACCGACAAGAGCTTTC
+GTGCGGTGTCTGCGGATAAAACAAAAGCCACCGTGTCGGTCAGTGGTATGACCATCACCG
+TGAACGGCGTTGCTGCAGGCAAGGTCAACATTCCGGTTGTATCCGGTAATGGTGAGTTTG
+CTGCGGTTGCAGAAATTACCGTCACCGCCAGTTAATCCGGAGAGTCAGCGATGTTCCTGA
+AAACCGAATCATTTGAACATAACGGTGTGACCGTCACGCTTTCTGAACTGTCAGCCCTGC
+AGCGCATTGAGCATCTCGCCCTGATGAAACGGCAGGCAGAACAGGCGGAGTCAGACAGCA
+ACCGGAAGTTTACTGTGGAAGACGCCATCAGAACCGGCGCGTTTCTGGTGGCGATGTCCC
+TGTGGCATAACCATCCGCAGAAGACGCAGATGCCGTCCATGAATGAAGCCGTTAAACAGA
+TTGAGCAGGAAGTGCTTACCACCTGGCCCACGGAGGCAATTTCTCATGCTGAAAACGTGG
+TGTACCGGCTGTCTGGTATGTATGAGTTTGTGGTGAATAATGCCCCTGAACAGACAGAGG
+ACGCCGGGCCCGCAGAGCCTGTTTCTGCGGGAAAGTGTTCGACGGTGAGCTGAGTTTTGC
+CCTGAAACTGGCGCGTGAGATGGGGCGACCCGACTGGCGTGCCATGCTTGCCGGGATGTC
+ATCCACGGAGTATGCCGACTGGCACCGCTTTTACAGTACCCATTATTTTCATGATGTTCT
+GCTGGATATGCACTTTTCCGGGCTGACGTACACCGTGCTCAGCCTGTTTTTCAGCGATCC
+GGATATGCATCCGCTGGATTTCAGTCTGCTGAACCGGCGCGAGGCTGACGAAGAGCCTGA
+AGATGATGTGCTGATGCAGAAAGCGGCAGGGCTTGCCGGAGGTGTCCGCTTTGGCCCGGA
+CGGGAATGAAGTTATCCCCGCTTCCCCGGATGTGGCGGACATGACGGAGGATGACGTAAT
+GCTGATGACAGTATCAGAAGGGATCGCAGGAGGAGTCCGGTATGGCTGAACCGGTAGGCG
+ATCTGGTCGTTGATTTGAGTCTGGATGCGGCCAGATTTGACGAGCAGATGGCCAGAGTCA
+GGCGTCATTTTTCTGGTACGGAAAGTGATGCGAAAAAAACAGCGGCAGTCGTTGAACAGT
+CGCTGAGCCGACAGGCGCTGGCTGCACAGAAAGCGGGGATTTCCGTCGGGCAGTATAAAG
+CCGCCATGCGTATGCTGCCTGCACAGTTCACCGACGTGGCCACGCAGCTTGCAGGCGGGC
+AAAGTCCGTGGCTGATCCTGCTGCAACAGGGGGGGCAGGTGAAGGACTCCTTCGGCGGGA
+TGATCCCCATGTTCAGGGGGCTTGCCGGTGCGATCACCCTGCCGATGGTGGGGGCCACCT
+CGCTGGCGGTGGCGACCGGTGCGCTGGCGTATGCCTGGTATCAGGGCAACTCAACCCTGT
+CCGATTTCAACAAAACGCTGGTCCTTTCCGGCAATCAGGCGGGACTGACGGCAGATCGTA
+TGCTGGTCCTGTCCAGAGCCGGGCAGGCGGCAGGGCTGACGTTTAACCAGACCAGCGAGT
+CACTCAGCGCACTGGTTAAGGCGGGGGTAAGCGGTGAGGCTCAGATTGCGTCCATCAGCC
+AGAGTGTGGCGCGTTTCTCCTCTGCATCCGGCGTGGAGGTGGACAAGGTCGCTGAAGCCT
+TCGGGAAGCTGACCACAGACCCGACGTCGGGGCTGACGGCGATGGCTCGCCAGTTCCATA
+ACGTGTCGGCGGAGCAGATTGCGTATGTTGCTCAGTTGCAGCGTTCCGGCGATGAAGCCG
+GGGCATTGCAGGCGGCGAACGAGGCCGCAACGAAAGGGTTTGATGACCAGACCCGCCGCC
+TGAAAGAGAACATGGGCACGCTGGAGACCTGGGCAGACAGGACTGCGCGGGCATTCAAAT
+CCATGTGGGATGCGGTGCTGGATATTGGTCGTCCTGATACCGCGCAGGAGATGCTGATTA
+AGGCAGAGGCTGCGTATAAGAAAGCAGACGACATCTGGAATCTGCGCAAGGATGATTATT
+TTGTTAACGATGAAGCGCGGGCGCGTTACTGGGATGATCGTGAAAAGGCCCGTCTTGCGC
+TTGAAGCCGCCCGAAAGAAGGCTGAGCAGCAGACTCAACAGGACAAAAATGCGCAGCAGC
+AGAGCGATACCGAAGCGTCACGGCTGAAATATACCGAAGAGGCGCAGAAGGCTTACGAAC
+GGCTGCAGACGCCGCTGGAGAAATATACCGCCCGTCAGGAAGAACTGAACAAGGCACTGA
+AAGACGGGAAAATCCTGCAGGCGGATTACAACACGCTGATGGCGGCGGCGAAAAAGGATT
+ATGAAGCGACGCTGAAAAAGCCGAAACAGTCCAGCGTGAAGGTGTCTGCGGGCGATCGTC
+AGGAAGACAGTGCTCATGCTGCCCTGCTGACGCTTCAGGCAGAACTCCGGACGCTGGAGA
+AGCATGCCGGAGCAAATGAGAAAATCAGCCAGCAGCGCCGGGATTTGTGGAAGGCGGAGA
+GTCAGTTCGCGGTACTGGAGGAGGCGGCGCAACGTCGCCAGCTGTCTGCACAGGAGAAAT
+CCCTGCTGGCGCATAAAGATGAGACGCTGGAGTACAAACGCCAGCTGGCTGCACTTGGCG
+ACAAGGTTACGTATCAGGAGCGCCTGAACGCGCTGGCGCAGCAGGCGGATAAATTCGCAC
+AGCAGCAACGGGCAAAACGGGCCGCCATTGATGCGAAAAGCCGGGGGCTGACTGACCGGC
+AGGCAGAACGGGAAGCCACGGAACAGCGCCTGAAGGAACAGTATGGCGATAATCCGCTGG
+CGCTGAATAACGTCATGTCAGAGCAGAAAAAGACCTGGGCGGCTGAAGACCAGCTTCGCG
+GGAACTGGATGGCAGGCCTGAAGTCCGGCTGGAGTGAGTGGGAAGAGAGCGCCACGGACA
+GTATGTCGCAGGTAAAAAGTGCAGCCACGCAGACCTTTGATGGTATTGCACAGAATATGG
+CGGCGATGCTGACCGGCAGTGAGCAGAACTGGCGCAGCTTCACCCGTTCCGTGCTGTCCA
+TGATGACAGAAATTCTGCTTAAGCAGGCAATGGTGGGGATTGTCGGGAGTATCGGCAGCG
+CCATTGGCGGGGCTGTTGGTGGCGGCGCATCCGCGTCAGGCGGTACAGCCATTCAGGCCG
+CTGCGGCGAAATTCCATTTTGCAACCGGAGGATTTACGGGAACCGGCGGCAAATATGAGC
+CAGCGGGGATTGTTCACCGTGGTGAGTTTGTCTTCACGAAGGAGGCAACCAGCCGGATTG
+GCGTGGGGAATCTTTACCGGCTGATGCGCGGCTATGCCACCGGCGGTTATGTCGGTACAC
+CGGGCAGCATGGCAGACAGCCGGTCGCAGGCGTCCGGGACGTTTGAGCAGAATAACCATG
+TGGTGATTAACAACGACGGCACGAACGGGCAGATAGGTCCGGCTGCTCTGAAGGCGGTGT
+ATGACATGGCCCGCAAGGGTGCCCGTGATGAAATTCAGACACAGATGCGTGATGGTGGCC
+TGTTCTCCGGAGGTGGACGATGAAGACCTTCCGCTGGAAAGTGAAACCCGGTATGGATGT
+GGCTTCGGTCCCTTCTGTAAGAAAGGTGCGCTTTGGTGATGGCTATTCTCAGCGAGCGCC
+TGCCGGGCTGAATGCCAACCTGAAAACGTACAGCGTGACGCTTTCTGTCCCCCGTGAGGA
+GGCCACGGTACTGGAGTCGTTTCTGGAAGAGCACGGGGGCTGGAAATCCTTTCTGTGGAC
+GCCGCCTTATGAGTGGCGGCAGATAAAGGTGACCTGCGCAAAATGGTCGTCGCGGGTCAG
+TATGCTGCGTGTTGAGTTCAGCGCAGAGTTTGAACAGGTGGTGAACTGATGCAGGATATC
+CGGCAGGAAACACTGAATGAATGCACCCGTGCGGAGCAGTCGGCCAGCGTGGTGCTCTGG
+GAAATCGACCTGACAGAGGTCGGTGGAGAACGTTATTTTTTCTGTAATGAGCAGAACGAA
+AAAGGTGAGCCGGTCACCTGGCAGGGGCGACAGTATCAGCCGTATCCCATTCAGGGGAGC
+GGTTTTGAACTGAATGGCAAAGGCACCAGTACGCGCCCCACGCTGACGGTTTCTAACCTG
+TACGGTATGGTCACCGGGATGGCGGAAGATATGCAGAGTCTGGTCGGCGGAACGGTGGTC
+CGGCGTAAGGTTTACGCCCGTTTTCTGGATGCGGTGAACTTCGTCAACGGAAACAGTTAC
+GCCGATCCGGAGCAGGAGGTGATCAGCCGCTGGCGCATTGAGCAGTGCAGCGAACTGAGC
+GCGGTGAGTGCCTCCTTTGTACTGTCCACGCCGACGGAAACGGATGGCGCTGTTTTTCCG
+GGACGTATCATGCTGGCCAACACCTGCACCTGGACCTATCGCGGTGACGAGTGCGGTTAT
+AGCGGTCCGGCTGTCGCGGATGAATATGACCAGCCAACGTCCGATATCACGAAGGATAAA
+TGCAGCAAATGCCTGAGCGGTTGTAAGTTCCGCAATAACGTCGGCAACTTTGGCGGCTTC
+CTTTCCATTAACAAACTTTCGCAGTAAATCCCATGACACAGACAGAATCAGCGATTCTGG
+CGCACGCCCGGCGATGTGCGCCAGCGGAGTCGTGCGGCTTCGTGGTAAGCACGCCGGAGG
+GGGAAAGATATTTCCCCTGCGTGAATATCTCCGGTGAGCCGGAGGCTATTTCCGTATGTC
+GCCGGAAGACTGGCTGCAGGCAGAAATGCAGGGTGAGATTGTGGCGCTGGTCCACAGCCA
+CCCCGGTGGTCTGCCCTGGCTGAGTGAGGCCGACCGGCGGCTGCAGGTGCAGAGTGATTT
+GCCGTGGTGGCTGGTCTGCCGGGGGACGATTCATAAGTTCCGCTGTGTGCCGCATCTCAC
+CGGGCGGCGCTTTGAGCACGGTGTGACGGACTGTTACACACTGTTCCGGGATGCTTATCA
+TCTGGCGGGGATTGAGATGCCGGACTTTCATCGTGAGGATGACTGGTGGCGTAACGGCCA
+GAATCTCTATCTGGATAATCTGGAGGCGACGGGGCTGTATCAGGTGCCGTTGTCAGCGGC
+ACAGCCGGGCGATGTGCTGCTGTGCTGTTTTGGTTCATCAGTGCCGAATCACGCCGCAAT
+TTACTGCGGCGACGGCGAGCTGCTGCACCATATTCCTGAACAACTGAGCAAACGAGAGAG
+GTACACCGACAAATGGCAGCGACGCACACACTCCCTCTGGCGTCACCGGGCATGGCGCGC
+ATCTGCCTTTACGGGGATTTACAACGATTTGGTCGCCGCATCGACCTTCGTGTGAAAACG
+GGGGCTGAAGCCATCCGGGCACTGGCCACACAGCTCCCGGCGTTTCGTCAGAAACTGAGC
+GACGGCTGGTATCAGGTACGGATTGCCGGGCGGGACGTCAGCACGTCCGGGTTAACGGCG
+CAGTTACATGAGACTCTGCCTGATGGCGCTGTAATTCATATTGTTCCCAGAGTCGCCGGG
+GCCAAGTCAGGTGGCGTATTCCAGATTGTCCTGGGGGCTGCCGCCATTGCCGGATCATTC
+TTTACCGCCGGAGCCACCCTTGCAGCATGGGGGGCAGCCATTGGGGCCGGTGGTATGACC
+GGCATCCTGTTTTCTCTCGGTGCCAGTATGGTGCTCGGTGGTGTGGCGCAGATGCTGGCA
+CCGAAAGCCAGAACTCCCCGTATACAGACAACGGATAACGGTAAGCAGAACACCTATTTC
+TCCTCACTGGATAACATGGTTGCCCAGGGCAATGTTCTGCCTGTTCTGTACGGGGAAATG
+CGCGTGGGGTCACGCGTGGTTTCTCAGGAGATCAGCACGGCAGACGAAGGGGACGGTGGT
+CAGGTTGTGGTGATTGGTCGCTGATGCAAAATGTTTTATGTGAAACCGCCTGCGGGCGGT
+TTTGTCATTTATGGAGCGTGAGGAATGGGTAAAGGAAGCAGTAAGGGGCATACCCCGCGC
+GAAGCGAAGGACAACCTGAAGTCCACGCAGTTGCTGAGTGTGATCGATGCCATCAGCGAA
+GGGCCGATTGAAGGTCCGGTGGATGGCTTAAAAAGCGTGCTGCTGAACAGTACGCCGGTG
+CTGGACACTGAGGGGAATACCAACATATCCGGTGTCACGGTGGTGTTCCGGGCTGGTGAG
+CAGGAGCAGACTCCGCCGGAGGGATTTGAATCCTCCGGCTCCGAGACGGTGCTGGGTACG
+GAAGTGAAATATGACACGCCGATCACCCGCACCATTACGTCTGCAAACATCGACCGTCTG
+CGCTTTACCTTCGGTGTACAGGCACTGGTGGAAACCACCTCAAAGGGTGACAGGAATCCG
+TCGGAAGTCCGCCTGCTGGTTCAGATACAACGTAACGGTGGCTGGGTGACGGAAAAAGAC
+ATCACCATTAAGGGCAAAACCACCTCGCAGTATCTGGCCTCGGTGGTGATGGGTAACCTG
+CCGCCGCGCCCGTTTAATATCCGGATGCGCAGGATGACGCCGGACAGCACCACAGACCAG
+CTGCAGAACAAAACGCTCTGGTCGTCATACACTGAAATCATCGATGTGAAACAGTGCTAC
+CCGAACACGGCACTGGTCGGCGTGCAGGTGGACTCGGAGCAGTTCGGCAGCCAGCAGGTG
+AGCCGTAATTATCATCTGCGCGGGCGTATTCTGCAGGTGCCGTCGAACTATAACCCGCAG
+ACGCGGCAATACAGCGGTATCTGGGACGGAACGTTTAAACCGGCATACAGCAACAACATG
+GCCTGGTGTCTGTGGGATATGCTGACCCATCCGCGCTACGGCATGGGGAAACGTCTTGGT
+GCGGCGGATGTGGATAAATGGGCGCTGTATGTCATCGGCCAGTACTGCGACCAGTCAGTG
+CCGGACGGCTTTGGCGGCACGGAGCCGCGCATCACCTGTAATGCGTACCTGACCACACAG
+CGTAAGGCGTGGGATGTGCTCAGCGATTTCTGCTCGGCGATGCGCTGTATGCCGGTATGG
+AACGGGCAGACGCTGACGTTCGTGCAGGACCGACCGTCGGATAAGACGTGGACCTATAAC
+CGCAGTAATGTGGTGATGCCGGATGATGGCGCGCCGTTCCGCTACAGCTTCAGCGCCCTG
+AAGGACCGCCATAATGCCGTTGAGGTGAACTGGATTGACCCGAACAACGGCTGGGAGACG
+GCGACAGAGCTTGTTGAAGATACGCAGGCCATTGCCCGTTACGGTCGTAATGTTACGAAG
+ATGGATGCCTTTGGCTGTACCAGCCGGGGGCAGGCACACCGCGCCGGGCTGTGGCTGATT
+AAAACAGAACTGCTGGAAACGCAGACCGTGGATTTCAGCGTCGGCGCAGAAGGGCTTCGC
+CATGTACCGGGCGATGTTATTGAAATCTGCGATGATGACTATGCCGGTATCAGCACCGGT
+GGTCGTGTGCTGGCGGTGAACAGCCAGACCCGGACGCTGACGCTCGACCGTGAAATCACG
+CTGCCATCCTCCGGTACCGCGCTGATAAGCCTGGTTGACGGAAGTGGCAATCCGGTCAGC
+GTGGAGGTTCAGTCCGTCACCGACGGCGTGAAGGTAAAAGTGAGCCGTGTTCCTGACGGT
+GTTGCTGAATACAGCGTATGGGAGCTGAAGCTGCCGACGCTGCGCCAGCGACTGTTCCGC
+TGCGTGAGTATCCGTGAGAACGACGACGGCACGTATGCCATCACCGCCGTGCAGCATGTG
+CCGGAAAAAGAGGCCATCGTGGATAACGGGGCGCACTTTGACGGCGAACAGAGTGGCACG
+GTGAATGGTGTCACGCCGCCAGCGGTGCAGCACCTGACCGCAGAAGTCACTGCAGACAGC
+GGGGAATATCAGGTGCTGGCGCGATGGGACACACCGAAGGTGGTGAAGGGCGTGAGTTTC
+CTGCTCCGTCTGACCGTAACAGCGGACGACGGCAGTGAGCGGCTGGTCAGCACGGCCCGG
+ACGACGGAAACCACATACCGCTTCACGCAACTGGCGCTGGGGAACTACAGGCTGACAGTC
+CGGGCGGTAAATGCGTGGGGGCAGCAGGGCGATCCGGCGTCGGTATCGTTCCGGATTGCC
+GCACCGGCAGCACCGTCGAGGATTGAGCTGACGCCGGGCTATTTTCAGATAACCGCCACG
+CCGCATCTTGCCGTTTATGACCCGACGGTACAGTTTGAGTTCTGGTTCTCGGAAAAGCAG
+ATTGCGGATATCAGACAGGTTGAAACCAGCACGCGTTATCTTGGTACGGCGCTGTACTGG
+ATAGCCGCCAGTATCAATATCAAACCGGGCCATGATTATTACTTTTATATCCGCAGTGTG
+AACACCGTTGGCAAATCGGCATTCGTGGAGGCCGTCGGTCGGGCGAGCGATGATGCGGAA
+GGTTACCTGGATTTTTTCAAAGGCAAGATAACCGAATCCCATCTCGGCAAGGAGCTGCTG
+GAAAAAGTCGAGCTGACGGAGGATAACGCCAGCAGACTGGAGGAGTTTTCGAAAGAGTGG
+AAGGATGCCAGTGATAAGTGGAATGCCATGTGGGCTGTCAAAATTGAGCAGACCAAAGAC
+GGCAAACATTATGTCGCGGGTATTGGCCTCAGCATGGAGGACACGGAGGAAGGCAAACTG
+AGCCAGTTTCTGGTTGCCGCCAATCGTATCGCATTTATTGACCCGGCAAACGGGAATGAA
+ACGCCGATGTTTGTGGCGCAGGGCAACCAGATATTCATGAACGACGTGTTCCTGAAGCGC
+CTGACGGCCCCCACCATTACCAGCGGCGGCAATCCTCCGGCCTTTTCCCTGACACCGGAC
+GGAAAGCTGACCGCTAAAAATGCGGATATCAGTGGCAGTGTGAATGCGAACTCCGGGACG
+CTCAGTAATGTGACGATAGCTGAAAACTGTACGATAAACGGTACGCTGAGGGCGGAAAAA
+ATCGTCGGGGACATTGTAAAGGCGGCGAGCGCGGCTTTTCCGCGCCAGCGTGAAAGCAGT
+GTGGACTGGCCGTCAGGTACCCGTACTGTCACCGTGACCGATGACCATCCTTTTGATCGC
+CAGATAGTGGTGCTTCCGCTGACGTTTCGCGGAAGTAAGCGTACTGTCAGCGGCAGGACA
+ACGTATTCGATGTGTTATCTGAAAGTACTGATGAACGGTGCGGTGATTTATGATGGCGCG
+GCGAACGAGGCGGTACAGGTGTTCTCCCGTATTGTTGACATGCCAGCGGGTCGGGGAAAC
+GTGATCCTGACGTTCACGCTTACGTCCACACGGCATTCGGCAGATATTCCGCCGTATACG
+TTTGCCAGCGATGTGCAGGTTATGGTGATTAAGAAACAGGCGCTGGGCATCAGCGTGGTC
+TGAGTGTGTTACAGAGGTTCGTCCGGGAACGGGCGTTTTATTATAAAACAGTGAGAGGTG
+AACGATGCGTAATGTGTGTATTGCCGTTGCTGTCTTTGCCGCACTTGCGGTGACAGTCAC
+TCCGGCCCGTGCGGAAGGTGGACATGGTACGTTTACGGTGGGCTATTTTCAAGTGAAACC
+GGGTACATTGCCGTCGTTGTCGGGCGGGGATACCGGTGTGAGTCATCTGAAAGGGATTAA
+CGTGAAGTACCGTTATGAGCTGACGGACAGTGTGGGGGTGATGGCTTCCCTGGGGTTCGC
+CGCGTCGAAAAAGAGCAGCACAGTGATGACCGGGGAGGATACGTTTCACTATGAGAGCCT
+GCGTGGACGTTATGTGAGCGTGATGGCCGGACCGGTTTTACAAATCAGTAAGCAGGTCAG
+TGCGTACGCCATGGCCGGAGTGGCTCACAGTCGGTGGTCCGGCAGTACAATGGATTACCG
+TAAGACGGAAATCACTCCCGGGTATATGAAAGAGACGACCACTGCCAGGGACGAAAGTGC
+AATGCGGCATACCTCAGTGGCGTGGAGTGCAGGTATACAGATTAATCCGGCAGCGTCCGT
+CGTTGTTGATATTGCTTATGAAGGCTCCGGCAGTGGCGACTGGCGTACTGACGGATTCAT
+CGTTGGGGTCGGTTATAAATTCTGATTAGCCAGGTAACACAGTGTTATGACAGCCCGCCG
+GAACCGGTGGGCTTTTTTGTGGGGTGAATATGGCAGTAAAGATTTCAGGAGTCCTGAAAG
+ACGGCACAGGAAAACCGGTACAGAACTGCACCATTCAGCTGAAAGCCAGACGTAACAGCA
+CCACGGTGGTGGTGAACACGGTGGGCTCAGAGAATCCGGATGAAGCCGGGCGTTACAGCA
+TGGATGTGGAGTACGGTCAGTACAGTGTCATCCTGCAGGTTGACGGTTTTCCACCATCGC
+ACGCCGGGACCATCACCGTGTATGAAGATTCACAACCGGGGACGCTGAATGATTTTCTCT
+GTGCCATGACGGAGGATGATGCCCGGCCGGAGGTGCTGCGTCGTCTTGAACTGATGGTGG
+AAGAGGTGGCGCGTAACGCGTCCGTGGTGGCACAGAGTACGGCAGACGCGAAGAAATCAG
+CCGGCGATGCCAGTGCATCAGCTGCTCAGGTCGCGGCCCTTGTGACTGATGCAACTGACT
+CAGCACGCGCCGCCAGCACGTCCGCCGGACAGGCTGCATCGTCAGCTCAGGAAGCGTCCT
+CCGGCGCAGAAGCGGCATCAGCAAAGGCCACTGAAGCGGAAAAAAGTGCCGCAGCCGCAG
+AGTCCTCAAAAAACGCGGCGGCCACCAGTGCCGGTGCGGCGAAAACGTCAGAAACGAATG
+CTGCAGCGTCACAACAATCAGCCGCCACGTCTGCCTCCACCGCGGCCACGAAAGCGTCAG
+AGGCCGCCACTTCAGCACGAGATGCGGTGGCCTCAAAAGAGGCAGCAAAATCATCAGAAA
+CGAACGCATCATCAAGTGCCGGTCGTGCAGCTTCCTCGGCAACGGCGGCAGAAAATTCTG
+CCAGGGCGGCAAAAACGTCCGAGACGAATGCCAGGTCATCTGAAACAGCAGCGGAACGGA
+GCGCCTCTGCCGCGGCAGACGCAAAAACAGCGGCGGCGGGGAGTGCGTCAACGGCATCCA
+CGAAGGCGACAGAGGCTGCGGGAAGTGCGGTATCAGCATCGCAGAGCAAAAGTGCGGCAG
+AAGCGGCGGCAATACGTGCAAAAAATTCGGCAAAACGTGCAGAAGATATAGCTTCAGCTG
+TCGCGCTTGAGGATGCGGACACAACGAGAAAGGGGATAGTGCAGCTCAGCAGTGCAACCA
+ACAGCACGTCTGAAACGCTTGCTGCAACGCCAAAGGCGGTTAAGGTGGTAATGGATGAAA
+CGAACAGAAAAGCCCACTGGACAGTCCGGCACTGACCGGAACGCCAACAGCACCAACCGC
+GCTCAGGGGAACAAACAATACCCAGATTGCGAACACCGCTTTTGTACTGGCCGCGATTGC
+AGATGTTATCGACGCGTCACCTGACGCACTGAATACGCTGAATGAACTGGCCGCAGCGCT
+CGGGAATGATCCAGATTTTGCTACCACCATGACTAACGCGCTTGCGGGTAAACAACCGAA
+GAATGCGACACTGACGGCGCTGGCAGGGCTTTCCACGGCGAAAAATAAATTACCGTATTT
+TGCGGAAAATGATGCCGCCAGCCTGACTGAACTGACTCAGGTTGGCAGGGATATTCTGGC
+AAAAAATTCCGTTGCAGATGTTCTTGAATACCTTGGGGCCGGTGAGAATTCGGCCTTTCC
+GGCAGGTGCGCCGATCCCGTGGCCATCAGATATCGTTCCGTCTGGCTACGTCCTGATGCA
+GGGGCAGGCGTTTGACAAATCAGCCTACCCAAAACTTGCTGTCGCGTATCCATCGGGTGT
+GCTTCCTGATATGCGAGGCTGGACAATCAAGGGGAAACCCGCCAGCGGTCGTGCTGTATT
+GTCTCAGGAACAGGATGGAATTAAGTCGCACACCCACAGTGCCAGTGCATCCGGTACGGA
+TTTGGGGACGAAAACCACATCGTCGTTTGATTACGGGACGAAAACAACAGGCAGTTTCGA
+TTACGGCACCAAATCGACGAATAACACGGGGGCTCATGCTCACAGTCTGAGCGGTTCAAC
+AGGGGCCGCGGGTGCTCATGCCCACACAAGTGGTTTAAGGATGAACAGTTCTGGCTGGAG
+TCAGTATGGAACAGCAACCATTACAGGAAGTTTATCCACAGTTAAAGGAACCAGCACACA
+GGGTATTGCTTATTTATCGAAAACGGACAGTCAGGGCAGCCACAGTCACTCATTGTCCGG
+TACAGCCGTGAGTGCCGGTGCACATGCGCATACAGTTGGTATTGGTGCGCACCAGCATCC
+GGTTGTTATCGGTGCTCATGCCCATTCTTTCAGTATTGGTTCACACGGACACACCATCAC
+CGTTAACGCTGCGGGTAACGCGGAAAACACCGTCAAAAACATTGCATTTAACTATATTGT
+GAGGCTTGCATAATGGCATTCAGAATGAGTGAACAACCACGGACCATAAAAATTTATAAT
+CTGCTGGCCGGAACTAATGAATTTATTGGTGAAGGTGACGCATATATTCCGCCTCATACC
+GGTCTGCCTGCAAACAGTACCGATATTGCACCGCCAGATATTCCGGCTGGCTTTGTGGCT
+GTTTTCAACAGTGATGAGGCATCGTGGCATCTCGTTGAAGACCATCGGGGTAAAACCGTC
+TATGACGTGGCTTCCGGCGACGCGTTATTTATTTCTGAACTCGGTCCGTTACCGGAAAAT
+TTTACCTGGTTATCGCCGGGAGGGGAATATCAGAAGTGGAACGGCACAGCCTGGGTGAAG
+GATACGGAAGCAGAAAAACTGTTCCGGATCCGGGAGGCGGAAGAAACAAAAAAAAGCCTG
+ATGCAGGTAGCCAGTGAGCATATTGCGCCGCTTCAGGATGCTGCAGATCTGGAAATTGCA
+ACGAAGGAAGAAACCTCGTTGCTGGAAGCCTGGAAGAAGTATCGGGTGTTGCTGAACCGT
+GTTGATACATCAACTGCACCTGATATTGAGTGGCCTGCTGTCCCTGTTATGGAGTAATCG
+TTTTGTGATATGCCGCAGAAACGTTGTATGAAATAACGTTCTGCGGTTAGTTAGTATATT
+GTAAAGCTGAGTATTGGTTTATTTGGCGATTATTATCTTCAGGAGAATAATGGAAGTTCT
+ATGACTCAATTGTTCATAGTGTTTACATCACCGCCAATTGCTTTTAAGACTGAACGCATG
+AAATATGGTTTTTCGTCATGTTTTGAGTCTGCTGTTGATATTTCTAAAGTCGGTTTTTTT
+TCTTCGTTTTCTCTAACTATTTTCCATGAAATACATTTTTGATTATTATTTGAATCAATT
+CCAATTACCTGAAGTCTTTCATCTATAATTGGCATTGTATGTATTGGTTTATTGGAGTAG
+ATGCTTGCTTTTCTGAGCCATAGCTCTGATATCCAAATGAAGCCATAGGCATTTGTTATT
+TTGGCTCTGTCAGCTGCATAACGCCAAAAAATATATTTATCTGCTTGATCTTCAAATGTT
+GTATTGATTAAATCAATTGGATGGAATTGTTTATCATAAAAAATTAATGTTTGAATGTGA
+TAACCGTCCTTTAAAAAAGTCGTTTCTGCAAGCTTGGCTGTATAGTCAACTAACTCTTCT
+GTCGAAGTGATATTTTTAGGCTTATCTACCAGTTTTAGACGCTCTTTAATATCTTCAGGA
+ATTATTTTATTGTCATATTGTATCATGCTAAATGACAATTTGCTTATGGAGTAATCTTTT
+AATTTTAAATAAGTTATTCTCCTGGCTTCATCAAATAAAGAGTCGAATGATGTTGGCGAA
+ATCACATCGTCACCCATTGGATTGTTTATTTGTATGCCAAGAGAGTTACAGCAGTTATAC
+ATTCTGCCATAGATTATAGCTAAGGCATGTAATAATTCGTAATCTTTTAGCGTATTAGCG
+ACCCATCGTCTTTCTGATTTAATAATAGATGATTCAGTTAAATATGAAGGTAATTTCTTT
+TGTGCAAGTCTGACTAACTTTTTTATACCAATGTTTAACATACTTTCATTTGTAATAAAC
+TCAATGTCATTTTCTTCAATGTAAGATGAAATAAGAGTAGCCTTTGCCTCGCTATACATT
+TCTAAATCGCCTTGTTTTTCTATCGTATTGCGAGAATTTTTAGCCCAAGCCATTAATGGA
+TCATTTTTCCATTTTTCAATAACATTATTGTTATACCAAATGTCATATCCTATAATCTGG
+TTTTTGTTTTTTTGAATAATAAATGTTACTGTTCTTGCGGTTTGGAGGAATTGATTCAAA
+TTCAAGCGAAATAATTCAGGGTCAAAATATGTATCAATGCAGCATTTGAGCAAGTGCGAT
+AAATCTTTAAGTCTTCTTTCCCATGGTTTTTTAGTCATAAAACTCTCCATTTTGATAGGT
+TGCATGCTAGATGCTGATATATTTTAGAGGTGATAAAATTAACTGCTTAACTGTCAATGT
+AATACAAGTTGTTTGATCTTTGCAATGATTCTTATCAGAAACCATATAGTAAATTAGTTA
+CACAGGAAATTTTTAATATTATTATTATCATTCATTATGTATTAAAATTAGAGTTGTGGC
+TTGGCTCTGCTAACACGTTGCTCATAGGAGATATGGTAGAGCCGCAGACACGTCGTATGC
+AGGAACGTGCTGCGGCTGGCTGGTGAACTTCCGATAGTGCGGGTGTTGAATGATTTCCAG
+TTGCTACCGATTTTACATATTTTTTGCATGAGAGAATTTGTACCACCTCCCACCGACCAT
+CTATGACTGTACGCCACTGTCCCTAGGACTGCTATGTGCCGGAGCGGACATTACAAACGT
+CCTTCTCGGTGCATGCCACTGTTGCCAATGACCTGCCTAGGAATTGGTTAGCAAGTTACT
+ACCGGATTTTGTAAAAACAGCCCTCCTCATATAAAAAGTATTCGTTCACTTCCGATAAGC
+GTCGTAATTTTCTATCTTTCATCATATTCTAGATCCCTCTGAAAAAATCTTCCGAGTTTG
+CTAGGCACTGATACATAACTCTTTTCCAATAATTGGGGAAGTCATTCAAATCTATAATAG
+GTTTCAGATTTGCTTCAATAAATTCTGACTGTAGCTGCTGAAACGTTGCGGTTGAACTAT
+ATTTCCTTATAACTTTTACGAAAGAGTTTCTTTGAGTAATCACTTCACTCAAGTGCTTCC
+CTGCCTCCAAACGATACCTGTTAGCAATATTTAATAGCTTGAAATGATGAAGAGCTCTGT
+GTTTGTCTTCCTGCCTCCAGTTCGCCGGGCATTCAACATAAAAACTGATAGCACCCGGAG
+TTCCGGAAACGAAATTTGCATATACCCATTGCTCACGAAAAAAAATGTCCTTGTCGATAT
+AGGGATGAATCGCTTGGTGTACCTCATCTACTGCGAAAACTTGACCTTTCTCTCCCATAT
+TGCAGTCGCGGCACGATGGAACTAAATTAATAGGCATCACCGAAAATTCAGGATAATGTG
+CAATAGGAAGAAAATGATCTATATTTTTTGTCTGTCCTATATCACCACAAAATGGACATT
+TTTCACCTGATGAAACAAGCATGTCATCGTAATATGTTCTAGCGGGTTTGTTTTTATCTC
+GGAGATTATTTTCATAAAGCTTTTCTAATTTAACCTTTGTCAGGTTACCAACTACTAAGG
+TTGTAGGCTCAAGAGGGTGTGTCCTGTCGTAGGTAAATAACTGACCTGTCGAGCTTAATA
+TTCTATATTGTTGTTCTTTCTGCAAAAAAGTGGGGAAGTGAGTAATGAAATTATTTCTAA
+CATTTATCTGCATCATACCTTCCGAGCATTTATTAAGCATTTCGCTATAAGTTCTCGCTG
+GAAGAGGTAGTTTTTTCATTGTACTTTACCTTCATCTCTGTTCATTATCATCGCTTTTAA
+AACGGTTCGACCTTCTAATCCTATCTGACCATTATAATTTTTTAGAATGGTTTCATAAGA
+AAGCTCTGAATCAACGGACTGCGATAATAAGTGGTGGTATCCAGAATTTGTCACTTCAAG
+TAAAAACACCTCACGAGTTAAAACACCTAAGTTCTCACCGAATGTCTCAATATCCGGACG
+GATAATATTTATTGCTTCTCTTGACCGTAGGACTTTCCACATGCAGGATTTTGGAACCTC
+TTGCAGTACTACTGGGGAATGAGTTGCAATTATTGCTACACCATTGCGTGCATCGAGTAA
+GTCGCTTAATGTTCGTAAAAAAGCAGAGAGCAAAGGTGGATGCAGATGAACCTCTGGTTC
+ATCGAATAAAACTAATGACTTTTCGCCAACGACATCTACTAATCTTGTGATAGTAAATAA
+AACAATTGCATGTCCAGAGCTCATTCGAAGCAGATATTTCTGGATATTGTCATAAAACAA
+TTTAGTGAATTTATCATCGTCCACTTGAATCTGTGGTTCATTACGTCTTAACTCTTCATA
+TTTAGAAATGAGGCTGATGAGTTCCATATTTGAAAAGTTTTCATCACTACTTAGTTTTTT
+GATAGCTTCAAGCCAGAGTTGTCTTTTTCTATCTACTCTCATACAACCAATAAATGCTGA
+AATGAATTCTAAGCGGAGATCGCCTAGTGATTTTAAACTATTGCTGGCAGCATTCTTGAG
+TCCAATATAAAAGTATTGTGTACCTTTTGCTGGGTCAGGTTGTTCTTTAGGAGGAGTAAA
+AGGATCAAATGCACTAAACGAAACTGAAACAAGCGATCGAAAATATCCCTTTGGGATTCT
+TGACTCGATAAGTCTATTATTTTCAGAGAAAAAATATTCATTGTTTTCTGGGTTGGTGAT
+TGCACCAATCATTCCATTCAAAATTGTTGTTTTACCACACCCATTCCGCCCGATAAAAGC
+ATGAATGTTCGTGCTGGGCATAGAATTAACCGTCACCTCAAAAGGTATAGTTAAATCACT
+GAATCCGGGAGCACTTTTTCTATTAAATGAAAAGTGGAAATCTGACAATTCTGGCAAACC
+ATTTAACACACGTGCGAACTGTCCATGAATTTCTGAAAGAGTTACCCCTCTAAGTAATGA
+GGTGTTAAGGACGCTTTCATTTTCAATGTCGGCTAATCGATTTGGCCATACTACTAAATC
+CTGAATAGCTTTAAGAAGGTTATGTTTAAAACCATCGCTTAATTTGCTGAGATTAACATA
+GTAGTCAATGCTTTCACCTAAGGAAAAAAACATTTCAGGGAGTTGACTGAATTTTTTATC
+TATTAATGAATAAGTGCTTACTTCTTCTTTTTGACCTACAAAACCAATTTTAACATTTCC
+GATATCGCATTTTTCACCATGCTCATCAAAGACAGTAAGATAAAACATTGTAACAAAGGA
+ATAGTCATTCCAACCATCTGCTCGTAGGAATGCCTTATTTTTTTCTACTGCAGGAATATA
+CCCGCCTCTTTCAATAACACTAAACTCCAACATATAGTAACCCTTAATTTTATTAAAATA
+ACCGCAATTTATTTGGCGGCAACACAGGATCTCTCTTTTAAGTTACTCTCTATTACATAC
+GTTTTCCATCTAAAAATTAGTAGTATTGAACTTAACGGGGCATCGTATTGTAGTTTTCCA
+TATTTAGCTTTCTGCTTCCTTTTGGATAACCCACTGTTATTCATGTTGCATGGTGCACTG
+TTTATACCAACGATATAGTCTATTAATGCATATATAGTATCGCCGAACGATTAGCTCTTC
+AGGCTTCTGAAGAAGCGTTTCAAGTACTAATAAGCCGATAGATAGCCACGGACTTCGTAG
+CCATTTTTCATAAGTGTTAACTTCCGCTCCTCGCTCATAACAGACATTCACTACAGTTAT
+GGCGGAAAGGTATGCATGCTGGGTGTGGGGAAGTCGTGAAAGAAAAGAAGTCAGCTGCGT
+CGTTTGACATCACTGCTATCTTCTTACTGGTTATGCAGGTCGTAGTGGGTGGCACACAAA
+GCTTTGCACTGGATTGCGAGGCTTTGTGCTTCTCTGGAGTGCGACAGGTTTGATGACAAA
+AAATTAGCGCAAGAAGACAAAAATCACCTTGCGCTAATGCTCTGTTACAGGTCACTAATA
+CCATCTAAGTAGTTGATTCATAGTGACTGCATATGTTGTGTTTTACAGTATTATGTAGTC
+TGTTTTTTATGCAAAATCTAATTTAATATATTGATATTTATATCATTTTACGTTTCTCGT
+TCAGCTTTTTTATACTAAGTTGGCATTATAAAAAAGCATTGCTTATCAATTTGTTGCAAC
+GAACAGGTCACTATCAGTCAAAATAAAATCATTATTTGATTTCAATTTTGTCCCACTCCC
+TGCCTCTGTCATCACGATACTGTGATGCCATGGTGTCCGACTTATGCCCGAGAAGATGTT
+GAGCAAACTTATCGCTTATCTGCTTCTCATAGAGTCTTGCAGACAAACTGCGCAACTCGT
+GAAAGGTAGGCGGATCCCCTTCGAAGGAAAGACCTGATGCTTTTCGTGCGCGCATAAAAT
+ACCTTGATACTGTGCCGGATGAAAGCGGTTCGCGACGAGTAGATGCAATTATGGTTTCTC
+CGCCAAGAATCTCTTTGCATTTATCAAGTGTTTCCTTCATTGATATTCCGAGAGCATCAA
+TATGCAATGCTGTTGGGATGGCAATTTTTACGCCTGTTTTGCTTTGCTCGACATAAAGAT
+ATCCATCTACGATATCAGACCACTTCATTTCGCATAAATCACCAACTCGTTGCCCGGTAA
+CAACAGCCAGTTCCATTGCAAGTCTGAGCCAACATGGTGATGATTCTGCTGCTTGATAAA
+TTTTCAGGTATTCGTCAGCCGTAAGTCTTGATCTCCTTACCTCTGATTTTGCTGCGCGAG
+TGGCAGCGACATGGTTTGTTGTTATATGGCCTTCAGCTATTGCCTCTCGGAATGCATCGC
+TCAGTGTTGATCTGATTAACTTGGCTGACGCCGCCTTGCCCTCGTCTATGTATCCATTGA
+GCATTGCCGCAATTTCTTTTGTGGTGATGTCTTCAAGTGGAGCATCAGGCAGACCCCTCC
+TTATTGCTTTAATTTTGCTCATGTAATTTATGAGTGTCTTCTGCTTGATTCCTCTGCTGG
+CCAGGATTTTTTCGTAGCGATCAAGCCATGAATGTAACGTAACGGAATTATCACTGTTGA
+TTCTCGCTGTCAGAGGCTTGTGTTTGTGTCCTGAAAATAACTCAATGTTGGCCTGTATAG
+CTTCAGTGATTGCGATTCGCCTGTCTCTGCCTAATCCAAACTCTTTACCCGTCCTTGGGT
+CCCTGTAGCAGTAATATCCATTGTTTCTTATATAAAGGTTAGGGGGTAAATCCCGGCGCT
+CATGACTTCGCCTTCTTCCCATTTCTGATCCTCTTCAAAAGGCCACCTGTTACTGGTCGA
+TTTAAGTCAACCTTTACCGCTGATTCGTGGAACAGATACTCTCTTCCATCCTTAACCGGA
+GGTGGGAATATCCTGCATTCCCGAACCCATCGACGAACTGTTTCAAGGCTTCTTGGACGT
+CGCTGGCGTGCGTTCCACTCCTGAAGTGTCAAGTACATCGCAAAGTCTCCGCAATTACAC
+GCAAGAAAAAACCGCCATCAGGCGGCTTGGTGTTCTTTCAGTTCTTCAATTCGAATATTG
+GTTACGTCTGCATGTGCTATCTGCGCCCATATCATCCAGTGGTCGTAGCAGTCGTTGATG
+TTCTCCGCTTCGATAACTCTGTTGAATGGCTCTCCATTCCATTCTCCTGTGACTCGGAAG
+TGCATTTATCATCTCCATAAAACAAAACCCGCCGTAGCGAGTTCAGATAAAATAAATCCC
+CGCGAGTGCGAGGATTGTTATGTAATATTGGGTTTAATCATCTATATGTTTTGTACAGAG
+AGGGCAAGTATCGTTTCCACCGTACTCGTGATAATAATTTTGCACGGTATCAGTCATTTC
+TCGCACATTGCAGAATGGGGATTTGTCTTCATTAGACTTATAAACCTTCATGGAATATTT
+GTATGCCGACTCTATATCTATACCTTCATCTACATAAACACCTTCGTGATGTCTGCATGG
+AGACAAGACACCGGATCTGCACAACATTGATAACGCCCAATCTTTTTGCTCAGACTCTAA
+CTCATTGATACTCATTTATAAACTCCTTGCAATGTATGTCGTTTCAGCTAAACGGTATCA
+GCAATGTTTATGTAAAGAAACAGTAAGATAATACTCAACCCGATGTTTGAGTACGGTCAT
+CATCTGACACTACAGACTCTGGCATCGCTGTGAAGACGACGCGAAATTCAGCATTTTCAC
+AAGCGTTATCTTTTACAAAACCGATCTCACTCTCCTTTGATGCGAATGCCAGCGTCAGAC
+ATCATATGCAGATACTCACCTGCATCCTGAACCCATTGACCTCCAACCCCGTAATAGCGA
+TGCGTAATGATGTCGATAGTTACTAACGGGTCTTGTTCGATTAACTGCCGCAGAAACTCT
+TCCAGGTCACCAGTGCAGTGCTTGATAACAGGAGTCTTCCCAGGATGGCGAACAACAAGA
+AACTGGTTTCCGTCTTCACGGACTTCGTTGCTTTCCAGTTTAGCAATACGCTTACTCCCA
+TCCGAGATAACACCTTCGTAATACTCACGCTGCTCGTTGAGTTTTGATTTTGCTGTTTCA
+AGCTCAACACGCAGTTTCCCTACTGTTAGCGCAATATCCTCGTTCTCCTGGTCGCGGCGT
+TTGATGTATTGCTGGTTTCTTTCCCGTTCATCCAGCAGTTCCAGCACAATCGATGGTGTT
+ACCAATTCATGGAAAAGGTCTGCGTCAAATCCCCAGTCGTCATGCATTGCCTGCTCTGCC
+GCTTCACGCAGTGCCTGAGAGTTAATTTCGCTCACTTCGAACCTCTCTGTTTACTGATAA
+GTTCCAGATCCTCCTGGCAACTTGCACAAGTCCGACAACCCTGAACGACCAGGCGTCTTC
+GTTCATCTATCGGATCGCCACACTCACAACAATGAGTGGCAGATATAGCCTGGTGGTTCA
+GGCGGCGCATTTTTATTGCTGTGTTGCGCTGTAATTCTTCTATTTCTGATGCTGAATCAA
+TGATGTCTGCCATCTTTCATTAATCCCTGAACTGTTGGTTAATACGCTTGAGGGTGAATG
+CGAATAATAAAAAAGGAGCCTGTAGCTCCCTGATGATTTTGCTTTTCATGTTCATCGTTC
+CTTAAAGACGCCGTTTAACATGCCGATTGCCAGGCTTAAATGAGTCGGTGTGAATCCCAT
+CAGCGTTACCGTTTCGCGGTGCTTCTTCAGTACGCTACGGCAAATGTCATCGACGTTTTT
+ATCCGGAAACTGCTGTCTGGCTTTTTTTGATTTCAGAATTAGCCTGACGGGCAATGCTGC
+GAAGGGCGTTTTCCTGCTGAGGTGTCATTGAACAAGTCCCATGTCGGCAAGCATAAGCAC
+ACAGAATATGAAGCCCGCTGCCAGAAAAATGCATTCCGTGGTTGTCATACCTGGTTTCTC
+TCATCTGCTTCTGCTTTCGCCACCATCATTTCCAGCTTTTGTGAAAGGGATGCGGCTAAC
+GTATGAAATTCTTCGTCTGTTTCTACTGGTATTGGCACAAACCTGATTCCAATTTGAGCA
+AGGCTATGTGCCATCTCGATACTCGTTCTTAACTCAACAGAAGATGCTTTGTGCATACAG
+CCCCTCGTTTATTATTTATCTCCTCAGCCAGCCGCTGTGCTTTCAGTGGATTTCGGATAA
+CAGAAAGGCCGGGAAATACCCAGCCTCGCTTTGTAACGGAGTAGACGAAAGTGATTGCGC
+CTACCCGGATATTATCGTGAGGATGCGTCATCGCCATTGCTCCCCAAATACAAAACCAAT
+TTCAGCCAGTGCCTCGTCCATTTTTTCGATGAACTCCGGCACGATCTCGTCAAAACTCGC
+CATGTACTTTTCATCCCGCTCAATCACGACATAATGCAGGCCTTCACGCTTCATACGCGG
+GTCATAGTTGGCAAAGTACCAGGCATTTTTTCGCGTCACCCACATGCTGTACTGCACCTG
+GGCCATGTAAGCTGACTTTATGGCCTCGAAACCACCGAGCCGGAACTTCATGAAATCCCG
+GGAGGTAAACGGGCATTTCAGTTCAAGGCCGTTGCCGTCACTGCATAAACCATCGGGAGA
+GCAGGCGGTACGCATACTTTCGTCGCGATAGATGATCGGGGATTCAGTAACATTCACGCC
+GGAAGTGAATTCAAACAGGGTTCTGGCGTCGTTCTCGTACTGTTTTCCCCAGGCCAGTGC
+TTTAGCGTTAACTTCCGGAGCCACACCGGTGCAAACCTCAGCAAGCAGGGTGTGGAAGTA
+GGACATTTTCATGTCAGGCCACTTCTTTCCGGAGCGGGGTTTTGCTATCACGTTGTGAAC
+TTCTGAAGCGGTGATGACGCCGAGCCGTAATTTGTGCCACGCATCATCCCCCTGTTCGAC
+AGCTCTCACATCGATCCCGGTACGCTGCAGGATAATGTCCGGTGTCATGCTGCCACCTTC
+TGCTCTGCGGCTTTCTGTTTCAGGAATCCAAGAGCTTTTACTGCTTCGGCCTGTGTCAGT
+TCTGACGATGCACGAATGTCGCGGCGAAATATCTGGGAACAGAGCGGCAATAAGTCGTCA
+TCCCATGTTTTATCCAGGGCGATCAGCAGAGTGTTAATCTCCTGCATGGTTTCATCGTTA
+ACCGGAGTGATGTCGCGTTCCGGCTGACGTTCTGCAGTGTATGCAGTATTTTCGACAATG
+CGCTCGGCTTCATCCTTGTCATAGATACCAGCAAATCCGAAGGCCAGACGGGCACACTGA
+ATCATGGCTTTATGACGTAACATCCGTTTGGGATGCGACTGCCACGGCCCCGTGATTTCT
+CTGCCTTCGCGAGTTTTGAATGGTTCGCGGCGGCATTCATCCATCCATTCGGTAACGCAG
+ATCGGATGATTACGGTCCTTGCGGTAAATCCGGCATGTACAGGATTCATTGTCCTGCTCA
+AAGTCCATGCCATCAAACTGCTGGTTTTCATTGATGATGCGGGACCAGCCATCAACGCCC
+ACCACCGGAACGATGCCATTCTGCTTATCAGGAAAGGCGTAAATTTCTTTCGTCCACGGA
+TTAAGGCCGTACTGGTTGGCAACGATCAGTAATGCGATGAACTGCGCATCGCTGGCATCA
+CCTTTAAATGCCGTCTGGCGAAGAGTGGTGATCAGTTCCTGTGGGTCGACAGAATCCATG
+CCGACACGTTCAGCCAGCTTCCCAGCCAGCGTTGCGAGTGCAGTACTCATTCGTTTTATA
+CCTCTGAATCAATATCAACCTGGTGGTGAGCAATGGTTTCAACCATGTACCGGATGTGTT
+CTGCCATGCGCTCCTGAAACTCAACATCGTCATCAAACGCACGGGTAATGGATTTTTTGC
+TGGCCCCGTGGCGTTGCAAATGATCGATGCATAGCGATTCAAACAGGTGCTGGGGCAGGC
+CTTTTTCCATGTCGTCTGCCAGTTCTGCCTCTTTCTCTTCACGGGCGAGCTGCTGGTAGT
+GACGCGCCCAGCTCTGAGCCTCAAGACGATCCTGAATGTAATAAGCGTTCATGGCTGAAC
+TCCTGAAATAGCTGTGAAAATATCGCCCGCGAAATGCCGGGCTGATTAGGAAAACAGGAA
+AGGGGGTTAGTGAATGCTTTTGCTTGATCTCAGTTTCAGTATTAATATCCATTTTTTATA
+AGCGTCGACGGCTTCACGAAACATCTTTTCATCGCCAATAAAAGTGGCGATAGTGAATTT
+AGTCTGGATAGCCATAAGTGTTTGATCCATTCTTTGGGACTCCTGGCTGATTAAGTATGT
+CGATAAGGCGTTTCCATCCGTCACGTAATTTACGGGTGATTCGTTCAAGTAAAGATTCGG
+AAGGGCAGCCAGCAACAGGCCACCCTGCAATGGCATATTGCATGGTGTGCTCCTTATTTA
+TACATAACGAAAAACGCCTCGAGTGAAGCGTTATTGGTATGCGGTAAAACCGCACTCAGG
+CGGCCTTGATAGTCATATCATCTGAATCAAATATTCCTGATGTATCGATATCGGTAATTC
+TTATTCCTTCGCTACCATCCATTGGAGGCCATCCTTCCTGACCATTTCCATCATTCCAGT
+CGAACTCACACACAACACCATATGCATTTAAGTCGCTTGAAATTGCTATAAGCAGAGCAT
+GTTGCGCCAGCATGATTAATACAGCATTTAATACAGAGCCGTGTTTATTGAGTCGGTATT
+CAGAGTCTGACCAGAAATTATTAATCTGGTGAAGTTTTTCCTCTGTCATTACGTCATGGT
+CGATTTCAATTTCTATTGATGCTTTCCAGTCGTAATCAATGATGTATTTTTTGATGTTTG
+ACATCTGTTCATATCCTCACAGATAAAAAATCGCCCTCACACTGGAGGGCAAAGAAGATT
+TCCAATAATCAGAACAAGTCGGCTCCTGTTTAGTTACGAGCGACATTGCTCCGTGTATTC
+ACTCGTTGGAATGAATACACAGTGCAGTGTTTATTCTGTTATTTATGCCAAAAATAAAGG
+CCACTATCAGGCAGCTTTGTTGTTCTGTTTACCAAGTTCTCTGGCAATCATTGCCGTCGT
+TCGTATTGCCCATTTATCGACATATTTCCCATCTTCCATTACAGGAAACATTTCTTCAGG
+CTTAACCATGCATTCCGATTGCAGCTTGCATCCATTGCATCGCTTGAATTGTCCACACCA
+TTGATTTTTATCAATAGTCGTAGTCATACGGATAGTCCTGGTATTGTTCCATCACATCCT
+GAGGATGCTCTTCGAACTCTTCAAATTCTTCTTCCATATATCACCTTAAATAGTGGATTG
+CGGTAGTAAAGATTGTGCCTGTCTTTTAACCACATCAGGCTCGGTGGTTCTCGTGTACCC
+CTACAGCGAGAAATCGGATAAACTATTACAACCCCTACAGTTTGATGAGTATAGAAATGG
+ATCCACTCGTTATTCTCGGACGAGTGTTCAGTAATGAACCTCTGGAGAGAACCATGTATA
+TGATCGTTATCTGGGTTGGACTTCTGCTTTTAAGCCCAGATAACTGGCCTGAATATGTTA
+ATGAGAGAATCGGTATTCCTCATGTGTGGCATGTTTTCGTCTTTGCTCTTGCATTTTCGC
+TAGCAATTAATGTGCATCGATTATCAGCTATTGCCAGCGCCAGATATAAGCGATTTAAGC
+TAAGAAAACGCATTAAGATGCAAAACGATAAAGTGCGATCAGTAATTCAAAACCTTACAG
+AAGAGCAATCTATGGTTTTGTGCGCAGCCCTTAATGAAGGCAGGAAGTATGTGGTTACAT
+CAAAACAATTCCCATACATTAGTGAGTTGATTGAGCTTGGTGTGTTGAACAAAACTTTTT
+CCCGATGGAATGGAAAGCATATATTATTCCCTATTGAGGATATTTACTGGACTGAATTAG
+TTGCCAGCTATGATCCATATAATATTGAGATAAAGCCAAGGCCAATATCTAAGTAACTAG
+ATAAGAGGAATCGATTTTCCCTTAATTTTCTGGCGTCCACTGCATGTTATGCCGCGTTCG
+CCAGGCTTGCTGTACCATGTGCGCTGATTCTTGCGCTCAATACGTTGCAGGTTGCTTTCA
+ATCTGTTTGTGGTATTCAGCCAGCACTGTAAGGTCTATCGGATTTAGTGCGCTTTCTACT
+CGTGATTTCGGTTTGCGATTCAGCGAGAGAATAGGGCGGTTAACTGGTTTTGCGCTTACC
+CCAACCAACAGGGGATTTGCTGCTTTCCATTGAGCCTGTTTCTCTGCGCGACGTTCGCGG
+CGGCGTGTTTGTGCATCCATCTGGATTCTCCTGTCAGTTAGCTTTGGTGGTGTGTGGCAG
+TTGTAGTCCTGAACGAAAACCCCCCGCGATTGGCACATTGGCAGCTAATCCGGAATCGCA
+CTTACGGCCAATGCTTCGTTTCGTATCACACACCCCAAAGCCTTCTGCTTTGAATGCTGC
+CCTTCTTCAGGGCTTAATTTTTAAGAGCGTCACCTTCATGGTGGTCAGTGCGTCCTGCTG
+ATGTGCTCAGTATCACCGCCAGTGGTATTTATGTCAACACCGCCAGAGATAATTTATCAC
+CGCAGATGGTTATCTGTATGTTTTTTATATGAATTTATTTTTTGCAGGGGGGCATTGTTT
+GGTAGGTGAGAGATCTGAATTGCTATGTTTAGTGAGTTGTATCTATTTATTTTTCAATAA
+ATACAATTGGTTATGTGTTTTGGGGGCGATCGTGAGGCAAAGAAAACCCGGCGCTGAGGC
+CGGGTTATTCTTGTTCTCTGGTCAAATTATATAGTTGGAAAACAAGGATGCATATATGAA
+TGAACGATGCAGAGGCAATGCCGATGGCGATAGTGGGTATCATGTAGCCGCTTATGCTGG
+AAAGAAGCAATAACCCGCAGAAAAACAAAGCTCCAAGCTCAACAAAACTAAGGGCATAGA
+CAATAACTACCGATGTCATATACCCATACTCTCTAATCTTGGCCAGTCGGCGCGTTCTGC
+TTCCGATTAGAAACGTCAAGGCAGCAATCAGGATTGCAATCATGGTTCCTGCATATGATG
+ACAATGTCGCCCCAAGACCATCTCTATGAGCTGAAAAAGAAACACCAGGAATGTAGTGGC
+GGAAAAGGAGATAGCAAATGCTTACGATAACGTAAGGAATTATTACTATGTAAACACCAG
+GCATGATTCTGTTCCGCATAATTACTCCTGATAATTAATCCTTAACTTTGCCCACCTGCC
+TTTTAAAACATTCCAGTATATCACTTTTCATTCTTGCGTAGCAATATGCCATCTCTTCAG
+CTATCTCAGCATTGGTGACCTTGTTCAGAGGCGCTGAGAGATGGCCTTTTTCTGATAGAT
+AATGTTCTGTTAAAATATCTCCGGCCTCATCTTTTGCCCGCAGGCTAATGTCTGAAAATT
+GAGGTGACGGGTTAAAAATAATATCCTTGGCAACCTTTTTTATATCCCTTTTAAATTTTG
+GCTTAATGACTATATCCAATGAGTCAAAAAGCTCCCCTTCAATATCTGTTGCCCCTAAGA
+CCTTTAATATATCGCCAAATACAGGTAGCTTGGCTTCTACCTTCACCGTTGTTCGGCCGA
+TGAAATGCATATGCATAACATCGTCTTTGGTGGTTCCCCTCATCAGTGGCTCTATCTGAA
+CGCGCTCTCCACTGCTTAATGACATTCCTTTCCCGATTAAAAAATCTGTCAGATCGGATG
+TGGTCGGCCCGAAAACAGTTCTGGCAAAACCAATGGTGTCGCCTTCAACAAACAAAAAAG
+ATGGGAATCCCAATGATTCGTCATCTGCGAGGCTGTTCTTAATATCTTCAACTGAAGCTT
+TAGAGCGATTTATCTTCTGAACCAGACTCTTGTCATTTGTTTTGGTAAAGAGAAAAGTTT
+TTCCATCGATTTTATGAATATACAAATAATTGGAGCCAACCTGCAGGTGATGATTATCAG
+CCAGCAGAGAATTAAGGAAAACAGACAGGTTTATTGAGCGCTTATCTTTCCCTTTATTTT
+TGCTGCGGTAAGTCGCATAAAAACCATTCTTCATAATTCAATCCATTTACTATGTTATGT
+TCTGAGGGGAGTGAAAATTCCCCTAATTCGATGAAGATTCTTGCTCAATTGTTATCAGCT
+ATGCGCCGACCAGAACACCTTGCCGATCAGCCAAACGTCTCTTCAGGCCACTGACTAGCG
+ATAACTTTCCCCACAACGGAACAACTCTCATTGCATGGGATCATTGGGTACTGTGGGTTT
+AGTGGTTGTAAAAACACCTGACCGCTATCCCTGATCAGTTTCTTGAAGGTAAACTCATCA
+CCCCCAAGTCTGGCTATGCAGAAATCACCTGGCTCAACAGCCTGCTCAGGGTCAACGAGA
+ATTAACATTCCGTCAGGAAAGCTTGGCTTGGAGCCTGTTGGTGCGGTCATGGAATTACCT
+TCAACCTCAAGCCAGAATGCAGAATCACTGGCTTTTTTGGTTGTGCTTACCCATCTCTCC
+GCATCACCTTTGGTAAAGGTTCTAAGCTCAGGTGAGAACATCCCTGCCTGAACATGAGAA
+AAAACAGGGTACTCATACTCACTTCTAAGTGACGGCTGCATACTAACCGCTTCATACATC
+TCGTAGATTTCTCTGGCGATTGAAGGGCTAAATTCTTCAACGCTAACTTTGAGAATTTTT
+GCAAGCAATGCGGCGTTATAAGCATTTAATGCATTGATGCCATTAAATAAAGCACCAACG
+CCTGACTGCCCCATCCCCATCTTGTCTGCGACAGATTCCTGGGATAAGCCAAGTTCATTT
+TTCTTTTTTTCATAAATTGCTTTAAGGCGACGTGCGTCCTCAAGCTGCTCTTGTGTTAAT
+GGTTTCTTTTTTGTGCTCATACGTTAAATCTATCACCGCAAGGGATAAATATCTAACACC
+GTGCGTGTTGACTATTTTACCTCTGGCGGTGATAATGGTTGCATGTACTAAGGAGGTTGT
+ATGGAACAACGCATAACCCTGAAAGATTATGCAATGCGCTTTGGGCAAACCAAGACAGCT
+AAAGATCTCGGCGTATATCAAAGCGCGATCAACAAGGCCATTCATGCAGGCCGAAAGATT
+TTTTTAACTATAAACGCTGATGGAAGCGTTTATGCGGAAGAGGTAAAGCCCTTCCCGAGT
+AACAAAAAAACAACAGCATAAATAACCCCGCTCTTACACATTCCAGCCCTGAAAAAGGGC
+ATCAAATTAAACCACACCTATGGTGTATGCATTTATTTGCATACATTCAATCAATTGTTA
+TCTAAGGAAATACTTACATATGGTTCGTGCAAACAAACGCAACGAGGCTCTACGAATCGA
+GAGTGCGTTGCTTAACAAAATCGCAATGCTTGGAACTGAGAAGACAGCGGAAGCTGTGGG
+CGTTGATAAGTCGCAGATCAGCAGGTGGAAGAGGGACTGGATTCCAAAGTTCTCAATGCT
+GCTTGCTGTTCTTGAATGGGGGGTCGTTGACGACGACATGGCTCGATTGGCGCGACAAGT
+TGCTGCGATTCTCACCAATAAAAAACGCCCGGCGGCAACCGAGCGTTCTGAACAAATCCA
+GATGGAGTTCTGAGGTCATTACTGGATCTATCAACAGGAGTCATTATGACAAATACAGCA
+AAAATACTCAACTTCGGCAGAGGTAACTTTGCCGGACAGGAGCGTAATGTGGCAGATCTC
+GATGATGGTTACGCCAGACTATCAAATATGCTGCTTGAGGCTTATTCGGGCGCAGATCTG
+ACCAAGCGACAGTTTAAAGTGCTGCTTGCCATTCTGCGTAAAACCTATGGGTGGAATAAA
+CCAATGGACAGAATCACCGATTCTCAACTTAGCGAGATTACAAAGTTACCTGTCAAACGG
+TGCAATGAAGCCAAGTTAGAACTCGTCAGAATGAATATTATCAAGCAGCAAGGCGGCATG
+TTTGGACCAAATAAAAACATCTCAGAATGGTGCATCCCTCAAAACGAGGGAAAATCCCCT
+AAAACGAGGGATAAAACATCCCTCAAATTGGGGGATTGCTATCCCTCAAAACAGGGGGAC
+ACAAAAGACACTATTACAAAAGAAAAAAGAAAAGATTATTCGTCAGAGAATTCTGGCGAA
+TCCTCTGACCAGCCAGAAAACGACCTTTCTGTGGTGAAACCGGATGCTGCAATTCAGAGC
+GGCAGCAAGTGGGGGACAGCAGAAGACCTGACCGCCGCAGAGTGGATGTTTGACATGGTG
+AAGACTATCGCACCATCAGCCAGAAAACCGAATTTTGCTGGGTGGGCTAACGATATCCGC
+CTGATGCGTGAACGTGACGGACGTAACCACCGCGACATGTGTGTGCTGTTCCGCTGGGCA
+TGCCAGGACAACTTCTGGTCCGGTAACGTGCTGAGCCCGGCCAAACTCCGCGATAAGTGG
+ACCCAACTCGAAATCAACCGTAACAAGCAACAGGCAGGCGTGACAGCCAGCAAACCAAAA
+CTCGACCTGACAAACACAGACTGGATTTACGGGGTGGATCTATGAAAAACATCGCCGCAC
+AGATGGTTAACTTTGACCGTGAGCAGATGCGTCGGATCGCCAACAACATGCCGGAACAGT
+ACGACGAAAAGCCGCAGGTACAGCAGGTAGCGCAGATCATCAACGGTGTGTTCAGCCAGT
+TACTGGCAACTTTCCCGGCGAGCCTGGCTAACCGTGACCAGAACGAAGTGAACGAAATCC
+GTCGCCAGTGGGTTCTGGCTTTTCGGGAAAACGGGATCACCACGATGGAACAGGTTAACG
+CAGGAATGCGCGTAGCCCGTCGGCAGAATCGACCATTTCTGCCATCACCCGGGCAGTTTG
+TTGCATGGTGCCGGGAAGAAGCATCCGTTACCGCCGGACTGCCAAACGTCAGCGAGCTGG
+TTGATATGGTTTACGAGTATTGCCGGAAGCGAGGCCTGTATCCGGATGCGGAGTCTTATC
+CGTGGAAATCAAACGCGCACTACTGGCTGGTTACCAACCTGTATCAGAACATGCGGGCCA
+ATGCGCTTACTGATGCGGAATTACGCCGTAAGGCCGCAGATGAGCTTGTCCATATGACTG
+CGAGAATTAACCGTGGTGAGGCGATCCCTGAACCAGTAAAACAACTTCCTGTCATGGGCG
+GTAGACCTCTAAATCGTGCACAGGCTCTGGCGAAGATCGCAGAAATCAAAGCTAAGTTCG
+GACTGAAAGGAGCAAGTGTATGACGGGCAAAGAGGCAATTATTCATTACCTGGGGACGCA
+TAATAGCTTCTGTGCGCCGGACGTTGCCGCGCTAACAGGCGCAACAGTAACCAGCATAAA
+TCAGGCCGCGGCTAAAATGGCACGGGCAGGTCTTCTGGTTATCGAAGGTAAGGTCTGGCG
+AACGGTGTATTACCGGTTTGCTACCAGGGAAGAACGGGAAGGAAAGATGAGCACGAACCT
+GGTTTTTAAGGAGTGTCGCCAGAGTGCCGCGATGAAACGGGTATTGGCGGTATATGGAGT
+TAAAAGATGACCATCTACATTACTGAGCTAATAACAGGCCTGCTGGTAATCGCAGGCCTT
+TTTATTTGGGGGAGAGGGAAGTCATGAAAAAACTAACCTTTGAAATTCGATCTCCAGCAC
+ATCAGCAAAACGCTATTCACGCAGTACAGCAAATCCTTCCAGACCCAACCAAACCAATCG
+TAGTAACCATTCAGGAACGCAACCGCAGCTTAGACCAAAACAGGAAGCTATGGGCCTGCT
+TAGGTGACGTCTCTCGTCAGGTTGAATGGCATGGTCGCTGGCTGGATGCAGAAAGCTGGA
+AGTGTGTGTTTACCGCAGCATTAAAGCAGCAGGATGTTGTTCCTAACCTTGCCGGGAATG
+GCTTTGTGGTAATAGGCCAGTCAACCAGCAGGATGCGTGTAGGCGAATTTGCGGAGCTAT
+TAGAGCTTATACAGGCATTCGGTACAGAGCGTGGCGTTAAGTGGTCAGACGAAGCGAGAC
+TGGCTCTGGAGTGGAAAGCGAGATGGGGAGACAGGGCTGCATGATAAATGTCGTTAGTTT
+CTCCGGTGGCAGGACGTCAGCATATTTGCTCTGGCTAATGGAGCAAAAGCGACGGGCAGG
+TAAAGACGTGCATTACGTTTTCATGGATACAGGTTGTGAACATCCAATGACATATCGGTT
+TGTCAGGGAAGTTGTGAAGTTCTGGGATATACCGCTCACCGTATTGCAGGTTGATATCAA
+CCCGGAGCTTGGACAGCCAAATGGTTATACGGTATGGGAACCAAAGGATATTCAGACGCG
+AATGCCTGTTCTGAAGCCATTTATCGATATGGTAAAGAAATATGGCACTCCATACGTCGG
+CGGCGCGTTCTGCACTGACAGATTAAAACTCGTTCCCTTCACCAAATACTGTGATGACCA
+TTTCGGGCGAGGGAATTACACCACGTGGATTGGCATCAGAGCTGATGAACCGAAGCGGCT
+AAAGCCAAAGCCTGGAATCAGATATCTTGCTGAACTGTCAGACTTTGAGAAGGAAGATAT
+CCTCGCATGGTGGAAGCAACAACCATTCGATTTGCAAATACCGGAACATCTCGGTAACTG
+CATATTCTGCATTAAAAAATCAACGCAAAAAATCGGACTTGCCTGCAAAGATGAGGAGGG
+ATTGCAGCGTGTTTTTAATGAGGTCATCACGGGATCCCATGTGCGTGACGGACATCGGGA
+AACGCCAAAGGAGATTATGTACCGAGGAAGAATGTCGCTGGACGGTATCGCGAAAATGTA
+TTCAGAAAATGATTATCAAGCCCTGTATCAGGACATGGTACGAGCTAAAAGATTCGATAC
+CGGCTCTTGTTCTGAGTCATGCGAAATATTTGGAGGGCAGCTTGATTTCGACTTCGGGAG
+GGAAGCTGCATGATGCGATGTTATCGGTGCGGTGAATGCAAAGAAGATAACCGCTTCCGA
+CCAAATCAACCTTACTGGAATCGATGGTGTCTCCGGTGTGAAAGAACACCAACAGGGGTG
+TTACCACTACCGCAGGAAAAGGAGGACGTGTGGCGAGACAGCGACGAAGTATCACCGACA
+TAATCTGCGAAAACTGCAAATACCTTCCAACGAAACGCACCAGAAATAAACCCAAGCCAA
+TCCCAAAAGAATCTGACGTAAAAACCTTCAACTACACGGCTCACCTGTGGGATATCCGGT
+GGCTAAGACGTCGTGCGAGGAAAACAAGGTGATTGACCAAAATCGAAGTTACGAACAAGA
+AAGCGTCGAGCGAGCTTTAACGTGCGCTAACTGCGGTCAGAAGCTGCATGTGCTGGAAGT
+TCACGTGTGTGAGCACTGCTGCGCAGAACTGATGAGCGATCCGAATAGCTCGATGCACGA
+GGAAGAAGATGATGGCTAAACCAGCGCGAAGACGATGTAAAAACGATGAATGCCGGGAAT
+GGTTTCACCCTGCATTCGCTAATCAGTGGTGGTGCTCTCCAGAGTGTGGAACCAAGATAG
+CACTCGAACGACGAAGTAAAGAACGCGAAAAAGCGGAAAAAGCAGCAGAGAAGAAACGAC
+GACGAGAGGAGCAGAAACAGAAAGATAAACTTAAGATTCGAAAACTCGCCTTAAAGCCCC
+GCAGTTACTGGATTAAACAAGCCCAACAAGCCGTAAACGCCTTCATCAGAGAAAGAGACC
+GCGACTTACCATGTATCTCGTGCGGAACGCTCACGTCTGCTCAGTGGGATGCCGGACATT
+ACCGGACAACTGCTGCGGCACCTCAACTCCGATTTAATGAACGCAATATTCACAAGCAAT
+GCGTGGTGTGCAACCAGCACAAAAGCGGAAATCTCGTTCCGTATCGCGTCGAACTGATTA
+GCCGCATCGGGCAGGAAGCAGTAGACGAAATCGAATCAAACCATAACCGCCATCGCTGGA
+CTATCGAAGAGTGCAAGGCGATCAAGGCAGAGTACCAACAGAAACTCAAAGACCTGCGAA
+ATAGCAGAAGTGAGGCCGCATGACGTTCTCAGTAAAAACCATTCCAGACATGCTCGTTGA
+AGCATACGGAAATCAGACAGAAGTAGCACGCAGACTGAAATGTAGTCGCGGTACGGTCAG
+AAAATACGTTGATGATAAAGACGGGAAAATGCACGCCATCGTCAACGACGTTCTCATGGT
+TCATCGCGGATGGAGTGAAAGAGATGCGCTATTACGAAAAAATTGATGGCAGCAAATACC
+GAAATATTTGGGTAGTTGGCGATCTGCACGGATGCTACACGAACCTGATGAACAAACTGG
+ATACGATTGGATTCGACAACAAAAAAGACCTGCTTATCTCGGTGGGCGATTTGGTTGATC
+GTGGTGCAGAGAACGTTGAATGCCTGGAATTAATCACATTCCCCTGGTTCAGAGCTGTAC
+GTGGAAACCATGAGCAAATGATGATTGATGGCTTATCAGAGCGTGGAAACGTTAATCACT
+GGCTGCTTAATGGCGGTGGCTGGTTCTTTAATCTCGATTACGACAAAGAAATTCTGGCTA
+AAGCTCTTGCCCATAAAGCAGATGAACTTCCGTTAATCATCGAACTGGTGAGCAAAGATA
+AAAAATATGTTATCTGCCACGCCGATTATCCCTTTGACGAATACGAGTTTGGAAAGCCAG
+TTGATCATCAGCAGGTAATCTGGAACCGCGAACGAATCAGCAACTCACAAAACGGGATCG
+TGAAAGAAATCAAAGGCGCGGACACGTTCATCTTTGGTCATACGCCAGCAGTGAAACCAC
+TCAAGTTTGCCAACCAAATGTATATCGATACCGGCGCAGTGTTCTGCGGAAACCTAACAT
+TGATTCAGGTACAGGGAGAAGGCGCATGAGACTCGAAAGCGTAGCTAAATTTCATTCGCC
+AAAAAGCCCGATGATGAGCGACTCACCACGGGCCACGGCTTCTGACTCTCTTTCCGGTAC
+TGATGTGATGGCTGCTATGGGGATGGCGCAATCACAAGCCGGATTCGGTATGGCTGCATT
+CTGCGGTAAGCACGAACTCAGCCAGAACGACAAACAAAAGGCTATCAACTATCTGATGCA
+ATTTGCACACAAGGTATCGGGGAAATACCGTGGTGTGGCAAAGCTTGAAGGAAATACTAA
+GGCAAAGGTACTGCAAGTGCTCGCAACATTCGCTTATGCGGATTATTGCCGTAGTGCCGC
+GACGCCGGGGGCAAGATGCAGAGATTGCCATGGTACAGGCCGTGCGGTTGATATTGCCAA
+AACAGAGCTGTGGGGGAGAGTTGTCGAGAAAGAGTGCGGAAGATGCAAAGGCGTCGGCTA
+TTCAAGGATGCCAGCAAGCGCAGCATATCGCGCTGTGACGATGCTAATCCCAAACCTTAC
+CCAACCCACCTGGTCACGCACTGTTAAGCCGCTGTATGACGCTCTGGTGGTGCAATGCCA
+CAAAGAAGAGTCAATCGCAGACAACATTTTGAATGCGGTCACACGTTAGCAGCATGATTG
+CCACGGATGGCAACATATTAACGGCATGATATTGACTTATTGAATAAAATTGGGTAAATT
+TGACTCAACGATGGGTTAATTCGCTCGTTGTGGTAGTGAGATGAAAAGAGGCGGCGCTTA
+CTACCGATTCCGCCTAGTTGGTCACTTCGACGTATCGTCTGGAACTCCAACCATCGCAGG
+CAGAGAGGTCTGCAAAATGCAATCCCGAAACAGTTCGCAGGTAATAGTTAGAGCCTGCAT
+AACGGTTTCGGGATTTTTTATATCTGCACAACAGGTAAGAGCATTGAGTCGATAATCGTG
+AAGAGTCGGCGAGCCTGGTTAGCCAGTGCTCTTTCCGTTGTGCTGAATTAAGCGAATACC
+GGAAGCAGAACCGGATCACCAAATGCGTACAGGCGTCATCGCCGCCCAGCAACAGCACAA
+CCCAAACTGAGCCGTAGCCACTGTCTGTCCTGAATTCATTAGTAATAGTTACGCTGCGGC
+CTTTTACACATGACCTTCGTGAAAGCGGGTGGCAGGAGGTCGCGCTAACAACCTCCTGCC
+GTTTTGCCCGTGCATATCGGTCACGAACAAATCTGATTACTAAACACAGTAGCCTGGATT
+TGTTCTATCAGTAATCGACCTTATTCCTAATTAAATAGAGCAAATCCCCTTATTGGGGGT
+AAGACATGAAGATGCCAGAAAAACATGACCTGTTGGCCGCCATTCTCGCGGCAAAGGAAC
+AAGGCATCGGGGCAATCCTTGCGTTTGCAATGGCGTACCTTCGCGGCAGATATAATGGCG
+GTGCGTTTACAAAAACAGTAATCGACGCAACGATGTGCGCCATTATCGCCTGGTTCATTC
+GTGACCTTCTCGACTTCGCCGGACTAAGTAGCAATCTCGCTTATATAACGAGCGTGTTTA
+TCGGCTACATCGGTACTGACTCGATTGGTTCGCTTATCAAACGCTTCGCTGCTAAAAAAG
+CCGGAGTAGAAGATGGTAGAAATCAATAATCAACGTAAGGCGTTCCTCGATATGCTGGCG
+TGGTCGGAGGGAACTGATAACGGACGTCAGAAAACCAGAAATCATGGTTATGACGTCATT
+GTAGGCGGAGAGCTATTTACTGATTACTCCGATCACCCTCGCAAACTTGTCACGCTAAAC
+CCAAAACTCAAATCAACAGGCGCCGGACGCTACCAGCTTCTTTCCCGTTGGTGGGATGCC
+TACCGCAAGCAGCTTGGCCTGAAAGACTTCTCTCCGAAAAGTCAGGACGCTGTGGCATTG
+CAGCAGATTAAGGAGCGTGGCGCTTTACCTATGATTGATCGTGGTGATATCCGTCAGGCA
+ATCGACCGTTGCAGCAATATCTGGGCTTCACTGCCGGGCGCTGGTTATGGTCAGTTCGAG
+CATAAGGCTGACAGCCTGATTGCAAAATTCAAAGAAGCGGGCGGAACGGTCAGAGAGATT
+GATGTATGAGCAGAGTCACCGCGATTATCTCCGCTCTGGTTATCTGCATCATCGTCTGCC
+TGTCATGGGCTGTTAATCATTACCGTGATAACGCCATTACCTACAAAGCCCAGCGCGACA
+AAAATGCCAGAGAACTGAAGCTGGCGAACGCGGCAATTACTGACATGCAGATGCGTCAGC
+GTGATGTTGCTGCGCTCGATGCAAAATACACGAAGGAGTTAGCTGATGCTAAAGCTGAAA
+ATGATGCTCTGCGTGATGATGTTGCCGCTGGTCGTCGTCGGTTGCACATCAAAGCAGTCT
+GTCAGTCAGTGCGTGAAGCCACCACCGCCTCCGGCGTGGATAATGCAGCCTCCCCCCGAC
+TGGCAGACACCGCTGAACGGGATTATTTCACCCTCAGAGAGAGGCTGATCACTATGCAAA
+AACAACTGGAAGGAACCCAGAAGTATATTAATGAGCAGTGCAGATAGAGTTGCCCATATC
+GATGGGCAACTCATGCAATTATTGTGAGCAATACACACGCGCTTCCAGCGGAGTATAAAT
+GCCTAAAGTAATAAAACCGAGCAATCCATTTACGAATGTTTGCTGGGTTTCTGTTTTAAC
+AACATTTTCTGCGCCGCCACAAATTTTGGCTGCATCGACAGTTTTCTTCTGCCCAATTCC
+AGAAACGAAGAAATGATGGGTGATGGTTTCCTTTGGTGCTACTGCTGCCGGTTTGTTTTG
+AACAGTAAACGTCTGTTGAGCACATCCTGTAATAAGCAGGGCCAGCGCAGTAGCGAGTAG
+CATTTTTTTCATGGTGTTATTCCCGATGCTTTTTGAAGTTCGCAGAATCGTATGTGTAGA
+AAATTAAACAAACCCTAAACAATGAGTTGAAATTTCATATTGTTAATATTTATTAATGTA
+TGTCAGGTGCGATGAATCGTCATTGTATTCCCGGATTAACTATGTCCACAGCCCTGACGG
+GGAACTTCTCTGCGGGAGTGTCCGGGAATAATTAAAACGATGCACACAGGGTTTAGCGCG
+TACACGTATTGCATTATGCCAACGCCCCGGTGCTGACACGGAAGAAACCGGACGTTATGA
+TTTAGCGTGGAAAGATTTGTGTAGTGTTCTGAATGCTCTCAGTAAATAGTAATGAATTAT
+CAAAGGTATAGTAATATCTTTTATGTTCATGGATATTTGTAACCCATCGGAAAACTCCTG
+CTTTAGCAAGATTTTCCCTGTATTGCTGAAATGTGATTTCTCTTGATTTCAACCTATCAT
+AGGACGTTTCTATAAGATGCGTGTTTCTTGAGAATTTAACATTTACAACCTTTTTAAGTC
+CTTTTATTAACACGGTGTTATCGTTTTCTAACACGATGTGAATATTATCTGTGGCTAGAT
+AGTAAATATAATGTGAGACGTTGTGACGTTTTAGTTCAGAATAAAACAATTCACAGTCTA
+AATCTTTTCGCACTTGATCGAATATTTCTTTAAAAATGGCAACCTGAGCCATTGGTAAAA
+CCTTCCATGTGATACGAGGGCGCGTAGTTTGCATTATCGTTTTTATCGTTTCAATCTGGT
+CTGACCTCCTTGTGTTTTGTTGATGATTTATGTCAAATATTAGGAATGTTTTCACTTAAT
+AGTATTGGTTGCGTAACAAAGTGCGGTCCTGCTGGCATTCTGGAGGGAAATACAACCGAC
+AGATGTATGTAAGGCCAACGTGCTCAAATCTTCATACAGAAAGATTTGAAGTAATATTTT
+AACCGCTAGATGAAGAGCAAGCGCATGGAGCGACAAAATGAATAAAGAACAATCTGCTGA
+TGATCCCTCCGTGGATCTGATTCGTGTAAAAAATATGCTTAATAGCACCATTTCTATGAG
+TTACCCTGATGTTGTAATTGCATGTATAGAACATAAGGTGTCTCTGGAAGCATTCAGAGC
+AATTGAGGCAGCGTTGGTGAAGCACGATAATAATATGAAGGATTATTCCCTGGTGGTTGA
+CTGATCACCATAACTGCTAATCATTCAAACTATTTAGTCTGTGACAGAGCCAACACGCAG
+TCTGTCACTGTCAGGAAAGTGGTAAAACTGCAACTCAATTACTGCAATGCCCTCGTAATT
+AAGTGAATTTACAATATCGTCCTGTTCGGAGGGAAGAACGCGGGATGTTCATTCTTCATC
+ACTTTTAATTGATGTATATGCTCTCTTTTCTGACGTTAGTCTCCGACGGCAGGCTTCAAT
+GACCCAGGCTGAGAAATTCCCGGACCCTTTTTGCTCAAGAGCGATGTTAATTTGTTCAAT
+CATTTGGTTAGGAAAGCGGATGTTGCGGGTTGTTGTTCTGCGGGTTCTGTTCTTCGTTGA
+CATGAGGTTGCCCCGTATTCAGTGTCGCTGATTTGTATTGTCTGAAGTTGTTTTTACGTT
+AAGTTGATGCAGATCAATTAATACGATACCTGCGTCATAATTGATTATTTGACGTGGTTT
+GATGGCCTCCACGCACGTTGTGATATGTAGATGATAATCATTATCACTTTACGGGTCCTT
+TCCGGTGATCCGACAGGTTACG
+>lambdap01
+MEVNKKQLADIFGASIRTIQNWQEQGMPVLRGGGKGNEVLYDSAAVIKWYAERDAEIENE
+KLRREVEELRQASEADLQPGTIEYERHRLTRAQADAQELKNARDSAEVVETAFCTFVLSR
+IAGEIASILDGLPLSVQRRFPELENRHVDFLKRDIIKAMNKAAALDELIPGLLSEYIEQS
+G
+>lambdap02
+MNISNSQVNRLRHFVRAGLRSLFRPEPQTAVEWADANYYLPKESAYQEGRWETLPFQRAI
+MNAMGSDYIREVNVVKSARVGYSKMLLGVYAYFIEHKQRNTLIWLPTDGDAENFMKTHVE
+PTIRDIPSLLALAPWYGKKHRDNTLTMKRFTNGRGFWCLGGKAAKNYREKSVDVAGYDEL
+AAFDDDIEQEGSPTFLGDKRIEGSVWPKSIRGSTPKVRGTCQIERAASESPHFMRFHVAC
+PHCGEEQYLKFGDKETPFGLKWTPDDPSSVFYLCEHNACVIRQQELDFTDARYICEKTGI
+WTRDGILWFSSSGEEIEPPDSVTFHIWTAYSPFTTWVQIVKDWMKTKGDTGKRKTFVNTT
+LGETWEAKIGERPDAEVMAERKEHYSAPVPDRVAYLTAGIDSQLDRYEMRVWGWGPGEES
+WLIDRQIIMGRHDDEQTLLRVDEAINKTYTRRNGAEMSISRICWDTGGIDPTIVYERSKK
+HGLFRVIPIKGASVYGKPVASMPRKRNKNGVYLTEIGTDTAKEQIYNRFTLTPEGDEPLP
+GAVHFPNNPDIFDLTEAQQLTAEEQVEKWVDGRKKILWDSKKRRNEALDCFVYALAALRI
+SISRWQLDLSALLASLQEEDGAATNKKTLADYARALSGEDE
+>lambdap03
+MTRQEELAAARAALHDLMTGKRVATVQKDGRRVEFTATSVSDLKKYIAELEVQTGMTQRR
+RGPAGFYV
+>lambdap04
+MKTPTIPTLLGPDGMTSLREYAGYHGGGSGFGGQLRSWNPPSESVDAALLPNFTRGNARA
+DDLVRNNGYAANAIQLHQDHIVGSFFRLSHRPSWRYLGIGEEEARAFSREVEAAWKEFAE
+DDCCCIDVERKRTFTMMIREGVAMHAFNGELFVQATWDTSSSRLFRTQFRMVSPKRISNP
+NNTGDSRNCRAGVQINDSGAALGYYVSEDGYPGWMPQKWTWIPRELPGGRASFIHVFEPV
+EDGQTRGANVFYSVMEQMKMLDTLQNTQLQSAIVKAMYAATIESELDTQSAMDFILGANS
+QEQRERLTGWIGEIAAYYAAAPVRLGGAKVPHLMPGDSLNLQTAQDTDNGYSVFEQSLLR
+YIAAGLGVSYEQLSRNYAQMSYSTARASANESWAYFMGRRKFVASRQASQMFLCWLEEAI
+VRRVVTLPSKARFSFQEARSAWGNCDWIGSGRMAIDGLKEVQEAVMLIEAGLSTYEKECA
+KRGDDYQEIFAQQVRETMERRAAGLKPPAWAAAAFESGLRQSTEEEKSDSRAA
+>lambdap05
+MTAELRNLPHIASMAFNEPLMLEPAYARVFFCALAGQLGISSLTDAVSGDSLTAQEALAT
+LALSGDDDGPRQARSYQVMNGIAVLPVSGTLVSRTRALQPYSGMTGYNGIIARLQQAASD
+PMVDGILLDMDTPGGMVAGAFDCADIIARVRDIKPVWALANDMNCSAGQLLASAASRRLV
+TQTARTGSIGVMMAHSNYGAALEKQGVEITLIYSGSHKVDGNPYSHLPDDVRETLQSRMD
+ATRQMFAQKVSAYTGLSVQVVLDTEAAVYSGQEAIDAGLADELVNSTDAITVMRDALDAR
+KSRLSGGRMTKETQSTTVSATASQADVTDVVPATEGENASAAQPDVNAQITAAVAAENSR
+IMGILNCEEAHGREEQARVLAETPGMTVKTARRILAAAPQSAQARSDTALDRLMQGAPAP
+LAAGNPASDAVNDLLNTPV
+>lambdap06
+MDATRQMFAQKVSAYTGLSVQVVLDTEAAVYSGQEAIDAGLADELVNSTDAITVMRDALD
+ARKSRLSGGRMTKETQSTTVSATASQADVTDVVPATEGENASAAQPDVNAQITAAVAAEN
+SRIMGILNCEEAHGREEQARVLAETPGMTVKTARRILAAAPQSAQARSDTALDRLMQGAP
+APLAAGNPASDAVNDLLNTPV
+>lambdap07
+MTSKETFTHYQPQGNSDPAHTATAPGGLSAKAPAMTPLMLDTSSRKLVAWDGTTDGAAVG
+ILAVAADQTSTTLTFYKSGTFRYEDVLWPEAASDETKKRTAFAGTAISIV
+>lambdap08
+MSMYTTAQLLAANEQKFKFDPLFLRLFFRESYPFTTEKVYLSQIPGLVNMALYVSPIVSG
+EVIRSRGGSTSEFTPGYVKPKHEVNPQMTLRRLPDEDPQNLADPAYRRRRIIMQNMRDEE
+LAIAQVEEMQAVSAVLKGKYTMTGEAFDPVEVDMGRSEENNITQSGGTEWSKRDKSTYDP
+TDDIEAYALNASGVVNIIVFDPKGWALFRSFKAVKEKLDTRRGSNSELETAVKDLGKAVS
+YKGMYGDVAIVVYSGQYVENGVKKNFLPDNTMVLGNTQARGLRTYGCIQDADAQREGINA
+SARYPKNWVTTGDPAREFTMIQSAPLMLLADPDEFVSVQLA
+>lambdap09
+MTKDELIARLRSLGEQLNRDVSLTGTKEELALRVAELKEELDDTDETAGQDTPLSRENVL
+TGHENEVGSAQPDTVILDTSELVTVVALVKLHTDALHATRDEPVAFVLPGTAFRVSAGVA
+AEMTERGLARMQ
+>lambdap10
+MADFDNLFDAAIARADETIRGYMGTSATITSGEQSGAVIRGVFDDPENISYAGQGVRVEG
+SSPSLFVRTDEVRQLRRGDTLTIGEENFWVDRVSPDDGGSCHLWLGRGVPPAVNRRR
+>lambdap11
+MAIKGLEQAVENLSRISKTAVPGAAAMAINRVASSAISQSASQVARETKVRRKLVKERAR
+LKRATVKNPQARIKVNRGDLPVIKLGNARVVLSRRRRRKKGQRSSLKGGGSVLVVGNRRI
+PGAFIQQLKNGRWHVMQRVAGKNRYPIDVVKIPMAVPLTTAFKQNIERIRRERLPKELGY
+ALQHQLRMVIKR
+>lambdap12
+MKHTELRAAVLDALEKHDTGATFFDGRPAVFDEADFPAVAVYLTGAEYTGEELDSDTWQA
+ELHIEVFLPAQVPDSELDAWMESRIYPVMSDIPALSDLITSMVASGYDYRRDDDAGLWSS
+ADLTYVITYEM
+>lambdap13
+MPVPNPTMPVKGAGTTLWVYKGSGDPYANPLSDVDWSRLAKVKDLTPGELTAESYDDSYL
+DDEDADWTATGQGQKSAGDTSFTLAWMPGEQGQQALLAWFNEGDTRAYKIRFPNGTVDVF
+RGWVSSIGKAVTAKEVITRTVKVTNVGRPSMAEDRSTVTAATGMTVTPASTSVVKGQSTT
+LTVAFQPEGVTDKSFRAVSADKTKATVSVSGMTITVNGVAAGKVNIPVVSGNGEFAAVAE
+ITVTAS
+>lambdap14
+MFLKTESFEHNGVTVTLSELSALQRIEHLALMKRQAEQAESDSNRKFTVEDAIRTGAFLV
+AMSLWHNHPQKTQMPSMNEAVKQIEQEVLTTWPTEAISHAENVVYRLSGMYEFVVNNAPE
+QTEDAGPAEPVSAGKCSTVS
+>lambdap15
+MFDGELSFALKLAREMGRPDWRAMLAGMSSTEYADWHRFYSTHYFHDVLLDMHFSGLTYT
+VLSLFFSDPDMHPLDFSLLNRREADEEPEDDVLMQKAAGLAGGVRFGPDGNEVIPASPDV
+ADMTEDDVMLMTVSEGIAGGVRYG
+>lambdap16
+MAEPVGDLVVDLSLDAARFDEQMARVRRHFSGTESDAKKTAAVVEQSLSRQALAAQKAGI
+SVGQYKAAMRMLPAQFTDVATQLAGGQSPWLILLQQGGQVKDSFGGMIPMFRGLAGAITL
+PMVGATSLAVATGALAYAWYQGNSTLSDFNKTLVLSGNQAGLTADRMLVLSRAGQAAGLT
+FNQTSESLSALVKAGVSGEAQIASISQSVARFSSASGVEVDKVAEAFGKLTTDPTSGLTA
+MARQFHNVSAEQIAYVAQLQRSGDEAGALQAANEAATKGFDDQTRRLKENMGTLETWADR
+TARAFKSMWDAVLDIGRPDTAQEMLIKAEAAYKKADDIWNLRKDDYFVNDEARARYWDDR
+EKARLALEAARKKAEQQTQQDKNAQQQSDTEASRLKYTEEAQKAYERLQTPLEKYTARQE
+ELNKALKDGKILQADYNTLMAAAKKDYEATLKKPKQSSVKVSAGDRQEDSAHAALLTLQA
+ELRTLEKHAGANEKISQQRRDLWKAESQFAVLEEAAQRRQLSAQEKSLLAHKDETLEYKR
+QLAALGDKVTYQERLNALAQQADKFAQQQRAKRAAIDAKSRGLTDRQAEREATEQRLKEQ
+YGDNPLALNNVMSEQKKTWAAEDQLRGNWMAGLKSGWSEWEESATDSMSQVKSAATQTFD
+GIAQNMAAMLTGSEQNWRSFTRSVLSMMTEILLKQAMVGIVGSIGSAIGGAVGGGASASG
+GTAIQAAAAKFHFATGGFTGTGGKYEPAGIVHRGEFVFTKEATSRIGVGNLYRLMRGYAT
+GGYVGTPGSMADSRSQASGTFEQNNHVVINNDGTNGQIGPAALKAVYDMARKGARDEIQT
+QMRDGGLFSGGGR
+>lambdap17
+MKTFRWKVKPGMDVASVPSVRKVRFGDGYSQRAPAGLNANLKTYSVTLSVPREEATVLES
+FLEEHGGWKSFLWTPPYEWRQIKVTCAKWSSRVSMLRVEFSAEFEQVVN
+>lambdap18
+MQDIRQETLNECTRAEQSASVVLWEIDLTEVGGERYFFCNEQNEKGEPVTWQGRQYQPYP
+IQGSGFELNGKGTSTRPTLTVSNLYGMVTGMAEDMQSLVGGTVVRRKVYARFLDAVNFVN
+GNSYADPEQEVISRWRIEQCSELSAVSASFVLSTPTETDGAVFPGRIMLANTCTWTYRGD
+ECGYSGPAVADEYDQPTSDITKDKCSKCLSGCKFRNNVGNFGGFLSINKLSQ
+>lambdap19
+MSPEDWLQAEMQGEIVALVHSHPGGLPWLSEADRRLQVQSDLPWWLVCRGTIHKFRCVPH
+LTGRRFEHGVTDCYTLFRDAYHLAGIEMPDFHREDDWWRNGQNLYLDNLEATGLYQVPLS
+AAQPGDVLLCCFGSSVPNHAAIYCGDGELLHHIPEQLSKRERYTDKWQRRTHSLWRHRAW
+RASAFTGIYNDLVAASTFV
+>lambdap20
+MAATHTLPLASPGMARICLYGDLQRFGRRIDLRVKTGAEAIRALATQLPAFRQKLSDGWY
+QVRIAGRDVSTSGLTAQLHETLPDGAVIHIVPRVAGAKSGGVFQIVLGAAAIAGSFFTAG
+ATLAAWGAAIGAGGMTGILFSLGASMVLGGVAQMLAPKARTPRIQTTDNGKQNTYFSSLD
+NMVAQGNVLPVLYGEMRVGSRVVSQEISTADEGDGGQVVVIGR
+>lambdap21
+MGKGSSKGHTPREAKDNLKSTQLLSVIDAISEGPIEGPVDGLKSVLLNSTPVLDTEGNTN
+ISGVTVVFRAGEQEQTPPEGFESSGSETVLGTEVKYDTPITRTITSANIDRLRFTFGVQA
+LVETTSKGDRNPSEVRLLVQIQRNGGWVTEKDITIKGKTTSQYLASVVMGNLPPRPFNIR
+MRRMTPDSTTDQLQNKTLWSSYTEIIDVKQCYPNTALVGVQVDSEQFGSQQVSRNYHLRG
+RILQVPSNYNPQTRQYSGIWDGTFKPAYSNNMAWCLWDMLTHPRYGMGKRLGAADVDKWA
+LYVIGQYCDQSVPDGFGGTEPRITCNAYLTTQRKAWDVLSDFCSAMRCMPVWNGQTLTFV
+QDRPSDKTWTYNRSNVVMPDDGAPFRYSFSALKDRHNAVEVNWIDPNNGWETATELVEDT
+QAIARYGRNVTKMDAFGCTSRGQAHRAGLWLIKTELLETQTVDFSVGAEGLRHVPGDVIE
+ICDDDYAGISTGGRVLAVNSQTRTLTLDREITLPSSGTALISLVDGSGNPVSVEVQSVTD
+GVKVKVSRVPDGVAEYSVWELKLPTLRQRLFRCVSIRENDDGTYAITAVQHVPEKEAIVD
+NGAHFDGEQSGTVNGVTPPAVQHLTAEVTADSGEYQVLARWDTPKVVKGVSFLLRLTVTA
+DDGSERLVSTARTTETTYRFTQLALGNYRLTVRAVNAWGQQGDPASVSFRIAAPAAPSRI
+ELTPGYFQITATPHLAVYDPTVQFEFWFSEKQIADIRQVETSTRYLGTALYWIAASINIK
+PGHDYYFYIRSVNTVGKSAFVEAVGRASDDAEGYLDFFKGKITESHLGKELLEKVELTED
+NASRLEEFSKEWKDASDKWNAMWAVKIEQTKDGKHYVAGIGLSMEDTEEGKLSQFLVAAN
+RIAFIDPANGNETPMFVAQGNQIFMNDVFLKRLTAPTITSGGNPPAFSLTPDGKLTAKNA
+DISGSVNANSGTLSNVTIAENCTINGTLRAEKIVGDIVKAASAAFPRQRESSVDWPSGTR
+TVTVTDDHPFDRQIVVLPLTFRGSKRTVSGRTTYSMCYLKVLMNGAVIYDGAANEAVQVF
+SRIVDMPAGRGNVILTFTLTSTRHSADIPPYTFASDVQVMVIKKQALGISVV
+>lambdap26
+MRNVCIAVAVFAALAVTVTPARAEGGHGTFTVGYFQVKPGTLPSLSGGDTGVSHLKGINV
+KYRYELTDSVGVMASLGFAASKKSSTVMTGEDTFHYESLRGRYVSVMAGPVLQISKQVSA
+YAMAGVAHSRWSGSTMDYRKTEITPGYMKETTTARDESAMRHTSVAWSAGIQINPAASVV
+VDIAYEGSGSGDWRTDGFIVGVGYKF
+>lambdap27
+MAVKISGVLKDGTGKPVQNCTIQLKARRNSTTVVVNTVGSENPDEAGRYSMDVEYGQYSV
+ILQVDGFPPSHAGTITVYEDSQPGTLNDFLCAMTEDDARPEVLRRLELMVEEVARNASVV
+AQSTADAKKSAGDASASAAQVAALVTDATDSARAASTSAGQAASSAQEASSGAEAASAKA
+TEAEKSAAAAESSKNAAATSAGAAKTSETNAAASQQSAATSASTAATKASEAATSARDAV
+ASKEAAKSSETNASSSAGRAASSATAAENSARAAKTSETNARSSETAAERSASAAADAKT
+AAAGSASTASTKATEAAGSAVSASQSKSAAEAAAIRAKNSAKRAEDIASAVALEDADTTR
+KGIVQLSSATNSTSETLAATPKAVKVVMDETNRKAHWTVRH
+>lambdap28
+MTNALAGKQPKNATLTALAGLSTAKNKLPYFAENDAASLTELTQVGRDILAKNSVADVLE
+YLGAGENSAFPAGAPIPWPSDIVPSGYVLMQGQAFDKSAYPKLAVAYPSGVLPDMRGWTI
+KGKPASGRAVLSQEQDGIKSHTHSASASGTDLGTKTTSSFDYGTKTTGSFDYGTKSTNNT
+GAHAHSLSGSTGAAGAHAHTSGLRMNSSGWSQYGTATITGSLSTVKGTSTQGIAYLSKTD
+SQGSHSHSLSGTAVSAGAHAHTVGIGAHQHPVVIGAHAHSFSIGSHGHTITVNAAGNAEN
+TVKNIAFNYIVRLA
+>lambdap29
+MAFRMSEQPRTIKIYNLLAGTNEFIGEGDAYIPPHTGLPANSTDIAPPDIPAGFVAVFNS
+DEASWHLVEDHRGKTVYDVASGDALFISELGPLPENFTWLSPGGEYQKWNGTAWVKDTEA
+EKLFRIREAEETKKSLMQVASEHIAPLQDAADLEIATKEETSLLEAWKKYRVLLNRVDTS
+TAPDIEWPAVPVME
+>lambdap33
+MGRRRSHERRDLPPNLYIRNNGYYCYRDPRTGKEFGLGRDRRIAITEAIQANIELFSGHK
+HKPLTARINSDNSVTLHSWLDRYEKILASRGIKQKTLINYMSKIKAIRRGLPDAPLEDIT
+TKEIAAMLNGYIDEGKAASAKLIRSTLSDAFREAIAEGHITTNHVAATRAAKSEVRRSRL
+TADEYLKIYQAAESSPCWLRLAMELAVVTGQRVGDLCEMKWSDIVDGYLYVEQSKTGVKI
+AIPTALHIDALGISMKETLDKCKEILGGETIIASTRREPLSSGTVSRYFMRARKASGLSF
+EGDPPTFHELRSLSARLYEKQISDKFAQHLLGHKSDTMASQYRDDRGREWDKIEIK
+>lambdap34
+MYLTLQEWNARQRRPRSLETVRRWVRECRIFPPPVKDGREYLFHESAVKVDLNRPVTGGL
+LKRIRNGKKAKS
+>lambdap35
+MHFRVTGEWNGEPFNRVIEAENINDCYDHWMIWAQIAHADVTNIRIEELKEHQAA
+>lambdap36
+MSINELESEQKDWALSMLCRSGVLSPCRHHEGVYVDEGIDIESAYKYSMKVYKSNEDKSP
+FCNVREMTDTVQNYYHEYGGNDTCPLCTKHIDD
+>lambdap37
+MRETRYDNHGMHFSGSGLHILCAYACRHGTCSMTPQQENALRSIARQANSEIKKSQTAVS
+G
+>lambdap38
+MHKASSVELRTSIEMAHSLAQIGIRFVPIPVETDEEFHTLAASLSQKLEMMVAKAEADER
+NQV
+>lambdap39
+MTHPHDNIRVGAITFVYSVTKRGWVFPGLSVIRNPLKAQRLAEEINNKRGAVCTKHLLLS
+
+>lambdap41
+MTPDIILQRTGIDVRAVEQGDDAWHKLRLGVITASEVHNVIAKPRSGKKWPDMKMSYFHT
+LLAEVCTGVAPEVNAKALAWGKQYENDARTLFEFTSGVNVTESPIIYRDESMRTACSPDG
+LCSDGNGLELKCPFTSRDFMKFRLGGFEAIKSAYMAQVQYSMWVTRKNAWYFANYDPRMK
+REGLHYVVIERDEKYMASFDEIVPEFIEKMDEALAEIGFVFGEQWR
+>lambdap42
+MDINTETEIKQKHSLTPFPVFLISPAFRGRYFHSYFRSSAMNAYYIQDRLEAQSWARHYQ
+QLAREEKEAELADDMEKGLPQHLFESLCIDHLQRHGASKKSITRAFDDDVEFQERMAEHI
+RYMVETIAHHQVDIDSEV
+>lambdap45.p01
+MSNIKKYIIDYDWKASIEIEIDHDVMTEEKLHQINNFWSDSEYRLNKHGSVLNAVLIMLA
+QHALLIAISSDLNAYGVVCEFDWNDGNGQEGWPPMDGSEGIRITDIDTSGIFDSDDMTIK
+AA
+>lambdap46.p01
+MTTTIDKNQWCGQFKRCNGCKLQSECMVKPEEMFPVMEDGKYVDKWAIRTTAMIARELGK
+QNNKAA
+>lambdap47
+MEEEFEEFEEHPQDVMEQYQDYPYDYDY
+>lambdap48
+MMSIEMDPLVILGRVFSNEPLERTMYMIVIWVGLLLLSPDNWPEYVNERIGIPHVWHVFV
+FALAFSLAINVHRLSAIASARYKRFKLRKRIKMQNDKVRSVIQNLTEEQSMVLCAALNEG
+RKYVVTSKQFPYISELIELGVLNKTFSRWNGKHILFPIEDIYWTELVASYDPYNIEIKPR
+PISK
+>lambdap49.p01
+MCQSRGVFVQDYNCHTPPKLTDRRIQMDAQTRRRERRAEKQAQWKAANPLLVGVSAKPVN
+RPILSLNRKPKSRVESALNPIDLTVLAEYHKQIESNLQRIERKNQRTWYSKPGERGITCS
+GRQKIKGKSIPLI
+>lambdap53
+MRNRIMPGVYIVIIPYVIVSICYLLFRHYIPGVSFSAHRDGLGATLSSYAGTMIAILIAA
+LTFLIGSRTRRLAKIREYGYMTSVVIVYALSFVELGALFFCGLLLLSSISGYMIPTIAIG
+IASASFIHICILVFQLYNLTREQE
+>lambdap57.p01
+MEQRITLKDYAMRFGQTKTAKDLGVYQSAINKAIHAGRKIFLTINADGSVYAEEVKPFPS
+NKKTTA
+>lambdap59
+MVRANKRNEALRIESALLNKIAMLGTEKTAEAVGVDKSQISRWKRDWIPKFSMLLAVLEW
+GVVDDDMARLARQVAAILTNKKRPAATERSEQIQMEF
+>lambdap61
+MKNIAAQMVNFDREQMRRIANNMPEQYDEKPQVQQVAQIINGVFSQLLATFPASLANRDQ
+NEVNEIRRQWVLAFRENGITTMEQVNAGMRVARRQNRPFLPSPGQFVAWCREEASVTAGL
+PNVSELVDMVYEYCRKRGLYPDAESYPWKSNAHYWLVTNLYQNMRANALTDAELRRKAAD
+ELVHMTARINRGEAIPEPVKQLPVMGGRPLNRAQALAKIAEIKAKFGLKGASV
+>lambdap62
+MTGKEAIIHYLGTHNSFCAPDVAALTGATVTSINQAAAKMARAGLLVIEGKVWRTVYYRF
+ATREEREGKMSTNLVFKECRQSAAMKRVLAVYGVKR
+>lambdap63
+MKKLTFEIRSPAHQQNAIHAVQQILPDPTKPIVVTIQERNRSLDQNRKLWACLGDVSRQV
+EWHGRWLDAESWKCVFTAALKQQDVVPNLAGNGFVVIGQSTSRMRVGEFAELLELIQAFG
+TERGVKWSDEARLALEWKARWGDRAA
+>lambdap64
+MINVVSFSGGRTSAYLLWLMEQKRRAGKDVHYVFMDTGCEHPMTYRFVREVVKFWDIPLT
+VLQVDINPELGQPNGYTVWEPKDIQTRMPVLKPFIDMVKKYGTPYVGGAFCTDRLKLVPF
+TKYCDDHFGRGNYTTWIGIRADEPKRLKPKPGIRYLAELSDFEKEDILAWWKQQPFDLQI
+PEHLGNCIFCIKKSTQKIGLACKDEEGLQRVFNEVITGSHVRDGHRETPKEIMYRGRMSL
+DGIAKMYSENDYQALYQDMVRAKRFDTGSCSESCEIFGGQLDFDFGREAA
+>lambdap65
+MMRCYRCGECKEDNRFRPNQPYWNRWCLRCERTPTGVLPLPQEKEDVWRDSDEVSPT
+>lambdap66
+MARQRRSITDIICENCKYLPTKRTRNKPKPIPKESDVKTFNYTAHLWDIRWLRRRARKTR
+
+>lambdap67
+MIDQNRSYEQESVERALTCANCGQKLHVLEVHVCEHCCAELMSDPNSSMHEEEDDG
+>lambdap68
+MMAKPARRRCKNDECREWFHPAFANQWWCSPECGTKIALERRSKEREKAEKAAEKKRRRE
+EQKQKDKLKIRKLALKPRSYWIKQAQQAVNAFIRERDRDLPCISCGTLTSAQWDAGHYRT
+TAAAPQLRFNERNIHKQCVVCNQHKSGNLVPYRVELISRIGQEAVDEIESNHNRHRWTIE
+ECKAIKAEYQQKLKDLRNSRSEAA
+>lambdap69
+MTFSVKTIPDMLVEAYGNQTEVARRLKCSRGTVRKYVDDKDGKMHAIVNDVLMVHRGWSE
+RDALLRKN
+>lambdap70
+MRYYEKIDGSKYRNIWVVGDLHGCYTNLMNKLDTIGFDNKKDLLISVGDLVDRGAENVEC
+LELITFPWFRAVRGNHEQMMIDGLSERGNVNHWLLNGGGWFFNLDYDKEILAKALAHKAD
+ELPLIIELVSKDKKYVICHADYPFDEYEFGKPVDHQQVIWNRERISNSQNGIVKEIKGAD
+TFIFGHTPAVKPLKFANQMYIDTGAVFCGNLTLIQVQGEGA
+>lambdap71
+MRLESVAKFHSPKSPMMSDSPRATASDSLSGTDVMAAMGMAQSQAGFGMAAFCGKHELSQ
+NDKQKAINYLMQFAHKVSGKYRGVAKLEGNTKAKVLQVLATFAYADYCRSAATPGARCRD
+CHGTGRAVDIAKTELWGRVVEKECGRCKGVGYSRMPASAAYRAVTMLIPNLTQPTWSRTV
+KPLYDALVVQCHKEESIADNILNAVTR
+>lambdap73
+MKRGGAYYRFRLVGHFDVSSGTPTIAGREVCKMQSRNSSQVIVRACITVSGFFISAQQVR
+ALSR
+>lambdap74
+MKMPEKHDLLAAILAAKEQGIGAILAFAMAYLRGRYNGGAFTKTVIDATMCAIIAWFIRD
+LLDFAGLSSNLAYITSVFIGYIGTDSIGSLIKRFAAKKAGVEDGRNQ
+>lambdap75
+MVEINNQRKAFLDMLAWSEGTDNGRQKTRNHGYDVIVGGELFTDYSDHPRKLVTLNPKLK
+STGAGRYQLLSRWWDAYRKQLGLKDFSPKSQDAVALQQIKERGALPMIDRGDIRQAIDRC
+SNIWASLPGAGYGQFEHKADSLIAKFKEAGGTVREIDV
+>lambdap76
+MSRVTAIISALVICIIVCLSWAVNHYRDNAITYKAQRDKNARELKLANAAITDMQMRQRD
+VAALDAKYTKELADAKAENDALRDDVAAGRRRLHIKAVCQSVREATTASGVDNAASPRLA
+DTAERDYFTLRERLITMQKQLEGTQKYINEQCR
+>lambdap77
+MKKMLLATALALLITGCAQQTFTVQNKPAAVAPKETITHHFFVSGIGQKKTVDAAKICGG
+AENVVKTETQQTFVNGLLGFITLGIYTPLEARVYCSQ
+>lambdap78
+MKTFLIFDINHQQNTRRSDQIETIKTIMQTTRPRITWKVLPMAQVAIFKEIFDQVRKDLD
+CELFYSELKRHNVSHYIYYLATDNIHIVLENDNTVLIKGLKKVVNVKFSRNTHLIETSYD
+RLKSREITFQQYRENLAKAGVFRWVTNIHEHKRYYYTFDNSLLFTESIQNTTQIFPR
+>lambdap79
+MNKEQSADDPSVDLIRVKNMLNSTISMSYPDVVIACIEHKVSLEAFRAIEAALVKHDNNM
+KDYSLVVD
+>lambdap80
+MTKKPWERRLKDLSHLLKCCIDTYFDPELFRLNLNQFLQTARTVTFIIQKNKNQIIGYDI
+WYNNNVIEKWKNDPLMAWAKNSRNTIEKQGDLEMYSEAKATLISSYIEENDIEFITNESM
+LNIGIKKLVRLAQKKLPSYLTESSIIKSERRWVANTLKDYELLHALAIIYGRMYNCCNSL
+GIQINNPMGDDVISPTSFDSLFDEARRITYLKLKDYSISKLSFSMIQYDNKIIPEDIKER
+LKLVDKPKNITSTEELVDYTAKLAETTFLKDGYHIQTLIFYDKQFHPIDLINTTFEDQAD
+KYIFWRYAADRAKITNAYGFIWISELWLRKASIYSNKPIHTMPIIDERLQVIGIDSNNNQ
+KCISWKIVRENEEKKPTLEISTADSKHDEKPYFMRSVLKAIGGDVNTMNN
+>lambdap81
+MKKLPLPARTYSEMLNKCSEGMMQINVRNNFITHFPTFLQKEQQYRILSSTGQLFTYDRT
+HPLEPTTLVVGNLTKVKLEKLYENNLRDKNKPARTYYDDMLVSSGEKCPFCGDIGQTKNI
+DHFLPIAHYPEFSVMPINLVPSCRDCNMGEKGQVFAVDEVHQAIHPYIDKDIFFREQWVY
+ANFVSGTPGAISFYVECPANWRQEDKHRALHHFKLLNIANRYRLEAGKHLSEVITQRNSF
+VKVIRKYSSTATFQQLQSEFIEANLKPIIDLNDFPNYWKRVMYQCLANSEDFFRGI
+>lambdap82
+MLEFSVIERGGYIPAVEKNKAFLRADGWNDYSFVTMFYLTVFDEHGEKCDIGNVKIGFVG
+QKEEVSTYSLIDKKFSQLPEMFFSLGESIDYYVNLSKLSDGFKHNLLKAIQDLVVWPNRL
+ADIENESVLNTSLLRGVTLSEIHGQFARVLNGLPELSDFHFSFNRKSAPGFSDLTIPFEV
+TVNSMPSTNIHAFIGRNGCGKTTILNGMIGAITNPENNEYFFSENNRLIESRIPKGYFRS
+LVSVSFSAFDPFTPPKEQPDPAKGTQYFYIGLKNAASNSLKSLGDLRLEFISAFIGCMRV
+DRKRQLWLEAIKKLSSDENFSNMELISLISKYEELRRNEPQIQVDDDKFTKLFYDNIQKY
+LLRMSSGHAIVLFTITRLVDVVGEKSLVLFDEPEVHLHPPLLSAFLRTLSDLLDARNGVA
+IIATHSPVVLQEVPKSCMWKVLRSREAINIIRPDIETFGENLGVLTREVFLLEVTNSGYH
+HLLSQSVDSELSYETILKNYNGQIGLEGRTVLKAMIMNRDEGKVQ
+>lambdap83
+MSEINSQALREAAEQAMHDDWGFDADLFHELVTPSIVLELLDERERNQQYIKRRDQENED
+IALTVGKLRVELETAKSKLNEQREYYEGVISDGSKRIAKLESNEVREDGNQFLVVRHPGK
+TPVIKHCTGDLEEFLRQLIEQDPLVTIDIITHRYYGVGGQWVQDAGEYLHMMSDAGIRIK
+GE
+>lambdap84
+MSTALATLAGKLAERVGMDSVDPQELITTLRQTAFKGDASDAQFIALLIVANQYGLNPWT
+KEIYAFPDKQNGIVPVVGVDGWSRIINENQQFDGMDFEQDNESCTCRIYRKDRNHPICVT
+EWMDECRREPFKTREGREITGPWQSHPKRMLRHKAMIQCARLAFGFAGIYDKDEAERIVE
+NTAYTAERQPERDITPVNDETMQEINTLLIALDKTWDDDLLPLCSQIFRRDIRASSELTQ
+AEAVKALGFLKQKAAEQKVAA
+>lambdap85
+MDQTLMAIQTKFTIATFIGDEKMFREAVDAYKKWILILKLRSSKSIH
+>lambdap86
+MQYAIAGWPVAGCPSESLLERITRKLRDGWKRLIDILNQPGVPKNGSNTYGYPD
+>lambdap87
+MKNGFYATYRSKNKGKDKRSINLSVFLNSLLADNHHLQVGSNYLYIHKIDGKTFLFTKTN
+DKSLVQKINRSKASVEDIKNSLADDESLGFPSFLFVEGDTIGFARTVFGPTTSDLTDFLI
+GKGMSLSSGERVQIEPLMRGTTKDDVMHMHFIGRTTVKVEAKLPVFGDILKVLGATDIEG
+ELFDSLDIVIKPKFKRDIKKVAKDIIFNPSPQFSDISLRAKDEAGDILTEHYLSEKGHLS
+APLNKVTNAEIAEEMAYCYARMKSDILECFKRQVGKVKD
+>lambdap88
+MSTKKKPLTQEQLEDARRLKAIYEKKKNELGLSQESVADKMGMGQSGVGALFNGINALNA
+YNAALLAKILKVSVEEFSPSIAREIYEMYEAVSMQPSLRSEYEYPVFSHVQAGMFSPELR
+TFTKGDAERWVSTTKKASDSAFWLEVEGNSMTAPTGSKPSFPDGMLILVDPEQAVEPGDF
+CIARLGGDEFTFKKLIRDSGQVFLQPLNPQYPMIPCNESCSVVGKVIASQWPEETFG
+>lambdap89
+MTNTAKILNFGRGNFAGQERNVADLDDGYARLSNMLLEAYSGADLTKRQFKVLLAILRKT
+YGWNKPMDRITDSQLSEITKLPVKRCNEAKLELVRMNIIKQQGGMFGPNKNISEWCIPQN
+EGKSPKTRDKTSLKLGDCYPSKQGDTKDTITKEKRKDYSSENSGESSDQPENDLSVVKPD
+AAIQSGSKWGTAEDLTAAEWMFDMVKTIAPSARKPNFAGWANDIRLMRERDGRNHRDMCV
+LFRWACQDNFWSGNVLSPAKLRDKWTQLEINRNKQQAGVTASKPKLDLTNTDWIYGVDL
+>lambdap90
+MLLVALLSCTIPFLVVSASSSATAEAISSARFAEFFARIAAASAALLLCDADTALPAASV
+AFVDAVDALPAAAVFASAAAEALRSAAVSDDLAFVSDVFAALAEFSAAVAEEAARPALDD
+AFVSDDFAASFEATASRAEVAASDAFVAAVEADVAADCCDAAAFVSDVFAAPALVAAAFF
+EDSAAAALFSASVAFADAASAPEDAS
+>lambdap91
+MLKLKMMLCVMMLPLVVVGCTSKQSVSQCVKPPPPPAWIMQPPPDWQTPLNGIISPSERG
+
+>lambdap92
+MPEKHDLLAAILAAKEQGIGAILAFAMAYLRGRYNGGAFTKTVIDATMCAIIAWFIRDLL
+DFAGLSSNLAYITSVFIGYIGTDSIGSLIKRFAAKKAGVEDGRNQ
