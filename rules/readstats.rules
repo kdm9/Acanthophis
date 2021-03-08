@@ -1,0 +1,47 @@
+rule read_count_librun_indiv:
+    input:
+        "data/reads/runs/{run}/{lib}.fastq.gz"
+    output:
+        "data/stats/reads/readnum_librun/{run}~{lib}.tsv",
+    log:
+        "data/log/readstats/seqhax-stats-librun/{run}~{lib}.log",
+    shell:
+        "( seqhax stats"
+        "    {input}"
+        "    >{output}"
+        " ) 2>{log}"
+
+rule read_count_fromindiv:
+    input:
+        ["data/stats/reads/readnum_librun/{run}~{lib}.tsv".format(run=run, lib=lib)
+          for run, lib in RUNLIB2SAMP],
+    output:
+        "data/stats/reads/readnum_librun.tsv",
+    threads:
+        1
+    run:
+        with open(output[0], "w") as fh:
+            for i, tsv in enumerate(input):
+                with open(tsv) as tsvfh:
+                    if i > 0:
+                        next(tsvfh)  # skip header on all but first file
+                    for line in tsvfh:
+                        fh.write(line)
+
+
+rule read_count_sample:
+    input:
+    	expand("data/reads/samples_pipe/{sample}.fastq.gz", sample=SAMP2RUNLIB),
+    output:
+        "data/stats/reads/readnum_samples.tsv",
+    threads:
+        47
+    log:
+        "data/log/readstats/seqhax-stats-sample.log",
+    shell:
+        "( seqhax stats"
+        "    -t {threads}"
+        "    {input}"
+        "    >{output}"
+        " ) 2>{log}"
+

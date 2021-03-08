@@ -1,0 +1,62 @@
+
+localrules: bcfmerge_fofn
+rule bcfmerge_fofn:
+    input:
+        bcf=lambda wc: expand("data/variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf",
+                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                              region=sorted(VARCALL_REGIONS[wc.caller][wc.ref])),
+    output:
+        fofn=temp("data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN"),
+    run:
+        with open(output[0], "w") as fh:
+            for s in sorted(input):
+                print(s, file=fh)
+
+rule bcfmerge:
+    input:
+        bcf=lambda wc: expand("data/variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf",
+                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                              region=sorted(VARCALL_REGIONS[wc.caller][wc.ref])),
+        bcfi=lambda wc: expand("data/variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf.csi",
+                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                              region=sorted(VARCALL_REGIONS[wc.caller][wc.ref])),
+        fofn="data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN",
+    output:
+        bcf="data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf",
+    log:
+        "data/log/mergebcf/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}.log"
+    threads: 12
+    shell:
+        "( bcftools concat"
+        "   --threads {threads}"
+        "   --file-list {input.fofn}"
+        "   --allow-overlaps"
+        "   -o {output.bcf}"
+        "   -O b"
+        " ) >{log} 2>&1"
+
+
+rule bcf2vcf:
+    input:
+        bcf="{path}.bcf",
+    output:
+        vcf="{path}.vcf.gz",
+    log:
+        "data/log/bcf2vcf/{path}.log"
+    threads: 8
+    shell:
+        "( bcftools view"
+        "   {input.bcf}"
+        "   -O z"
+        "   --threads {threads}"
+        "   -o {output.vcf}"
+        " ) >{log} 2>&1"
+
+rule variantidx:
+    input:
+        "{path}"
+    output:
+        "{path}.csi"
+    shell:
+        "bcftools index -f {input}"
+

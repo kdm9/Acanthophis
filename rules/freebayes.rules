@@ -1,0 +1,41 @@
+rule freebayes:
+    input:
+        bam="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",  # use the megabam, see above
+        bai="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai",
+        sset="data/samplelists/{sampleset}.txt",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        bcf="data/variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf",
+    log:
+        "data/log/freebayes/{aligner}~{ref}~{sampleset}/{region}.log"
+    benchmark:
+        "data/log/freebayes/{aligner}~{ref}~{sampleset}/{region}.benchmark"
+    priority: 1  # get them done earlier, normalisation is super quick
+    params:
+        theta=lambda wc: config["varcall"]["samplesets"][wc.sampleset].get("theta_prior", 0.01),
+        minmq=lambda wc: config["varcall"]["minmapq"].get(wc.aligner, 5),
+        minbq=config["varcall"]["minbq"],
+    shell:
+        "( freebayes"
+        "   --theta {params.theta}"
+        "   --samples {input.sset}"
+        "   --ploidy 2"
+        "   --use-best-n-alleles 4"
+        "   --min-mapping-quality {params.minmq}"
+        "   --min-base-quality {params.minbq}"
+        "   --read-max-mismatch-fraction 0.15"
+        "   --min-alternate-fraction 0.05"
+        "   --min-alternate-count 3" # per sample
+        "   --min-alternate-total 9" # across all samples
+        "   --min-coverage 20" # across all samples
+	"   --skip-coverage 100000"
+        "   --prob-contamination 1e-3"
+        "   --strict-vcf"
+        "   --region '{wildcards.region}'"
+        "   --fasta-reference {input.ref}"
+        "   {input.bam}"
+        " | bcftools view"
+        "   -O b  -o {output.bcf}"
+        " ) >{log} 2>&1"
+
+

@@ -1,0 +1,380 @@
+configfile: "config.yml"
+import snkmk
+RUNLIB2SAMP, SAMP2RUNLIB = snkmk.make_runlib2samp("metadata/sample2runlib.csv")
+SAMPLESETS = snkmk.make_samplesets(s2rl_file="metadata/sample2runlib.csv",
+                                   setfile_glob="metadata/samplesets/*.txt")
+
+VARCALL_REGIONS = {
+    vc: snkmk.make_regions(config["refs"], window=config["varcall"]["chunksize"][vc])
+    for vc in config["varcall"]["chunksize"]
+}
+
+CHROMS = snkmk.make_chroms(config["refs"])
+shell.prefix = "set -euo pipefail; "
+
+wildcard_constraints:
+    run="[^/]+",
+    lib="[^/]+",
+    aligner="[^/]+",
+    sample="[^/]+",
+    ref="[^/]+",
+    type="[^/]+",
+
+
+#######################################################################
+#                            Read-level QC                            #
+#######################################################################
+
+rule qc_runlib:
+    input:
+        ["data/reads/runs/{run}/{lib}.fastq.gz".format(run=run, lib=lib) for run, lib in RUNLIB2SAMP],
+        expand("data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.dist", 
+               ksize=config["denovodist"]["ksize"], sketchsize=config["denovodist"]["mash_sketchsize"]),
+
+rule read_stats:
+    input:
+        "data/stats/reads/readnum_librun.tsv",
+        #"data/stats/reads/readnum_samples.tsv",
+
+rule reads:
+    input:
+        rules.qc_runlib.input,
+        rules.read_stats.input,
+
+localrules: sample_fastqs
+rule sample_fastqs:
+    input:
+        [expand("data/reads/samples/{sample}.fastq.gz", sample=SAMPLESETS[sset])
+            for sset in config["persample_reads"]["samplesets"]]
+
+rule kwip:
+    input:
+        expand("data/kwip/k{ksize}-s{sketchsize}/{set}.dist",
+               ksize=config["denovodist"]["ksize"],
+               sketchsize=config["denovodist"]["kwip_sketchsize"],
+               set=config["denovodist"]["kwip_sets"]),
+
+
+rule mash:
+    input:
+        expand("data/mash/k{ksize}-s{sketchsize}/{set}.dist",
+               ksize=config["denovodist"]["ksize"],
+               sketchsize=config["denovodist"]["mash_sketchsize"],
+               set=config["denovodist"]["mash_sets"]),
+
+rule denovo:
+    input:
+        rules.kwip.input,
+        rules.mash.input,
+
+#######################################################################
+#                       Alignment to Reference                        #
+#######################################################################
+
+
+### Align targets
+
+rule align_librun:
+    input:
+        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}/{lib}.bam".
+                        format(run=r, lib=l, aln=a, ref=ref)
+                        for r, l in RUNLIB2SAMP
+                        for a in config["mapping"]["aligners"]
+                        for ref in config["mapping"]["refs"]],
+
+localrules: align_samples
+rule align_samples:
+    input:
+        expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+               ref=config["mapping"]["refs"],
+               aligner=config["mapping"]["aligners"],
+               sample=SAMP2RUNLIB),
+
+localrules: align_qualimap_samples
+rule align_qualimap_samples:
+    input:
+        expand("data/alignments/qualimap/samples/{aligner}~{ref}~{sample}/",
+               aligner=config["mapping"]["aligners"],
+               ref=config["mapping"]["refs"],
+               sample=SAMP2RUNLIB),
+
+localrules: align_stats
+rule align_stats:
+    input:
+        expand("data/alignments/bamstats/sample/{aligner}~{ref}~{sample}.tsv",
+               aligner=config["mapping"]["aligners"],
+               ref=config["mapping"]["refs"],
+               sample=SAMPLESETS["all_samples"]),
+    output:
+        expand("data/alnstats/everything_{type}.csv",
+               type=["SN", "IS", "COV"])
+    log: "data/log/bamstats/mergeallbamstats.log"
+    shell:
+        "python3 ./scripts/tidybamstat.py"
+        "   -o data/alnstats/everything"  # prefix
+        "   {input}"
+        " >{log} 2>&1"
+
+
+allsets = set(
+    list(config["mapping"]["samplesets"]) +
+    list(config["varcall"]["samplesets"]) +
+    list(config["sample_sets"])
+)
+rule align_samplesets_all:
+    # Currently there's no real need for this, as all variant calling uses the mega-bam
+    # and ANGSD uses a list of filenames (which will be generated on the fly
+    # for each ANGSD sample set)
+    input:
+        expand("data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
+               ref=config["mapping"]["refs"],
+               aligner=config["mapping"]["aligners"],
+               sampleset=allsets),
+        expand("data/alignments/bamlists/{aligner}~{ref}~all_samples.bamlist",
+               ref=config["mapping"]["refs"],
+               aligner=config["mapping"]["aligners"],
+               sampleset=allsets),
+
+rule align:
+   input:
+        rules.align_samples.input,
+        rules.align_stats.input,
+        expand("data/alignments/sets/{aligner}~{ref}~all_samples.bam",
+               ref=config["mapping"]["refs"],
+               aligner=config["mapping"]["aligners"]),
+        expand("data/alignments/bamlists/{aligner}~{ref}~all_samples.bamlist",
+               ref=config["mapping"]["refs"],
+               aligner=config["mapping"]["aligners"]),
+        expand("data/alignments/sets/{aligner}~{ref}~all_samples.bam.bai",
+               ref=config["mapping"]["refs"],
+               aligner=config["mapping"]["aligners"]),
+
+#######################################################################
+#                           Variant Calling                           #
+#######################################################################
+
+# So I've rejigged the variant calling to use the megabam of all samples for
+# each aligner/ref, as then we don't need 15 different massive subset bams.
+
+
+
+rule bcfstats:
+    input:
+        "data/variants/{path}.bcf"
+    output:
+        "data/variants/{path}.bcf.stats"
+    shell:
+        "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
+
+
+def raw_variant_calls_input(wildcards):
+    inputs = []
+    for sampleset in config["varcall"]["samplesets"]:
+        for caller in config["varcall"]["samplesets"][sampleset]["callers"]:
+            for aligner in config["varcall"]["samplesets"][sampleset]["aligners"]:
+                for ref in config["varcall"]["samplesets"][sampleset]["refs"]:
+                    this_rawfiles = expand("data/variants/raw_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf",
+                                           caller=caller, aligner=aligner, ref=ref, sampleset=sampleset, region=VARCALL_REGIONS[caller][ref])
+                    inputs.extend(this_rawfiles)
+    return inputs
+
+
+rule raw_variant_calls:
+    input: raw_variant_calls_input
+
+localrules: filtered_variants
+rule filtered_variants:
+    input:
+        [expand("data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
+               ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "bcf.stats"],
+               caller=config["varcall"]["samplesets"][sampleset]["callers"],
+               aligner=config["varcall"]["samplesets"][sampleset]["aligners"],
+               ref=config["varcall"]["samplesets"][sampleset]["refs"],
+               filter=config["varcall"]["filters"],
+               sampleset=sampleset
+               ) for sampleset in config["varcall"]["samplesets"]],
+        [expand("data/variants/final/gatk-hc~{aligner}~{ref}~{sampleset}.vcf.gz",
+                aligner="bwa", ref=config["varcall"]["gatksets"][sampleset]["refs"],
+                sampleset=sampleset
+                ) for sampleset in config["varcall"]["gatksets"]],
+
+rule varcall:
+    input:
+        rules.filtered_variants.input,
+
+
+## Haplotype Caller
+
+### We don't do BQSR as it requires a library of known polymorphism. We don't
+### have that, so the original bams will have to do.
+
+rule gatk_hapcall:
+    input:
+        bam="data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+        bai="data/alignments/samples/{aligner}/{ref}/{sample}.bam.bai",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        gvcf=temp("data/variants/gatk/hapcall/{aligner}~{ref}~{sample}/{region}.gvcf"),
+    log:
+        "data/variants/gatk/hapcall/{aligner}~{ref}~{sample}/{region}.gvcf.log",
+    threads:
+        2
+    shell:
+        "gatk"
+        "   HaplotypeCaller"
+        "   -R {input.ref}"
+        "   -I {input.bam}"
+        "   -O {output.gvcf}"
+        "   -ERC GVCF"
+        "   -L {wildcards.region}"
+        "   --heterozygosity 0.05"
+        "   --heterozygosity-stdev 0.01"
+        "   --indel-heterozygosity 0.01"
+        "   --max-reads-per-alignment-start 50"
+        "   --native-pair-hmm-threads {threads}"
+        "   --create-output-variant-index"
+        "   --create-output-variant-md5"
+        "   --contamination-fraction-to-filter 0.03"
+        " >{log} 2>&1"
+
+
+rule gatk_combinegvcfs:
+    input:
+        gvcfs=lambda wc: expand("data/variants/gatk/hapcall/{aligner}~{ref}~{sample}/{region}.gvcf",
+                                aligner=wc.aligner, ref=wc.ref, region=wc.region,
+                                sample=SAMPLESETS[wc.sampleset]),
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        gvcf="data/variants/gatk/combinedgvcf/{aligner}~{ref}~{sampleset}/{region}.gvcf.gz",
+    log:
+        "data/variants/gatk/combinedgvcf/{aligner}~{ref}~{sampleset}/{region}.gvcf.gz.log"
+    threads:
+        1
+    run:
+        gvcfarg = " -V ".join(input.gvcfs)
+        shell(
+            "gatk"
+            "   CombineGVCFs"
+            "   -R {input.ref}"
+            "   -L {wildcards.region}"
+            f"  -V {gvcfarg}"
+            "   -O {output.gvcf}"
+            "   --create-output-variant-index"
+            "   --create-output-variant-md5"
+            " >{log} 2>&1"
+        )
+
+
+rule gatk_genotypegvcfs:
+    input:
+        gvcf="data/variants/gatk/combinedgvcf/{aligner}~{ref}~{sampleset}/{region}.gvcf.gz",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        vcf="data/variants/gatk/genotypedgvcf/{aligner}~{ref}~{sampleset}/{region}.vcf.gz",
+    log:
+        "data/variants/gatk/genotypedgvcf/{aligner}~{ref}~{sampleset}/{region}.gvcf.gz.log"
+    threads:
+        1
+    shell:
+        "gatk"
+        "   GenotypeGVCFs"
+        "   -R {input.ref}"
+        "   -V {input.gvcf}"
+        "   -O {output.vcf}"
+        "   -L {wildcards.region}"
+        "   --create-output-variant-index"
+        "   --create-output-variant-md5"
+        "   --heterozygosity 0.05"
+        "   --heterozygosity-stdev 0.01"
+        "   --indel-heterozygosity 0.01"
+        ">{log} 2>&1"
+
+
+#GenotypeGVCFs  #region
+#VariantRecalibrator, ApplyRecalibration  # per region
+
+rule gatk_mergevariants:
+    input:
+        vcf=lambda wc: expand("data/variants/gatk/genotypedgvcf/{aligner}~{ref}~{sampleset}/{region}.vcf.gz",
+                               aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset,
+                               region=sorted(VARCALL_REGIONS["gatk-hc"][wc.ref])),
+    output:
+        vcf="data/variants/final/gatk-hc~{aligner}~{ref}~{sampleset}.vcf.gz",
+    log:
+        "data/variants/final/gatk-hc~{aligner}~{ref}~{sampleset}.vcf.gz.log",
+    run:
+        invcfs = " -I ".join(input.vcf)
+        shell(
+            "gatk MergeVcfs"
+            "   -O {output.vcf}" +
+            f"  -I {invcfs}"
+            " >{log} 2>&1"
+        )
+            
+                   
+
+
+### ANGSD
+
+# Angsd somewhat hacky verison of Rose's logic w/ hardcoded sites per step1 files
+
+rule angsd_step2_maf_chrom:
+    input:
+        ref=lambda wc: config['refs'][wc.ref],
+        sites=lambda wc: expand("rawdata/angsd-sites-rose/{chr}.sites_mm", chr=wc.chrom),
+        bamlist="data/alignments/bamlists/{aligner}~{ref}~{sampleset}.bamlist",
+    output:
+        "data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.arg",
+        "data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.hwe.gz",
+        "data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.mafs.gz",
+        "data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.qs",
+        "data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.saf.gz",
+        "data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.saf.idx",
+        "data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.saf.pos.gz",
+        "data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.snpStat.gz",
+    log:
+        "data/log/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.log"
+    shell:
+        "angsd"
+        "   -P 1"
+        "   -bam {input.bamlist}"
+        "   -out data/angsd/step2/maf_{wildcards.aligner}~{wildcards.ref}~{wildcards.sampleset}_{wildcards.chrom}"
+        "   -ref {input.ref} -anc {input.ref}"
+        "   -GL 2"
+        "   -doMajorMinor 3"
+        "   -skipTriallelic 1"
+        "   -doHWE 1"
+        "   -doMaf 1"
+        "   -doSaf 1"
+        "   -doCounts 1"
+        "   -doQsDist 1"
+        "   -doSnpStat 1"
+        "   -C 50"
+        "   -baq 1"
+        "   -minMapQ 20"
+        "   -minQ 20"
+        "   -r {wildcards.chrom}"
+        "   -sites {input.sites}"
+        "   > {log} 2>&1"
+
+
+rule all_angsd_step2_maf:
+    input:
+        expand("data/angsd/step2/maf_{aligner}~{ref}~{sampleset}_{chrom}.mafs.gz",
+               aligner=config["angsd"]["aligners"],
+               ref=config["angsd"]["refs"],
+               sampleset=config["angsd"]["samplesets"],
+               chrom=config["angsd"]["chroms"])
+
+
+#######################################################################
+#                              All rule                               #
+#######################################################################
+
+
+rule all:
+    input:
+        rules.denovo.input,
+        rules.reads.input,
+        rules.align.input,
+        rules.varcall.input,

@@ -1,0 +1,22 @@
+
+# Paths to raw data. These should be consistent across all samples. Samples
+# must have either an R1 and R2, or an interleaved (il) fastq file per run and
+# library.
+raw_paths:
+  r1_path: "rawdata/runs/{run}/{lib}_R1.fastq.gz"
+  r2_path: "rawdata/runs/{run}/{lib}_R2.fastq.gz"
+  il_path: "rawdata/runs/{run}/{lib}_il.fastq.gz"
+
+
+# Adaptor trimming settings.
+qc:
+  _DEFAULT_: # settings to use for all runs except those specifically named below.
+    # these settings match the NEB NextTera oligos.
+    adapter1: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
+    adapter2: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
+    minqual: 25
+  # Example special run
+  # some_run:
+  #   adapter1: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
+  #   adapter2: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
+  #   minqual: 25
