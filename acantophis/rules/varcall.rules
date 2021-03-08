@@ -159,6 +159,7 @@ rule bcfstats:
         "data/variants/{path}.bcf"
     output:
         "data/variants/{path}.bcf.stats"
+    conda: acantophis.get_resource("envs/varcall.yml")
     shell:
         "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
 
