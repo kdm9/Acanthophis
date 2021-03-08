@@ -18,11 +18,7 @@ jobs:
         with:
           activate-conda: true
           update-conda: true
-          conda-channels:
-            - defaults 
-            - conda-forge
-            - bioconda
-            - kdm801
+          conda-channels: "defaults,conda-forge,bioconda,kdm801"
       
       - name: Install snakemake and mamba
         run: conda install snakemake mamba
