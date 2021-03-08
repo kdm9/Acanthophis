@@ -20,8 +20,9 @@ jobs:
           update-conda: true
           conda-channels: "defaults,conda-forge,bioconda,kdm801"
       
-      - name: Install snakemake and mamba
-        run: conda install snakemake wgsim msprime numpy samtools
+      - name: Install conda deps
+        run: |
+          conda env update -n base -f fake-dataset/conda.yml
       
       - name: Create fake dataset
         run: |
