@@ -1,4 +1,4 @@
 include acantophis/rules/*.rules
-include acantophis/envs/*.yaml
+include acantophis/envs/*.yml
 include acantophis/examples/*
 

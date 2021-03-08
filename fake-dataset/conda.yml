@@ -1,0 +1,12 @@
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+  - kdm801
+dependencies:
+  - python
+  - snakemake
+  - samtools
+  - msprime
+  - numpy
+  - wgsim

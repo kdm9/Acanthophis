@@ -67,7 +67,8 @@ rule metadata:
 
 rule genomes:
     output:
-        expand("data/genomes/{sample}.fa", sample=SAMPLES)
+        genomes=expand("data/genomes/{sample}.fa", sample=SAMPLES),
+        varpos="data/genomes/variantpos.txt",
     run:
         # Simulate coalescent sequences
         tree_sequence = msprime.simulate(
@@ -82,18 +83,23 @@ rule genomes:
         np.random.seed(SEED)
         anc_seq = np.random.choice(list("ACGT"), size=CHROM_LENGTH).reshape((1, CHROM_LENGTH))
         S = np.repeat(anc_seq, repeats=N_SAMPLES, axis=0)
+        varpos = []
 
         # Per variant site, update allele matrix
         nucs = list("ACGT")
         for variant in tree_sequence.variants():
             np.random.shuffle(nucs)
             pos = int(np.round(variant.site.position))
+            varpos.append(pos + 1) # 1-based
             for i, gt in enumerate(variant.genotypes):
                 S[i, pos] = nucs[gt]
         for i, sname in enumerate(SAMPLES):
-            with open(output[i], "w") as file:
+            with open(output.genomes[i], "w") as file:
                 print(f">{sname}", file=file)
                 print("".join(S[i, :]), file=file)
+        with open(output.varpos, "w") as file:
+            for p in varpos:
+                print(p, file=file)
 
 
 cov_per_run = int(np.ceil(TOTAL_COV / (RUNS_PER_LIB * LIBS_PER_SAMP)))

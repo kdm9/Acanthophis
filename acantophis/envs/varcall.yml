@@ -1,0 +1,10 @@
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+  - kdm801
+dependencies:
+  - samtools
+  - bcftools
+  - freebayes
+

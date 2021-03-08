@@ -20,28 +20,6 @@ wildcard_constraints:
 
 
 
-#######################################################################
-#                       Alignment to Reference                        #
-#######################################################################
-
-
-
-#######################################################################
-#                           Variant Calling                           #
-#######################################################################
-
-# So I've rejigged the variant calling to use the megabam of all samples for
-# each aligner/ref, as then we don't need 15 different massive subset bams.
-
-
-
-rule bcfstats:
-    input:
-        "data/variants/{path}.bcf"
-    output:
-        "data/variants/{path}.bcf.stats"
-    shell:
-        "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
 
 
 def raw_variant_calls_input(wildcards):
@@ -58,26 +36,6 @@ def raw_variant_calls_input(wildcards):
 
 rule raw_variant_calls:
     input: raw_variant_calls_input
-
-localrules: filtered_variants
-rule filtered_variants:
-    input:
-        [expand("data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
-               ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "bcf.stats"],
-               caller=config["varcall"]["samplesets"][sampleset]["callers"],
-               aligner=config["varcall"]["samplesets"][sampleset]["aligners"],
-               ref=config["varcall"]["samplesets"][sampleset]["refs"],
-               filter=config["varcall"]["filters"],
-               sampleset=sampleset
-               ) for sampleset in config["varcall"]["samplesets"]],
-        [expand("data/variants/final/gatk-hc~{aligner}~{ref}~{sampleset}.vcf.gz",
-                aligner="bwa", ref=config["varcall"]["gatksets"][sampleset]["refs"],
-                sampleset=sampleset
-                ) for sampleset in config["varcall"]["gatksets"]],
-
-rule varcall:
-    input:
-        rules.filtered_variants.input,
 
 
 ## Haplotype Caller

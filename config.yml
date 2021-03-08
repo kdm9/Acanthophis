@@ -42,3 +42,63 @@ align:
     - all
   ngm: # tool specific settings
     sensitivity: 0.5
+
+
+
+# Variant calling
+varcall:
+  
+  # Per-aligner minimum MAPQ thresholds for using a read.
+  minmapq:
+    bwa: 30  # bwa scores approximately follow a PHRED scale (-10*log10(p))
+    ngm: 10  # NGM scores are bonkers, and don't follow a particularly clear scale. in practice ~10 seems appropriate
+
+
+  # Minimum base quality to count *base* in pileup
+  minbq: 15 
+  
+  # Chunk size for parallisation across genome. Per variant caller as they take
+  # have different runtime and memory requirements, and all need to fit in
+  # ~12hours on a single job.
+  chunksize:
+    mpileup:   2000000
+    freebayes:   50000
+    gatk-hc: 100000000
+
+  # The main per-sample set configuration. Here we select which variant
+  # callers, aligners, and reference genomes get used, and set some parameters
+  # specific to each sample set.
+  samplesets:
+    all:
+      theta_prior: 0.001
+      aligners:
+        - ngm
+        - bwa
+      callers:
+        - mpileup
+        - freebayes
+      refs:
+        - sample1
+    ## Example from our multispecies eucalyptus work
+    # AdnatariaHighCoverage:
+    #   theta_prior: 0.1
+    #   aligners:
+    #     - bwa
+    #   callers:
+    #     - mpileup
+    #     - freebayes
+    #   refs:
+    #     - E_grandis
+    #     - E_melliodora
+
+
+  # Filters. These are series of command line arguments to pass to bcftools
+  # view. These filters apply while multiallelic variants have been decomposed
+  # into multiple overlapping variant calls. This allows e.g. allele frequency
+  # filters to be performed on a per-allele basis.
+  filters:
+    default: >
+      -i 'QUAL >= 10 &&
+          ALT != "." &&
+          INFO/DP >= 5 &&
+          INFO/AN >= 3'

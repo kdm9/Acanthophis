@@ -1,0 +1,261 @@
+#######################################################################
+#                               Mpileup                               #
+#######################################################################
+rule mpileup:
+    input:
+        bam="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
+        bai="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai",
+        sset="data/samplelists/{sampleset}.txt",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        bcf="data/variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf",
+    log:
+        "data/log/mpileup/{aligner}~{ref}~{sampleset}/{region}.log"
+    benchmark:
+        "data/log/mpileup/{aligner}~{ref}~{sampleset}/{region}.benchmark"
+    params:
+        theta=lambda wc: config["varcall"]["samplesets"][wc.sampleset].get("theta_prior", 0.01),
+        minmq=lambda wc: config["varcall"]["minmapq"].get(wc.aligner, 5),
+        minbq=config["varcall"]["minbq"],
+    priority: 1  # get them done earlier, normalisation is super quick
+    threads: 2
+    conda: acantophis.get_resource("envs/varcall.yml")
+    shell:
+        "( bcftools mpileup"
+        "   --redo-BAQ"
+        "   --max-depth 100000" # the default per file max (250x) is insane, i.e. <1x for most sets. new limit of 20000x  equates to a max. of 20x across all samples.
+        "   --min-MQ {params.minmq}"
+        "   --min-BQ {params.minbq}"
+        "   --fasta-ref {input.ref}"
+        "   --samples-file {input.sset}"
+        "   --annotate FORMAT/DP,FORMAT/AD,FORMAT/SP,INFO/AD" #output extra tags
+        "   --region '{wildcards.region}'"
+        "   --output-type u" # uncompressed bam
+        "   {input.bam}"
+        " | bcftools call"
+        "   --threads {threads}"
+        "   --targets '{wildcards.region}'" # might not be needed
+        "   --multiallelic-caller"
+        "   --prior {params.theta}"
+        "   -O b" # compressed bam
+        "   -o {output.bcf}"
+        " ) >{log} 2>&1"
+
+
+
+#######################################################################
+#                              Freebayes                              #
+#######################################################################
+rule freebayes:
+    input:
+        bam="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",  # use the megabam, see above
+        bai="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai",
+        sset="data/samplelists/{sampleset}.txt",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        bcf="data/variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf",
+    log:
+        "data/log/freebayes/{aligner}~{ref}~{sampleset}/{region}.log"
+    benchmark:
+        "data/log/freebayes/{aligner}~{ref}~{sampleset}/{region}.benchmark"
+    priority: 1  # get them done earlier, normalisation is super quick
+    params:
+        theta=lambda wc: config["varcall"]["samplesets"][wc.sampleset].get("theta_prior", 0.01),
+        minmq=lambda wc: config["varcall"]["minmapq"].get(wc.aligner, 5),
+        minbq=config["varcall"]["minbq"],
+    conda: acantophis.get_resource("envs/varcall.yml")
+    shell:
+        "( freebayes"
+        "   --theta {params.theta}"
+        "   --samples {input.sset}"
+        "   --ploidy 2"
+        "   --use-best-n-alleles 4"
+        "   --min-mapping-quality {params.minmq}"
+        "   --min-base-quality {params.minbq}"
+        "   --read-max-mismatch-fraction 0.15"
+        "   --min-alternate-fraction 0.05"
+        "   --min-alternate-count 3" # per sample
+        "   --min-alternate-total 9" # across all samples
+        "   --min-coverage 20" # across all samples
+	"   --skip-coverage 100000"
+        "   --prob-contamination 1e-3"
+        "   --strict-vcf"
+        "   --region '{wildcards.region}'"
+        "   --fasta-reference {input.ref}"
+        "   {input.bam}"
+        " | bcftools view"
+        "   -O b  -o {output.bcf}"
+        " ) >{log} 2>&1"
+
+
+#######################################################################
+#                            Bcftools Norm                            #
+#######################################################################
+rule bcfnorm:
+    input:
+        bcf="data/variants/raw_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        # Not a pipe! can't run multiple filters if a pipe
+        bcf=temp("data/variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
+    log:
+        "data/log/bcfnormalise/{caller}~{aligner}~{ref}~{sampleset}/{region}.log"
+    conda: acantophis.get_resource("envs/varcall.yml")
+    shell:
+        "( bcftools norm"
+        "   --fasta-ref {input.ref}"
+        "   --multiallelics -snps"  # Split multi-alleics to filter each allele separately
+        "   -O u  -o {output.bcf}"
+        "   {input.bcf}"
+        " ) >{log} 2>&1"
+        #
+        #  Old version with vt decompose_blocksub -- for some reason doesn't decompose block subsititions, and crashes on gadi
+        #  "( bcftools norm"
+        #  "   --fasta-ref {input.ref}"
+        #  "   -O u"
+        #  "   {input.bcf}"
+        #  " | vt decompose_blocksub + -o -" # decompose MNP to multipe SNPs
+        #  " | bcftools norm" # Split multi-alleics to filter each allele separately
+        #  "   --fasta-ref {input.ref}"
+        #  "   --do-not-normalize"
+        #  "   --multiallelics -snps"
+        #  "   -O u  -o {output.bcf}"
+        #  " ) >{log} 2>&1"
+
+
+#######################################################################
+#                           Bcftools filter                           #
+#######################################################################
+rule bcffilter:
+    input:
+        bcf="data/variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf",
+        ref=lambda wc: config['refs'][wc.ref],
+    output:
+        # Not a pipe! can't run all regions separately if this is a pipe into merge
+        bcf=temp("data/variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf"),
+    log:
+        "data/log/bcffilter/{caller}~{aligner}~{ref}~{sampleset}/{filter}/{region}.log"
+    params:
+        filtarg=lambda wc: config["varcall"]["filters"][wc.filter].replace('\n', ' ')
+    conda: acantophis.get_resource("envs/varcall.yml")
+    shell:
+        "( bcftools view"
+        "   {params.filtarg}"
+        "   -O u"
+        "   {input.bcf}"
+        " | bcftools norm" # We normalise here to re-join multi-allelic sites, after filtering with multi-allelics split
+        "   --fasta-ref {input.ref}"
+        "   --do-not-normalize"
+        "   --multiallelics +snps" # re-join multi-alleic sites
+        "   -O b  -o {output.bcf}"
+        " ) >{log} 2>&1"
+
+
+#######################################################################
+#                              BCF stats                              #
+#######################################################################
+rule bcfstats:
+    input:
+        "data/variants/{path}.bcf"
+    output:
+        "data/variants/{path}.bcf.stats"
+    shell:
+        "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
+
+
+
+
+#######################################################################
+#                              Bcf Merge                              #
+#######################################################################
+localrules: bcfmerge_fofn
+rule bcfmerge_fofn:
+    input:
+        bcf=lambda wc: expand("data/variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf",
+                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                              region=sorted(config["VARCALL_REGIONS"][wc.caller][wc.ref])),
+    output:
+        fofn=temp("data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN"),
+    run:
+        with open(output[0], "w") as fh:
+            for s in sorted(input):
+                print(s, file=fh)
+
+
+rule bcfmerge:
+    input:
+        bcf=lambda wc: expand("data/variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf",
+                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                              region=sorted(config["VARCALL_REGIONS"][wc.caller][wc.ref])),
+        bcfi=lambda wc: expand("data/variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf.csi",
+                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                              region=sorted(config["VARCALL_REGIONS"][wc.caller][wc.ref])),
+        fofn="data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN",
+    output:
+        bcf="data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf",
+    log:
+        "data/log/mergebcf/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}.log"
+    threads: 12
+    conda: acantophis.get_resource("envs/varcall.yml")
+    shell:
+        "( bcftools concat"
+        "   --threads {threads}"
+        "   --file-list {input.fofn}"
+        "   --allow-overlaps"
+        "   -o {output.bcf}"
+        "   -O b"
+        " ) >{log} 2>&1"
+
+
+
+
+#######################################################################
+#                       Misc variant processing                       #
+#######################################################################
+rule bcf2vcf:
+    input:
+        bcf="{path}.bcf",
+    output:
+        vcf="{path}.vcf.gz",
+    log:
+        "data/log/bcf2vcf/{path}.log"
+    threads: 8
+    conda: acantophis.get_resource("envs/varcall.yml")
+    shell:
+        "( bcftools view"
+        "   {input.bcf}"
+        "   -O z"
+        "   --threads {threads}"
+        "   -o {output.vcf}"
+        " ) >{log} 2>&1"
+
+rule variantidx:
+    input:
+        "{path}"
+    output:
+        "{path}.csi"
+    conda: acantophis.get_resource("envs/varcall.yml")
+    shell:
+        "bcftools index -f {input}"
+
+
+#######################################################################
+#                             Target Rules                            #
+#######################################################################
+localrules: filtered_variants
+rule filtered_variants:
+    input:
+        [expand("data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
+               ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "bcf.stats"],
+               caller=config["varcall"]["samplesets"][sampleset]["callers"],
+               aligner=config["varcall"]["samplesets"][sampleset]["aligners"],
+               ref=config["varcall"]["samplesets"][sampleset]["refs"],
+               filter=config["varcall"]["filters"],
+               sampleset=sampleset
+               ) for sampleset in config["varcall"]["samplesets"]],
+
+
+localrules: varcall
+rule varcall:
+    input:
+        rules.filtered_variants.input,

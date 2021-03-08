@@ -30,10 +30,26 @@ rule ngmap:
 #######################################################################
 #                               BWAMem                                #
 #######################################################################
+localrules: bwaidx
+rule bwaidx:
+    input:
+        "{path}"
+    output:
+        "{path}.amb",
+        "{path}.ann",
+        "{path}.bwt",
+        "{path}.pac",
+        "{path}.sa",
+    threads: 1
+    conda: acantophis.get_resource("envs/align.yml")
+    shell:
+        "bwa index {input}"
+
 rule bwamem:
     input:
         reads="data/reads/runs/{run}/{lib}.fastq.gz",
         ref=lambda wc: config['refs'][wc.ref],
+        bwaidx=lambda wc: config['refs'][wc.ref]+ ".pac",
     output:
         bam=temp("data/alignments/byrun.raw/bwa/{ref}/{run}/{lib}~{sample}.bam"),
     log: "data/log/bwa/{ref}/{run}/{lib}~{sample}.log"
