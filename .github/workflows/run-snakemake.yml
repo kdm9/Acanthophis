@@ -21,7 +21,7 @@ jobs:
           conda-channels: "defaults,conda-forge,bioconda,kdm801"
       
       - name: Install snakemake and mamba
-        run: conda install snakemake wgsim msprime numpy
+        run: conda install snakemake wgsim msprime numpy samtools
       
       - name: Create fake dataset
         run: |
