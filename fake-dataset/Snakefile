@@ -114,7 +114,7 @@ rule reads:
         cov_per_run=cov_per_run,
         reads_per_rl=reads_per_rl,
     shell:
-        "pywgsim" 
+        "wgsim" 
         "   -e 0.005"
         "   -D 500"
         "   -s 100"
