@@ -22,14 +22,15 @@ jobs:
       
       - name: Install conda deps
         run: |
-          conda env update -n base -f fake-dataset/conda.yml
+          conda install mamba
+          mamba env update -n base -f fake-dataset/conda.yml
       
       - name: Create fake dataset
         run: |
           pushd fake-dataset
-          snakemake -j 1 --use-conda
+          snakemake -j 1 --use-conda ----conda-frontend mamba
           popd
 
       - name: Run demo snakemake
         run: |
-          snakemake -j 1 --ri --use-conda
+          snakemake -j 1 --use-conda ----conda-frontend mamba
