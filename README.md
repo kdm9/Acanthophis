@@ -2,7 +2,8 @@
 
 A reusable, comprehensive, opinionated plant variant calling pipeline in Snakemake
 
-![Acanthophis pyrrus](.github/logo.jpg)
+![Acanthophis, the most beautiful and bad-ass of snakes](.github/logo.jpg)
+
 
 ## About & Authors
 

@@ -9,10 +9,12 @@ include: acantophis.rules.reads
 include: acantophis.rules.align
 include: acantophis.rules.varcall
 include: acantophis.rules.multiqc
+include: acantophis.rules.kraken
 
 rule all:
     input:
         rules.reads.input,
         rules.align.input,
         rules.varcall.input,
-        rules.all_multiqc.input
+        rules.all_multiqc.input,
+        rules.all_kraken.input,

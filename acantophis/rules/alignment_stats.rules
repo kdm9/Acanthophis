@@ -1,5 +1,3 @@
-
-
 localrules: bamstat_samps
 rule bamstat_samps:
     input:

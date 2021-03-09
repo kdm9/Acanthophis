@@ -56,10 +56,27 @@ qc:
   #   adapter2: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
   #   minqual: 25
 
+
+
+#######################################################################
+#                               Kraken                                #
+#######################################################################
+kraken:
+
+  # A mapping of db_name -> download URL. DBs will be automatically downloaded.
+  dburls:
+    Viral: "https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20201202.tar.gz"
+    # typically the far more useful:
+    #PlusPFP: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspfp_20210127.tar.gz"
+
+  samplesets:
+    all:
+      - Viral
+
+
 #######################################################################
 #                               Multiqc                               #
 #######################################################################
-
 multiqc:
   # A mapping of sampleset: multiqc stage reports. Stages are:
   # - rawreads
@@ -68,6 +85,8 @@ multiqc:
   all:
     - rawreads
     - samplereads
+    - bamstats
+    - kraken
 
 
 #######################################################################

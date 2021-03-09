@@ -93,10 +93,60 @@ rule multiqc_samplereads:
         "   {input}"
         " >{log} 2>&1"
 
+rule multiqc_bamstats:
+    input:
+        stats=lambda wc: expand("data/alignments/bamstats/sample/{{aligner}}~{{ref}}~{sample}.samtools.stats", sample=config["SAMPLESETS"][wc.sampleset]),
+    output:
+        html="data/stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html",
+    log:
+        log="data/log/multiqc/bamstats/{aligner}~{ref}~{sampleset}.log",
+    conda: acantophis.get_resource("envs/qcstats.yml")
+    shell:
+        "multiqc"
+        "   --no-megaqc-upload"
+        "   --flat"
+        "   --no-data-dir"
+        "   --comment 'Report for sample set {wildcards.sampleset}'"
+        "   --filename {output.html}"
+        "   {input}"
+        " >{log} 2>&1"
+
+
+rule multiqc_kraken:
+    input:
+        lambda wc: expand("data/kraken/persample/{dbname}/{sample}.txt",
+                          sample=config["SAMPLESETS"][wc.sampleset],
+                          dbname=config["kraken"]["samplesets"][wc.sampleset],
+                          ),
+    output:
+        html="data/stats/multiqc/kraken/{sampleset}_multiqc_report.html",
+    log:
+        log="data/log/multiqc/kraken/{sampleset}.log",
+    conda: acantophis.get_resource("envs/qcstats.yml")
+    shell:
+        "multiqc"
+        "   --no-megaqc-upload"
+        "   --flat"
+        "   --no-data-dir"
+        "   --comment 'Report for sample set {wildcards.sampleset}'"
+        "   --filename {output.html}"
+        "   {input}"
+        " >{log} 2>&1"
+
+
+def all_multiqc_input():
+    res = list()
+    for sampleset in config.get("multiqc", {}):
+        for stage in config.get("multiqc", {}).get(sampleset, []):
+            if stage == "bamstats":
+                if sampleset in config["align"]["samplesets"]:
+                    for aligner in config["align"]["aligners"]:
+                        for ref in config["align"]["refs"]:
+                            res.append("data/stats/multiqc/{stage}/{aligner}~{ref}~{sampleset}_multiqc_report.html".format(stage=stage, aligner=aligner, ref=ref, sampleset=sampleset))
+            else:
+                res.append("data/stats/multiqc/{stage}/{sampleset}_multiqc_report.html".format(stage=stage, sampleset=sampleset))
+    return res
 
 rule all_multiqc:
     input:
-        ["data/stats/multiqc/{stage}/{sampleset}_multiqc_report.html".format(stage=stage, sampleset=sampleset)
-                for sampleset in config.get("multiqc", {})
-                for stage in config.get("multiqc", {}).get(sampleset, [])
-        ],
+        *all_multiqc_input(),

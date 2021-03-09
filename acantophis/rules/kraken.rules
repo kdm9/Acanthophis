@@ -1,0 +1,50 @@
+
+rule krakendb_dl:
+    output:
+        hash="data/kraken/dbs/{dbname}/hash.k2d",
+        opts="data/kraken/dbs/{dbname}/opts.k2d",
+        taxo="data/kraken/dbs/{dbname}/taxo.k2d",
+    conda: acantophis.get_resource("envs/kraken.yml")
+    params:
+        url=lambda wc: config["kraken"]["dburls"][wc.dbname]
+    log: "data/log/kraken/dl/{dbname}.log"
+    shell:
+        "(D=$(dirname {output.hash});"
+        " pushd $D;"
+        " wget -O {wildcards.dbname}.tar.gz {params.url};"
+        " tar xf {wildcards.dbname}.tar.gz;"
+        " rm {wildcards.dbname}.tar.gz;"
+        " popd"
+        ") >{log} 2>&1"
+
+        
+rule kraken:
+    input:
+        reads="data/reads/samples/{sample}.fastq.gz",
+        hash="data/kraken/dbs/{dbname}/hash.k2d",
+        opts="data/kraken/dbs/{dbname}/opts.k2d",
+        taxo="data/kraken/dbs/{dbname}/taxo.k2d",
+    output: 
+        "data/kraken/persample/{dbname}/{sample}.txt",
+    log: "data/log/kraken/persample/{dbname}~{sample}.log"
+    threads: 4
+    conda: acantophis.get_resource("envs/kraken.yml")
+    shell:
+        "kraken2"
+        "   --db $(dirname {input.hash})/"
+        "   --threads {threads}"
+        "   --use-names"
+        "   --output -"
+        "   --report {output}"
+        "   {input.reads}"
+        ">{log} 2>&1"
+
+
+rule all_kraken:
+    input:
+        [expand("data/kraken/persample/{dbname}/{sample}.txt",
+               sample=config["SAMPLESETS"][sampleset],
+               dbname=config["kraken"]["samplesets"][sampleset],
+               ) for sampleset in config["kraken"]["samplesets"]]
+
+

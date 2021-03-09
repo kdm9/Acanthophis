@@ -217,6 +217,20 @@ rule bamidx:
         "samtools index {input}"
 
 
+#######################################################################
+#                              Bam stats                              #
+#######################################################################
+rule bamstat_samps:
+    input:
+        "data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+    output:
+        "data/alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats",
+    log:
+        "data/log/bamstats_sample/{aligner}~{ref}~{sample}.log"
+    conda: acantophis.get_resource("envs/align.yml")
+    shell:
+        "(samtools stats -i 5000 -x {input} >{output}) >{log}"
+
 
 #######################################################################
 #                         Align Target Rules                          #
