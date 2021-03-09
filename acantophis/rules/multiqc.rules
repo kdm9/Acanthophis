@@ -9,8 +9,6 @@ rule fastqc_adaptors_fa:
                 print(run+"ad2", config["qc"][run]["adapter2"], sep='\t', file=fh)
 
 
-
-
 rule fastqc_raw:
     input:
         reads="data/reads/raw_il/{run}~{lib}.fastq.gz",
@@ -29,6 +27,7 @@ rule fastqc_raw:
         "   {input.reads}"
         " && mv $T/*_fastqc.zip {output.fqczip}"
         ") >{log} 2>&1"
+
 
 rule fastqc_sample_postqc:
     input:
@@ -56,6 +55,10 @@ rule multiqc_rawreads:
                             for sample in config["SAMPLESETS"][wc.sampleset]
                             for run, lib in config["SAMP2RUNLIB"][sample]
                             ],
+        ar=lambda wc: ["data/stats/adapterremoval/{run}~{lib}.settings".format(run=run, lib=lib)
+                       for sample in config["SAMPLESETS"][wc.sampleset]
+                       for run, lib in config["SAMP2RUNLIB"][sample]
+                       ],
     output:
         html="data/stats/multiqc/rawreads/{sampleset}_multiqc_report.html",
     log:
@@ -89,7 +92,6 @@ rule multiqc_samplereads:
         "   --filename {output.html}"
         "   {input}"
         " >{log} 2>&1"
-
 
 
 rule all_multiqc:
