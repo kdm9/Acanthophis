@@ -15,7 +15,10 @@ To run this pipeline, one must:
 ```bash
 conda env create -f conda.yml -n acantophis-demo
 conda activate acantophis-demo
-pip install acantophis  # probably via pip install -e $PATH_TO_ACANOPHIS
+# Install Acanthophis
+pip install -e ..
+# once I put this on PyPI:
+# pip install acanthophis
 
 # the generate the fake dataset
 snakemake --snakefile Snakefile.generate-rawdata -j 8 --use-conda
