@@ -8,9 +8,11 @@ include: acantophis.rules.base
 include: acantophis.rules.reads
 include: acantophis.rules.align
 include: acantophis.rules.varcall
+include: acantophis.rules.multiqc
 
 rule all:
     input:
         rules.reads.input,
         rules.align.input,
         rules.varcall.input,
+        rules.all_multiqc.input

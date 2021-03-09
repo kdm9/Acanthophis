@@ -2,9 +2,9 @@
 #                           Metadata files                            #
 #######################################################################
 metadata:
-  runlib2samp_file: "data/rl2s.tsv"
-  sample_meta_file: "data/samples.tsv"
-  setfile_glob: "data/setfiles/*.txt"
+  runlib2samp_file: "rawdata/rl2s.tsv"
+  sample_meta_file: "rawdata/samples.tsv"
+  setfile_glob: "rawdata/setfiles/*.txt"
 
 
 #######################################################################
@@ -16,9 +16,9 @@ metadata:
 # the R1 & R2 files and append them to the interleaved, then remove the
 # original R1/R2 files.
 raw_paths:
-  r1_path: "data/reads/{run}/{lib}_R1.fastq.gz"
-  r2_path: "data/reads/{run}/{lib}_R2.fastq.gz"
-  il_path: "data/reads/{run}/{lib}_il.fastq.gz"
+  r1_path: "rawdata/reads/{run}/{lib}_R1.fastq.gz"
+  r2_path: "rawdata/reads/{run}/{lib}_R2.fastq.gz"
+  il_path: "rawdata/reads/{run}/{lib}_il.fastq.gz"
 
 
 #######################################################################
@@ -32,8 +32,8 @@ refs:
     # the pipeline code needs to know the lengths of chromosomes before it
     # runs, so for now you must `samtools faidx` each fasta file you put here
     # manually ahead of running snakemake.
-    fasta: "data/reference/genome.fa"
-    annotation: "data/reference/genome.gff"
+    fasta: "rawdata/reference/genome.fa"
+    annotation: "rawdata/reference/genome.gff"
 
 
 #######################################################################
@@ -56,6 +56,20 @@ qc:
   #   adapter2: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
   #   minqual: 25
 
+#######################################################################
+#                               Multiqc                               #
+#######################################################################
+
+multiqc:
+  # A mapping of sampleset: multiqc stage reports. Stages are:
+  # - rawreads
+  # - samplereads
+  # - alignment
+  all:
+    - rawreads
+    - samplereads
+
+
 
 #######################################################################
 #                       Alignment to Reference                        #
@@ -70,7 +84,11 @@ align:
     - all
   ngm: # tool specific settings
     sensitivity: 0.5
-
+  abra2:
+    java_args: '-Xmx16G'
+    extra_args:
+      # one can supply extra arguments (e.g. --targets) to abra, per reference genome
+      ancestral: ""
 
 
 #######################################################################
@@ -104,6 +122,7 @@ varcall:
       aligners:
         - ngm
         - bwa
+        - bwa_abra2
       callers:
         - mpileup
         - freebayes

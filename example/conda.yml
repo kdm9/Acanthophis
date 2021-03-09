@@ -1,3 +1,4 @@
+name: acantophis-demo
 channels:
   - defaults
   - conda-forge

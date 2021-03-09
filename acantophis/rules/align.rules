@@ -3,12 +3,12 @@
 #######################################################################
 rule ngmap:
     input:
-        reads="data/reads/runs/{run}/{lib}.fastq.gz",
+        reads="data/reads/runs/{run}~{lib}.fastq.gz",
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
-        bam=temp("data/alignments/byrun.raw/ngm/{ref}/{run}/{lib}~{sample}.bam"),
+        bam=temp("data/alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam"),
     log:
-        "data/log/ngm/{ref}/{run}/{lib}~{sample}.log"
+        "data/log/ngm/{ref}/{run}~{lib}~{sample}.log"
     threads:
         8
     params:
@@ -47,12 +47,12 @@ rule bwaidx:
 
 rule bwamem:
     input:
-        reads="data/reads/runs/{run}/{lib}.fastq.gz",
+        reads="data/reads/runs/{run}~{lib}.fastq.gz",
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
         bwaidx=lambda wc: config['refs'][wc.ref]["fasta"]+ ".pac",
     output:
-        bam=temp("data/alignments/byrun.raw/bwa/{ref}/{run}/{lib}~{sample}.bam"),
-    log: "data/log/bwa/{ref}/{run}/{lib}~{sample}.log"
+        bam=temp("data/alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam"),
+    log: "data/log/bwa/{ref}/{run}~{lib}~{sample}.log"
     threads:
         12
     conda: acantophis.get_resource("envs/align.yml")
@@ -72,12 +72,12 @@ rule bwamem:
 #######################################################################
 rule bam_markdups_sort:
     input:
-        bam="data/alignments/byrun.raw/{aligner}/{ref}/{run}/{lib}~{sample}.bam",
+        bam="data/alignments/byrun.raw/{aligner}/{ref}/{run}~{lib}~{sample}.bam",
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
-        bam=temp("data/alignments/byrun/{aligner}/{ref}/{run}/{lib}~{sample}.bam"),
+        bam=temp("data/alignments/byrun/{aligner}/{ref}/{run}~{lib}~{sample}.bam"),
     threads: 4
-    log: "data/log/markdup/{aligner}/{ref}/{run}/{lib}~{sample}.log"
+    log: "data/log/markdup/{aligner}/{ref}/{run}~{lib}~{sample}.log"
     conda: acantophis.get_resource("envs/align.yml")
     shell:
         "( samtools fixmate "
@@ -103,11 +103,44 @@ rule bam_markdups_sort:
 
 
 #######################################################################
+#                                ABRA2                                #
+#######################################################################
+# ABRA2 requires input from bwa mem. We run ABRA2 as just another aligner,
+# whose name is bwa_abra2. One can use the outputs from abra2 by subsituting
+# `bwa` for `bwa_abra2` in the `aligner` wildcard of any subsequent rule.
+ruleorder: abra2 > bam_markdups_sort
+rule abra2:
+    input:
+        bam="data/alignments/byrun/bwa/{ref}/{run}~{lib}~{sample}.bam",
+        bai="data/alignments/byrun/bwa/{ref}/{run}~{lib}~{sample}.bam.bai",
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
+    output:
+        bam=temp("data/alignments/byrun/bwa_abra2/{ref}/{run}~{lib}~{sample}.bam"),
+    log: "data/log/abra2/{ref}/{run}~{lib}~{sample}.log"
+    threads:
+        12
+    params:
+        java_args=config["align"].get("abra2", {}).get("java_args", "-Xmx4G"),
+        extra_args=lambda wc: config["align"].get("abra2", {}).get("extra_args", {}).get(wc.ref, ""),
+        temp_dir=config.get("misc", {}).get("tmpdir", "$TMPDIR"),
+    conda: acantophis.get_resource("envs/abra2.yml")
+    shell:
+        "( export JAVA_TOOL_OPTIONS='{params.java_args}'; "
+        "  abra2"
+        "   {params.extra_args}"
+        "   --threads {threads}"
+        "   --in {input.bam}"
+        "   --ref {input.ref}"
+        "   --out {output.bam}"
+        " ) >{log} 2>&1"
+
+
+#######################################################################
 #                     Merge runlib -> sample bams                     #
 #######################################################################
 rule mergebam_samp:
     input:
-        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}/{lib}~{sample}.bam".format(
+        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}~{lib}~{sample}.bam".format(
                             run=r, lib=l, aln=wc.aligner, ref=wc.ref, sample=wc.sample)
 	                for r, l in config["SAMP2RUNLIB"][wc.sample]]
     output:
@@ -191,7 +224,7 @@ rule bamidx:
 localrules: align_librun
 rule align_librun:
     input:
-        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}/{lib}.bam".
+        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}~{lib}.bam".
                         format(run=r, lib=l, aln=a, ref=ref)
                         for r, l in config["RUNLIB2SAMP"]
                         for a in config["align"]["aligners"]

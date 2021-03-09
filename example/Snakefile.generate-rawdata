@@ -51,12 +51,12 @@ if ANCESTRAL is not None:
 
 rule all:
     input:
-        "data/reference/genome.fa.fai",
-        expand("data/genomes/{sample}.fa.fai", sample=SAMPLES),
-        expand("data/reads/{run}/{lib}_{R}.fastq.gz", run=RUNS, lib=LIBS, R=["R1", "R2"]),
-        "data/rl2s.tsv",
-        "data/samples.tsv",
-        "data/setfiles/all.txt",
+        "rawdata/reference/genome.fa.fai",
+        expand("rawdata/genomes/{sample}.fa.fai", sample=SAMPLES),
+        expand("rawdata/reads/{run}/{lib}_{R}.fastq.gz", run=RUNS, lib=LIBS, R=["R1", "R2"]),
+        "rawdata/rl2s.tsv",
+        "rawdata/samples.tsv",
+        "rawdata/setfiles/all.txt",
 
 
 rule faidx:
@@ -71,9 +71,9 @@ rule faidx:
 
 rule metadata:
     output:
-        rl2s="data/rl2s.tsv",
-        samples="data/samples.tsv",
-        setfile="data/setfiles/all.txt",
+        rl2s="rawdata/rl2s.tsv",
+        samples="rawdata/samples.tsv",
+        setfile="rawdata/setfiles/all.txt",
     run:
         with open(output.rl2s, "w") as file:
             print("run", "library", "sample", "include", sep="\t", file=file)
@@ -97,9 +97,9 @@ rule metadata:
 
 rule genomes:
     output:
-        reference="data/reference/genome.fa",
-        genomes=expand("data/genomes/{sample}.fa", sample=SAMPLES),
-        varpos="data/genomes/variantpos.txt",
+        reference="rawdata/reference/genome.fa",
+        genomes=expand("rawdata/genomes/{sample}.fa", sample=SAMPLES),
+        varpos="rawdata/genomes/variantpos.txt",
     run:
         global ANC_GENOME_SEQ
         global ANC_GENOME_SEQID
@@ -143,7 +143,7 @@ rule genomes:
         if ANCESTRAL:
             ancgff = op.splitext(ANCESTRAL)[0] + ".gff"
             if op.exists(ancgff):
-                shutil.copyfile(ancgff, "data/reference/genome.gff")
+                shutil.copyfile(ancgff, "rawdata/reference/genome.gff")
 
         with open(output.varpos, "w") as file:
             for p in varpos:
@@ -154,10 +154,10 @@ cov_per_run = int(np.ceil(TOTAL_COV / (RUNS_PER_LIB * LIBS_PER_SAMP)))
 reads_per_rl = int(np.ceil(cov_per_run * CHROM_LENGTH / (2 * 100)))
 rule reads:
     input:
-        lambda wc: expand("data/genomes/{sample}.fa", sample=RUNLIB2SAMP[(wc.run, wc.lib)])
+        lambda wc: expand("rawdata/genomes/{sample}.fa", sample=RUNLIB2SAMP[(wc.run, wc.lib)])
     output:
-        r1="data/reads/{run}/{lib}_R1.fastq",
-        r2="data/reads/{run}/{lib}_R2.fastq",
+        r1="rawdata/reads/{run}/{lib}_R1.fastq",
+        r2="rawdata/reads/{run}/{lib}_R2.fastq",
     params:
         cov_per_run=cov_per_run,
         reads_per_rl=reads_per_rl,

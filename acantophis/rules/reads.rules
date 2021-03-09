@@ -1,50 +1,39 @@
-
-ruleorder: qcreads_il > qcreads
-rule qcreads:
+ruleorder: rawreads_il_fromr1r2 > rawreads_il_fromil
+rule rawreads_il_fromr1r2:
     input:
         r1=config["raw_paths"]["r1_path"],
         r2=config["raw_paths"]["r2_path"],
     output:
-        reads="data/reads/runs/{run}/{lib}.fastq.gz",
+        reads=temp("data/reads/raw_il/{run}~{lib}.fastq.gz"),
     log:
-        log="data/log/adapterremoval/{run}/{lib}.log",
-        settings="data/stats/adapterremoval/{run}/{lib}.txt",
-    threads:
-        8
-    params:
-        adp1=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter1"],
-        adp2=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter2"],
-        minqual=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["minqual"],
+        log="data/log/pecheck/{run}~{lib}.log",
+        stats="data/stats/pecheck/{run}~{lib}.tsv",
     conda: acantophis.get_resource("envs/reads.yml")
     shell:
-        "( AdapterRemoval"
-        "   --file1 {input.r1}"
-        "   --file2 {input.r2}"
-        "   --adapter1 {params.adp1}"
-        "   --adapter2 {params.adp2}"
-        "   --combined-output"
-        "   --interleaved-output"
-        "   --trimns"
-        "   --trimqualities"
-        "   --trimwindows 10"
-        "   --minquality {params.minqual}"
-        "   --threads {threads}"
-        "   --settings {log.settings}"
-        "   --output1 /dev/stdout"
-        " | seqhax pairs"
-        "   -l 20"
-        "   -b >(pigz -p {threads} >{output.reads})"
-        "   /dev/stdin"
-        ") >{log.log} 2>&1"
+        "seqhax pecheck -o >( gzip -1 >{output.reads}) {input.r1} {input.r2} >{log.stats} 2>{log.log}"
 
-rule qcreads_il:
+
+rule rawreads_il_fromil:
     input:
         il=config["raw_paths"]["il_path"],
     output:
-        reads="data/reads/runs/{run}/{lib}.fastq.gz",
+        reads=temp("data/reads/raw_il/{run}~{lib}.fastq.gz"),
     log:
-        log="data/log/adapterremoval/{run}/{lib}.log",
-        settings="data/stats/adapterremoval/{run}/{lib}.txt",
+        log="data/log/pecheck/{run}~{lib}.log",
+        stats="data/stats/pecheck/{run}~{lib}.tsv",
+    conda: acantophis.get_resource("envs/reads.yml")
+    shell:
+        "seqhax pecheck -o >(gzip -1 >{output.reads}) -i {input.il} >{log.stats} 2>{log.log}"
+
+
+rule qcreads:
+    input:
+        reads="data/reads/raw_il/{run}~{lib}.fastq.gz",
+    output:
+        reads="data/reads/runs/{run}~{lib}.fastq.gz",
+    log:
+        log="data/log/adapterremoval/{run}~{lib}.log",
+        settings="data/stats/adapterremoval/{run}~{lib}.settings",
     threads:
         8
     params:
@@ -54,7 +43,7 @@ rule qcreads_il:
     conda: acantophis.get_resource("envs/reads.yml")
     shell:
         "( AdapterRemoval"
-        "   --file1 {input.il}"
+        "   --file1 {input.reads}"
         "   --adapter1 {params.adp1}"
         "   --adapter2 {params.adp2}"
         "   --combined-output"
@@ -76,7 +65,7 @@ rule qcreads_il:
 
 rule read_count_librun_indiv:
     input:
-        "data/reads/runs/{run}/{lib}.fastq.gz"
+        "data/reads/runs/{run}~{lib}.fastq.gz"
     output:
         temp("data/stats/reads/readnum_librun/{run}~{lib}.tsv"),
     log:
@@ -109,7 +98,7 @@ rule read_count_fromindiv:
 
 rule qc_runlib:
     input:
-        ["data/reads/runs/{run}/{lib}.fastq.gz".format(run=run, lib=lib) for run, lib in config["RUNLIB2SAMP"]],
+        ["data/reads/runs/{run}~{lib}.fastq.gz".format(run=run, lib=lib) for run, lib in config["RUNLIB2SAMP"]],
 
 rule read_stats:
     input:
@@ -117,7 +106,7 @@ rule read_stats:
 
 rule samplefastqpipe:
     input:
-        lambda wc: ["data/reads/runs/{run}/{lib}.fastq.gz".format(run=r, lib=l) for r, l in SAMP2RUNLIB[wc.sample]],
+        lambda wc: ["data/reads/runs/{run}~{lib}.fastq.gz".format(run=r, lib=l) for r, l in config["SAMP2RUNLIB"][wc.sample]],
     output: pipe("data/reads/samples_pipe/{sample}.fastq.gz")
     log: "data/log/samplefastqpipe/{sample}.log"
     threads: 1
@@ -126,7 +115,7 @@ rule samplefastqpipe:
 
 rule samplefastqfile:
     input:
-        lambda wc: ["data/reads/runs/{run}/{lib}.fastq.gz".format(run=r, lib=l) for r, l in SAMP2RUNLIB[wc.sample]],
+        lambda wc: ["data/reads/runs/{run}~{lib}.fastq.gz".format(run=r, lib=l) for r, l in config["SAMP2RUNLIB"][wc.sample]],
     output: "data/reads/samples/{sample}.fastq.gz"
     log: "data/log/samplefastqfile/{sample}.log"
     threads: 1
@@ -137,7 +126,7 @@ rule samplefastqfile:
 localrules: sample_fastqs
 rule sample_fastqs:
     input:
-        [expand("data/reads/samples/{sample}.fastq.gz", sample=SAMPLESETS[sset])
+        [expand("data/reads/samples/{sample}.fastq.gz", sample=config["SAMPLESETS"][sset])
             for sset in config.get("persample_reads", {}).get("samplesets", [])]
 
 
