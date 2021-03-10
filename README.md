@@ -2,12 +2,10 @@
 
 A reusable, comprehensive, opinionated plant variant calling pipeline in Snakemake
 
-![Acanthophis, the most beautiful and bad-ass of snakes](.github/logo.jpg)
-
-
 Until I write the documentation, please see [the example workflow](example/).
 It should contain a fully working example workflow.
 
+![Acanthophis, the most beautiful and bad-ass of snakes](.github/logo.jpg)
 
 ## About & Authors
 

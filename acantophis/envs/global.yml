@@ -1,6 +1,5 @@
 name: acantophis
 channels:
-  - defaults
   - conda-forge
   - bioconda
 dependencies:

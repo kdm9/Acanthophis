@@ -1,4 +1,3 @@
-
 rule krakendb_dl:
     output:
         hash="data/kraken/dbs/{dbname}/hash.k2d",
