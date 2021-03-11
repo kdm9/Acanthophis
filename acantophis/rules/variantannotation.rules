@@ -70,7 +70,7 @@ rule all_snpeff:
                caller=config["varcall"]["samplesets"][sampleset]["callers"],
                aligner=config["varcall"]["samplesets"][sampleset]["aligners"],
                ref=config["varcall"]["samplesets"][sampleset]["refs"],
-               filter=config["varcall"]["filters"],
+               filter=config["varcall"]["samplesets"][sampleset]["filters"],
                sampleset=sampleset
                ) for sampleset in config["varcall"]["samplesets"]
                  if config["varcall"]["samplesets"][sampleset].get("snpeff", False)],

@@ -152,6 +152,8 @@ varcall:
         - freebayes
       refs:
         - ancestral
+      filters:
+        - default
       snpeff: True
     ## Example from our multispecies eucalyptus work
     # AdnatariaHighCoverage:

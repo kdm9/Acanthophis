@@ -251,7 +251,7 @@ rule filtered_variants:
                caller=config["varcall"]["samplesets"][sampleset]["callers"],
                aligner=config["varcall"]["samplesets"][sampleset]["aligners"],
                ref=config["varcall"]["samplesets"][sampleset]["refs"],
-               filter=config["varcall"]["filters"],
+               filter=config["varcall"]["samplesets"][sampleset]["filters"],
                sampleset=sampleset
                ) for sampleset in config["varcall"]["samplesets"]],
 
