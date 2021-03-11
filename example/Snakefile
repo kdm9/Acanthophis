@@ -19,4 +19,4 @@ rule all:
         rules.varcall.input,
         rules.all_multiqc.input,
         rules.all_kraken.input,
-        "data/snpEff/db/ancestral/genes.gff",
+        rules.all_snpeff.input,
