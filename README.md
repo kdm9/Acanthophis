@@ -15,4 +15,4 @@ This is an amalgamation of several pipelines developed between the [Weigel Group
 # TODO:
 
 - [ ] break out more freebayes parameters to the config file
-- [ ] `acantophis init` to generate boilerplate
+- [ ] `acanthophis init` to generate boilerplate

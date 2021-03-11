@@ -17,7 +17,7 @@ rule fastqc_raw:
         fqczip="data/stats/fastqc/raw/{run}~{lib}_fastqc.zip",
     log:
         log="data/log/fastqc/raw/{run}~{lib}.log",
-    conda: acantophis.get_resource("envs/qcstats.yml")
+    conda: acanthophis.get_resource("envs/qcstats.yml")
     shell:
         "(T=$(mktemp -d);"
         ' trap "rm -rf $T" EXIT;'
@@ -37,7 +37,7 @@ rule fastqc_sample_postqc:
         fqczip="data/stats/fastqc/postqc_sample/{sample}_fastqc.zip",
     log:
         log="data/log/fastqc/postqc_sample/{sample}.log",
-    conda: acantophis.get_resource("envs/qcstats.yml")
+    conda: acanthophis.get_resource("envs/qcstats.yml")
     shell:
         "set -x; (T=$(mktemp -d);"
         ' trap "rm -rf $T" EXIT;'
@@ -63,7 +63,7 @@ rule multiqc_rawreads:
         html="data/stats/multiqc/rawreads/{sampleset}_multiqc_report.html",
     log:
         log="data/log/multiqc/rawreads/{sampleset}.log",
-    conda: acantophis.get_resource("envs/qcstats.yml")
+    conda: acanthophis.get_resource("envs/qcstats.yml")
     shell:
         "multiqc"
         "   --no-megaqc-upload"
@@ -82,7 +82,7 @@ rule multiqc_samplereads:
         html="data/stats/multiqc/samplereads/{sampleset}_multiqc_report.html",
     log:
         log="data/log/multiqc/samplereads/{sampleset}.log",
-    conda: acantophis.get_resource("envs/qcstats.yml")
+    conda: acanthophis.get_resource("envs/qcstats.yml")
     shell:
         "multiqc"
         "   --no-megaqc-upload"
@@ -100,7 +100,7 @@ rule multiqc_bamstats:
         html="data/stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html",
     log:
         log="data/log/multiqc/bamstats/{aligner}~{ref}~{sampleset}.log",
-    conda: acantophis.get_resource("envs/qcstats.yml")
+    conda: acanthophis.get_resource("envs/qcstats.yml")
     shell:
         "multiqc"
         "   --no-megaqc-upload"
@@ -122,7 +122,7 @@ rule multiqc_kraken:
         html="data/stats/multiqc/kraken/{sampleset}_multiqc_report.html",
     log:
         log="data/log/multiqc/kraken/{sampleset}.log",
-    conda: acantophis.get_resource("envs/qcstats.yml")
+    conda: acanthophis.get_resource("envs/qcstats.yml")
     shell:
         "multiqc"
         "   --no-megaqc-upload"

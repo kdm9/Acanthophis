@@ -1,4 +1,4 @@
-name: acantophis
+name: acanthophis
 channels:
   - conda-forge
   - bioconda

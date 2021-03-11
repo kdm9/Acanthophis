@@ -32,7 +32,7 @@ rule snpeffdb:
         config="data/snpEff/db/{ref}/snpEff.config",
     output:
         "data/snpEff/db/{ref}/{ref}/snpEffectPredictor.bin",
-    conda: acantophis.get_resource("envs/snpeff.yml")
+    conda: acanthophis.get_resource("envs/snpeff.yml")
     log:
         "data/log/snpeff/build/build_{ref}.log"
     shell:
@@ -52,7 +52,7 @@ rule snpeff:
         html="data/variants/annotated/snpeff/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.html",
     log:
         "data/log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log"
-    conda: acantophis.get_resource("envs/snpeff.yml")
+    conda: acanthophis.get_resource("envs/snpeff.yml")
     shell:
         "( snpEff ann"
         "   -config {input.config}"

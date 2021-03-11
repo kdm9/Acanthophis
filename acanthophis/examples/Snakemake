@@ -1,9 +1,9 @@
 configfile: "config.yml"
 
-import acantophis
+import acanthophis
 
 
-acantophis.populate_metadata(config,
+acanthophis.populate_metadata(config,
 		runlib="metadata/runlib2sample.tsv",
 		sample_meta="metadata/samples.tsv",
 		setfile_glob="metadata/samplesets/*.txt")

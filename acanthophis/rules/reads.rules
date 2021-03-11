@@ -8,7 +8,7 @@ rule rawreads_il_fromr1r2:
     log:
         log="data/log/pecheck/{run}~{lib}.log",
         stats="data/stats/pecheck/{run}~{lib}.tsv",
-    conda: acantophis.get_resource("envs/reads.yml")
+    conda: acanthophis.get_resource("envs/reads.yml")
     shell:
         "seqhax pecheck -o >( gzip -1 >{output.reads}) {input.r1} {input.r2} >{log.stats} 2>{log.log}"
 
@@ -21,7 +21,7 @@ rule rawreads_il_fromil:
     log:
         log="data/log/pecheck/{run}~{lib}.log",
         stats="data/stats/pecheck/{run}~{lib}.tsv",
-    conda: acantophis.get_resource("envs/reads.yml")
+    conda: acanthophis.get_resource("envs/reads.yml")
     shell:
         "seqhax pecheck -o >(gzip -1 >{output.reads}) -i {input.il} >{log.stats} 2>{log.log}"
 
@@ -40,7 +40,7 @@ rule qcreads:
         adp1=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter1"],
         adp2=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter2"],
         minqual=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["minqual"],
-    conda: acantophis.get_resource("envs/reads.yml")
+    conda: acanthophis.get_resource("envs/reads.yml")
     shell:
         "( AdapterRemoval"
         "   --file1 {input.reads}"
@@ -70,7 +70,7 @@ rule read_count_librun_indiv:
         temp("data/stats/reads/readnum_librun/{run}~{lib}.tsv"),
     log:
         "data/log/readstats/seqhax-stats-librun/{run}~{lib}.log",
-    conda: acantophis.get_resource("envs/reads.yml")
+    conda: acanthophis.get_resource("envs/reads.yml")
     shell:
         "( seqhax stats"
         "    {input}"

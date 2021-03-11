@@ -13,8 +13,8 @@ pipelines from Acanthophis to call variants in this simulated dataset (see
 To run this pipeline, one must:
 
 ```bash
-conda env create -f conda.yml -n acantophis-demo
-conda activate acantophis-demo
+conda env create -f conda.yml -n acanthophis-demo
+conda activate acanthophis-demo
 # Install Acanthophis
 pip install -e ..
 # once I put this on PyPI:

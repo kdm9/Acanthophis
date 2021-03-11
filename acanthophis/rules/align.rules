@@ -13,7 +13,7 @@ rule ngmap:
         8
     params:
         sensitivity=config["align"]["ngm"]["sensitivity"],
-    conda: acantophis.get_resource("envs/align.yml")
+    conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( ngm"
         "   -q {input.reads}"
@@ -41,7 +41,7 @@ rule bwaidx:
         "{path}.pac",
         "{path}.sa",
     threads: 1
-    conda: acantophis.get_resource("envs/align.yml")
+    conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "bwa index {input}"
 
@@ -55,7 +55,7 @@ rule bwamem:
     log: "data/log/bwa/{ref}/{run}~{lib}~{sample}.log"
     threads:
         12
-    conda: acantophis.get_resource("envs/align.yml")
+    conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( bwa mem"
         "   -p" # paired input
@@ -78,7 +78,7 @@ rule bam_markdups_sort:
         bam=temp("data/alignments/byrun/{aligner}/{ref}/{run}~{lib}~{sample}.bam"),
     threads: 4
     log: "data/log/markdup/{aligner}/{ref}/{run}~{lib}~{sample}.log"
-    conda: acantophis.get_resource("envs/align.yml")
+    conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( samtools fixmate "
         "   -m"
@@ -123,7 +123,7 @@ rule abra2:
         java_args=config["align"].get("abra2", {}).get("java_args", "-Xmx4G"),
         extra_args=lambda wc: config["align"].get("abra2", {}).get("extra_args", {}).get(wc.ref, ""),
         temp_dir=config.get("misc", {}).get("tmpdir", "$TMPDIR"),
-    conda: acantophis.get_resource("envs/abra2.yml")
+    conda: acanthophis.get_resource("envs/abra2.yml")
     shell:
         "( export JAVA_TOOL_OPTIONS='{params.java_args}'; "
         "  abra2"
@@ -149,7 +149,7 @@ rule mergebam_samp:
         "data/log/mergesamplebam/{aligner}/{ref}/{sample}.log"
     threads: 8
     priority: 1 # so the temps get cleaned sooner
-    conda: acantophis.get_resource("envs/align.yml")
+    conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( samtools merge"
         "   -@ {threads}"
@@ -187,7 +187,7 @@ rule mergebam_set:
     log:
         "data/log/mergesetbam/{aligner}/{ref}/{sampleset}.log"
     threads: 16
-    conda: acantophis.get_resource("envs/align.yml")
+    conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( samtools merge"
         "   --output-fmt bam,level=7"
@@ -212,7 +212,7 @@ rule bamidx:
         "{path}.bam.bai"
     log:
         "data/log/bamindex/{path}.log"
-    conda: acantophis.get_resource("envs/align.yml")
+    conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "samtools index {input}"
 
@@ -227,7 +227,7 @@ rule bamstat_samps:
         "data/alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats",
     log:
         "data/log/bamstats_sample/{aligner}~{ref}~{sample}.log"
-    conda: acantophis.get_resource("envs/align.yml")
+    conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "(samtools stats -i 5000 -x {input} >{output}) >{log}"
 

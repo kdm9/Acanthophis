@@ -19,7 +19,7 @@ rule mpileup:
         minbq=config["varcall"]["minbq"],
     priority: 1  # get them done earlier, normalisation is super quick
     threads: 2
-    conda: acantophis.get_resource("envs/varcall.yml")
+    conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools mpileup"
         "   --redo-BAQ"
@@ -63,7 +63,7 @@ rule freebayes:
         theta=lambda wc: config["varcall"]["samplesets"][wc.sampleset].get("theta_prior", 0.01),
         minmq=lambda wc: config["varcall"]["minmapq"].get(wc.aligner, 5),
         minbq=config["varcall"]["minbq"],
-    conda: acantophis.get_resource("envs/varcall.yml")
+    conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( freebayes"
         "   --theta {params.theta}"
@@ -100,7 +100,7 @@ rule bcfnorm:
         bcf=temp("data/variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
     log:
         "data/log/bcfnormalise/{caller}~{aligner}~{ref}~{sampleset}/{region}.log"
-    conda: acantophis.get_resource("envs/varcall.yml")
+    conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools norm"
         "   --fasta-ref {input.ref}"
@@ -137,7 +137,7 @@ rule bcffilter:
         "data/log/bcffilter/{caller}~{aligner}~{ref}~{sampleset}/{filter}/{region}.log"
     params:
         filtarg=lambda wc: config["varcall"]["filters"][wc.filter].replace('\n', ' ')
-    conda: acantophis.get_resource("envs/varcall.yml")
+    conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools view"
         "   {params.filtarg}"
@@ -159,7 +159,7 @@ rule bcfstats:
         "data/variants/{path}.bcf"
     output:
         "data/variants/{path}.bcf.stats"
-    conda: acantophis.get_resource("envs/varcall.yml")
+    conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
 
@@ -197,7 +197,7 @@ rule bcfmerge:
     log:
         "data/log/mergebcf/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}.log"
     threads: 12
-    conda: acantophis.get_resource("envs/varcall.yml")
+    conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools concat"
         "   --threads {threads}"
@@ -221,7 +221,7 @@ rule bcf2vcf:
     log:
         "data/log/bcf2vcf/{path}.log"
     threads: 8
-    conda: acantophis.get_resource("envs/varcall.yml")
+    conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools view"
         "   {input.bcf}"
@@ -235,7 +235,7 @@ rule variantidx:
         "{path}"
     output:
         "{path}.csi"
-    conda: acantophis.get_resource("envs/varcall.yml")
+    conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "bcftools index -f {input}"
 
