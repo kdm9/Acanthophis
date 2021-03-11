@@ -36,9 +36,9 @@ rule snpeffdb:
     log:
         "data/log/snpeff/build/build_{ref}.log"
     shell:
-        "cd data/snpEff/db;"
-        "snpEff build -d -config {wildcards.ref}/snpEff.config -gff3 {wildcards.ref}"
-        ">{log} 2>&1"
+        "( cd data/snpEff/db; "
+        "  snpEff build -d -config {wildcards.ref}/snpEff.config -gff3 {wildcards.ref}"
+        ") > {log} 2>&1"
 
 
 rule snpeff:
