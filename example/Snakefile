@@ -10,6 +10,7 @@ include: acantophis.rules.align
 include: acantophis.rules.varcall
 include: acantophis.rules.multiqc
 include: acantophis.rules.kraken
+include: acantophis.rules.variantannotation
 
 rule all:
     input:
@@ -18,3 +19,4 @@ rule all:
         rules.varcall.input,
         rules.all_multiqc.input,
         rules.all_kraken.input,
+        "data/snpEff/db/ancestral/genes.gff",
