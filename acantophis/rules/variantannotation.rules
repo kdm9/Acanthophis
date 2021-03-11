@@ -38,6 +38,7 @@ rule snpeffdb:
     shell:
         "cd data/snpEff/db;"
         "snpEff build -d -config {wildcards.ref}/snpEff.config -gff3 {wildcards.ref}"
+        ">{log} 2>&1"
 
 
 rule snpeff:
@@ -51,6 +52,7 @@ rule snpeff:
         html="data/variants/annotated/snpeff/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.html",
     log:
         "data/log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log"
+    conda: acantophis.get_resource("envs/snpeff.yml")
     shell:
         "( snpEff ann"
         "   -config {input.config}"
