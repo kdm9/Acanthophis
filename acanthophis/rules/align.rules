@@ -10,7 +10,8 @@ rule ngmap:
     log:
         "data/log/ngm/{ref}/{run}~{lib}~{sample}.log"
     threads:
-        8
+        12
+    resources: **acanthophis.rule_resources(config, "ngmap", time_min=240, mem_gb=16)
     params:
         sensitivity=config["align"]["ngm"]["sensitivity"],
     conda: acanthophis.get_resource("envs/align.yml")
@@ -55,6 +56,7 @@ rule bwamem:
     log: "data/log/bwa/{ref}/{run}~{lib}~{sample}.log"
     threads:
         12
+    resources: **acanthophis.rule_resources(config, "bwamem", time_min=240, mem_gb=16)
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( bwa mem"
@@ -77,6 +79,7 @@ rule bam_markdups_sort:
     output:
         bam=temp("data/alignments/byrun/{aligner}/{ref}/{run}~{lib}~{sample}.bam"),
     threads: 4
+    resources: **acanthophis.rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=16)
     log: "data/log/markdup/{aligner}/{ref}/{run}~{lib}~{sample}.log"
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
@@ -119,6 +122,7 @@ rule abra2:
     log: "data/log/abra2/{ref}/{run}~{lib}~{sample}.log"
     threads:
         12
+    resources: **acanthophis.rule_resources(config, "abra2", time_min=360, mem_gb=16)
     params:
         java_args=config["align"].get("abra2", {}).get("java_args", "-Xmx4G"),
         extra_args=lambda wc: config["align"].get("abra2", {}).get("extra_args", {}).get(wc.ref, ""),
@@ -148,6 +152,7 @@ rule mergebam_samp:
     log:
         "data/log/mergesamplebam/{aligner}/{ref}/{sample}.log"
     threads: 8
+    resources: **acanthophis.rule_resources(config, "mergebam_samp", time_min=120, mem_gb=16)
     priority: 1 # so the temps get cleaned sooner
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
@@ -163,19 +168,22 @@ rule mergebam_samp:
 #######################################################################
 #                     Merge samples -> samplesets                     #
 #######################################################################
-localrules: mergebam_set_bamlist
-rule mergebam_set_bamlist:
-    input:
-        bam=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
-                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
-        bai=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam.bai",
-                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
-    output:
-        temp("data/alignments/sets/{aligner}~{ref}~{sampleset}.bamlist"),
-    run:
-        with open(output[0], "w") as fh:
-            for s in input.bam:
-                print(s, file=fh)
+# we historically did this with a file of file names, but don't need it
+# anymore. FIXME delete this at some point unless it proves useful
+#
+#localrules: mergebam_set_bamlist
+#rule mergebam_set_bamlist:
+#    input:
+#        bam=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+#                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
+#        bai=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam.bai",
+#                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
+#    output:
+#        temp("data/alignments/sets/{aligner}~{ref}~{sampleset}.bamlist"),
+#    run:
+#        with open(output[0], "w") as fh:
+#            for s in input.bam:
+#                print(s, file=fh)
 
 rule mergebam_set:
     input:
@@ -187,6 +195,7 @@ rule mergebam_set:
     log:
         "data/log/mergesetbam/{aligner}/{ref}/{sampleset}.log"
     threads: 16
+    resources: **acanthophis.rule_resources(config, "mergebam_set", time_min=2880, mem_gb=16)
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( samtools merge"
@@ -227,6 +236,8 @@ rule bamstat_samps:
         "data/alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats",
     log:
         "data/log/bamstats_sample/{aligner}~{ref}~{sample}.log"
+    threads: 1
+    resources: **acanthophis.rule_resources(config, "bamstat_samps", time_min=120, mem_gb=4)
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "(samtools stats -i 5000 -x {input} >{output}) >{log}"

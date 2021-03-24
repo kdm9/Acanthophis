@@ -17,8 +17,8 @@ rule mpileup:
         theta=lambda wc: config["varcall"]["samplesets"][wc.sampleset].get("theta_prior", 0.01),
         minmq=lambda wc: config["varcall"]["minmapq"].get(wc.aligner, 5),
         minbq=config["varcall"]["minbq"],
-    priority: 1  # get them done earlier, normalisation is super quick
     threads: 2
+    resources: **acanthophis.rule_resources(config, "mpileup", time_min=120, mem_gb=4)
     conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools mpileup"
@@ -58,11 +58,12 @@ rule freebayes:
         "data/log/freebayes/{aligner}~{ref}~{sampleset}/{region}.log"
     benchmark:
         "data/log/freebayes/{aligner}~{ref}~{sampleset}/{region}.benchmark"
-    priority: 1  # get them done earlier, normalisation is super quick
     params:
         theta=lambda wc: config["varcall"]["samplesets"][wc.sampleset].get("theta_prior", 0.01),
         minmq=lambda wc: config["varcall"]["minmapq"].get(wc.aligner, 5),
         minbq=config["varcall"]["minbq"],
+    threads: 1
+    resources: **acanthophis.rule_resources(config, "freebayes", time_min=240, mem_gb=8)
     conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( freebayes"
@@ -100,6 +101,8 @@ rule bcfnorm:
         bcf=temp("data/variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
     log:
         "data/log/bcfnormalise/{caller}~{aligner}~{ref}~{sampleset}/{region}.log"
+    threads: 1 
+    resources: **acanthophis.rule_resources(config, "bcfnorm", time_min=120, mem_gb=4)
     conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools norm"
@@ -137,6 +140,8 @@ rule bcffilter:
         "data/log/bcffilter/{caller}~{aligner}~{ref}~{sampleset}/{filter}/{region}.log"
     params:
         filtarg=lambda wc: config["varcall"]["filters"][wc.filter].replace('\n', ' ')
+    threads: 1 
+    resources: **acanthophis.rule_resources(config, "bcffilter", time_min=120, mem_gb=4)
     conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools view"
@@ -160,6 +165,8 @@ rule bcfstats:
     output:
         "data/variants/{path}.bcf.stats"
     conda: acanthophis.get_resource("envs/varcall.yml")
+    threads: 1 
+    resources: **acanthophis.rule_resources(config, "bcfstats", time_min=60, mem_gb=4)
     shell:
         "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
 
@@ -197,6 +204,7 @@ rule bcfmerge:
     log:
         "data/log/mergebcf/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}.log"
     threads: 12
+    resources: **acanthophis.rule_resources(config, "bcfstats", time_min=1440, mem_gb=12)
     conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools concat"
@@ -221,6 +229,7 @@ rule bcf2vcf:
     log:
         "data/log/bcf2vcf/{path}.log"
     threads: 8
+    resources: **acanthophis.rule_resources(config, "bcf2vcf", time_min=720, mem_gb=8)
     conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "( bcftools view"
@@ -235,6 +244,7 @@ rule variantidx:
         "{path}"
     output:
         "{path}.csi"
+    resources: **acanthophis.rule_resources(config, "variantidx", time_min=720, mem_gb=8)
     conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
         "bcftools index -f {input}"

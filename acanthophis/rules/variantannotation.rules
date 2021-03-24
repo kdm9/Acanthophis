@@ -1,4 +1,5 @@
 
+localrules: snpeffdb_files
 rule snpeffdb_files:
     input:
         fasta=lambda wc: config["refs"][wc.ref]['fasta'],
@@ -32,6 +33,8 @@ rule snpeffdb:
         config="data/snpEff/db/{ref}/snpEff.config",
     output:
         "data/snpEff/db/{ref}/{ref}/snpEffectPredictor.bin",
+    threads: 1
+    resources: **acanthophis.rule_resources(config, "snpeffdb", time_min=30, mem_gb=8)
     conda: acanthophis.get_resource("envs/snpeff.yml")
     log:
         "data/log/snpeff/build/build_{ref}.log"
@@ -52,6 +55,8 @@ rule snpeff:
         html="data/variants/annotated/snpeff/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.html",
     log:
         "data/log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log"
+    threads: 1
+    resources: **acanthophis.rule_resources(config, "snpeff", time_min=1440, mem_gb=8)
     conda: acanthophis.get_resource("envs/snpeff.yml")
     shell:
         "( snpEff ann"

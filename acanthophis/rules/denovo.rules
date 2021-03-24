@@ -2,15 +2,16 @@
 
 rule countsketch:
     input:
-        "data/reads/samples_pipe/{sample}.fastq.gz",
+        "data/reads/samples/{sample}.fastq.gz",
     output:
         ct=temp("data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz"),
         info="data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info",
         tsv="data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info.tsv",
     log:
         "data/log/kwip/sketch/k{ksize}-s{sketchsize}-{sample}.log"
+    resources: **acanthophis.rule_resources(config, "countsketch", time_min=60, mem_gb=16)
     threads:
-        3
+        2
     shell:
         "load-into-counting.py"
         "   -N 1"
@@ -36,6 +37,7 @@ rule kwipdist:
         "data/log/kwip/dist/k{ksize}-s{sketchsize}-{set}.log"
     threads:
         4
+    resources: **acanthophis.rule_resources(config, "countsketch", time_min=2880, mem_gb=16)
     shell:
         "kwip"
         " -d {output.d}"
@@ -46,7 +48,7 @@ rule kwipdist:
 
 rule unique_kmers:
     input:
-        lambda wc: expand("data/reads/samples_pipe/{sample}.fastq.gz",
+        lambda wc: expand("data/reads/samples/{sample}.fastq.gz",
                           sample=SAMPLESETS[wc.set]),
     output:
         "data/readstats/unique-kmers/{set}.tsv",
@@ -54,6 +56,7 @@ rule unique_kmers:
         27
     params:
         kmersize=config["denovodist"]["ksize"],
+    resources: **acanthophis.rule_resources(config, "unique_kmers", time_min=2880, mem_gb=1)
     log:
         "data/log/readstats/unique-kmers/{set}.log",
     shell:
@@ -73,7 +76,8 @@ rule everything_mash_sketch:
         temp("data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.msh"),
     log:
         "data/log/mash/everything/k{ksize}-s{sketchsize}.log"
-    threads: 49
+    resources: **acanthophis.rule_resources(config, "everything_mash_sketch", time_min=2880, mem_gb=16)
+    threads: 48
     shell:
         " mash sketch"
         "   -k {wildcards.ksize}"
@@ -84,13 +88,14 @@ rule everything_mash_sketch:
         " >{log} 2>&1"
 
 
-rule mashdist:
+rule everything_mash_dist:
     input:
         "data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.msh",
     output:
         dist="data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.dist",
     log:
         "data/log/mash/everything/dist_k{ksize}-s{sketchsize}.log"
+    resources: **acanthophis.rule_resources(config, "everything_mash_dist", time_min=2880, mem_gb=16)
     threads: 48
     shell:
         "mash dist"

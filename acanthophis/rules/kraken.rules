@@ -6,6 +6,7 @@ rule krakendb_dl:
     conda: acanthophis.get_resource("envs/kraken.yml")
     params:
         url=lambda wc: config["kraken"]["dburls"][wc.dbname]
+    resources: **acanthophis.rule_resources(config, "krakendb_dl", internet=1, time_min=180, mem_gb=1)
     log: "data/log/kraken/dl/{dbname}.log"
     shell:
         "(D=$(dirname {output.hash});"
@@ -28,6 +29,7 @@ rule kraken:
     log: "data/log/kraken/persample/{dbname}~{sample}.log"
     threads: 4
     conda: acanthophis.get_resource("envs/kraken.yml")
+    resources: **acanthophis.rule_resources(config, "kraken", time_min=60, mem_gb=8)
     shell:
         "kraken2"
         "   --db $(dirname {input.hash})/"
