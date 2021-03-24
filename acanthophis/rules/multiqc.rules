@@ -1,97 +1,3 @@
-localrules: fastqc_adaptors_fa
-rule fastqc_adaptors_fa:
-    output:
-        temp("data/stats/fastqc/adaptors.txt")
-    run:
-        with open(output[0], "w") as fh:
-            for run in config["qc"]:
-                print(run+"ad1", config["qc"][run]["adapter1"], sep='\t', file=fh)
-                print(run+"ad2", config["qc"][run]["adapter2"], sep='\t', file=fh)
-
-
-rule fastqc_raw:
-    input:
-        reads="data/reads/raw_il/{run}~{lib}.fastq.gz",
-        adaptors="data/stats/fastqc/adaptors.txt"
-    output:
-        fqczip="data/stats/fastqc/raw/{run}~{lib}_fastqc.zip",
-    log:
-        log="data/log/fastqc/raw/{run}~{lib}.log",
-    conda: acanthophis.get_resource("envs/qcstats.yml")
-    shell:
-        "(T=$(mktemp -d);"
-        ' trap "rm -rf $T" EXIT;'
-        " fastqc "
-        "   -o $T"
-        "   -a {input.adaptors}"
-        "   {input.reads}"
-        " && mv $T/*_fastqc.zip {output.fqczip}"
-        ") >{log} 2>&1"
-
-
-rule fastqc_sample_postqc:
-    input:
-        il="data/reads/samples/{sample}.fastq.gz",
-        adaptors="data/stats/fastqc/adaptors.txt"
-    output:
-        fqczip="data/stats/fastqc/postqc_sample/{sample}_fastqc.zip",
-    log:
-        log="data/log/fastqc/postqc_sample/{sample}.log",
-    conda: acanthophis.get_resource("envs/qcstats.yml")
-    shell:
-        "set -x; (T=$(mktemp -d);"
-        ' trap "rm -rf $T" EXIT;'
-        " fastqc "
-        "   -o $T"
-        "   --adapters {input.adaptors}"
-        "   {input.il}"
-        " && mv $T/*_fastqc.zip {output.fqczip}"
-        ") >{log} 2>&1"
-
-
-rule multiqc_rawreads:
-    input:
-        fqc_raw=lambda wc: ["data/stats/fastqc/raw/{run}~{lib}_fastqc.zip".format(run=run, lib=lib)
-                            for sample in config["SAMPLESETS"][wc.sampleset]
-                            for run, lib in config["SAMP2RUNLIB"][sample]
-                            ],
-        ar=lambda wc: ["data/stats/adapterremoval/{run}~{lib}.settings".format(run=run, lib=lib)
-                       for sample in config["SAMPLESETS"][wc.sampleset]
-                       for run, lib in config["SAMP2RUNLIB"][sample]
-                       ],
-    output:
-        html="data/stats/multiqc/rawreads/{sampleset}_multiqc_report.html",
-    log:
-        log="data/log/multiqc/rawreads/{sampleset}.log",
-    conda: acanthophis.get_resource("envs/qcstats.yml")
-    shell:
-        "multiqc"
-        "   --no-megaqc-upload"
-        "   --flat"
-        "   --no-data-dir"
-        "   --comment 'Report for sample set {wildcards.sampleset}'"
-        "   --filename {output.html}"
-        "   {input}"
-        " >{log} 2>&1"
-
-
-rule multiqc_samplereads:
-    input:
-        fqc_samp=lambda wc: expand("data/stats/fastqc/postqc_sample/{sample}_fastqc.zip", sample=config["SAMPLESETS"][wc.sampleset]),
-    output:
-        html="data/stats/multiqc/samplereads/{sampleset}_multiqc_report.html",
-    log:
-        log="data/log/multiqc/samplereads/{sampleset}.log",
-    conda: acanthophis.get_resource("envs/qcstats.yml")
-    shell:
-        "multiqc"
-        "   --no-megaqc-upload"
-        "   --flat"
-        "   --no-data-dir"
-        "   --comment 'Report for sample set {wildcards.sampleset}'"
-        "   --filename {output.html}"
-        "   {input}"
-        " >{log} 2>&1"
 
 rule multiqc_bamstats:
     input:
@@ -149,6 +55,7 @@ def all_multiqc_input():
                 res.append("data/stats/multiqc/{stage}/{sampleset}_multiqc_report.html".format(stage=stage, sampleset=sampleset))
     return res
 
-rule all_multiqc:
+localrules: multiqc
+rule multiqc:
     input:
         *all_multiqc_input(),

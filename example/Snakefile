@@ -17,6 +17,6 @@ rule all:
         rules.reads.input,
         rules.align.input,
         rules.varcall.input,
-        rules.all_multiqc.input,
+        rules.multiqc.input,
         rules.all_kraken.input,
         rules.all_snpeff.input,
