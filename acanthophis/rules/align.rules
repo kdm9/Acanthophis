@@ -43,6 +43,7 @@ rule bwaidx:
         "{path}.sa",
     threads: 1
     conda: acanthophis.get_resource("envs/align.yml")
+    resources: **acanthophis.rule_resources(config, "bwamem", time_min=240, mem_gb=16)
     shell:
         "bwa index {input}"
 
