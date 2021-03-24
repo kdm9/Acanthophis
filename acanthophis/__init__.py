@@ -30,15 +30,24 @@ def rule_resources(config, rule, **defaults):
     # get config entry
     C = config.get("cluster_resources", {})
     maxes = C.get("max_values", {})
+    global_defaults = C.get("defaults", {})
     rules = C.get("rules", {})
     
-    # now, we walk the default values provided here, overwriting each resource
-    # from the config file
-    ret = {}
     values = {}
+    values.update(global_defaults)
     values.update(defaults)
     values.update(rules.get(rule, {}))
+    ret = {}
     for res, val in values.items():
+        if isinstance(val, str):
+            # the logic below allows restarting with increased resources. If
+            # the resource's value is string, you can't double it with each
+            # attempt, so just return it as a constant.
+            # this is used for things like cluster queues etc.
+            ret[res] = val
+            if C.get("DEBUG", False):
+                print(rule, res, val)
+            continue
         maxval = maxes.get(res, inf)
         if C.get("DEBUG", False):
             print(rule, res, val, maxval)
