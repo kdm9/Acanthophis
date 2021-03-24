@@ -1,7 +1,6 @@
 __default__:
-  mem: "{resources.mem_gb}G"
   queue: normal
-  time: '{resources.walltime_minutes}:00'
-  jobfs: 400G
+  time: '1:00:00'
   project: xe2
   name: "SNK_{rule}"
+  output: "data/log/cluster/"

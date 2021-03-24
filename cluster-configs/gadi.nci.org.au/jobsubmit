@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+import argparse
+import subprocess
+import os
+import os.path
+from shlex import quote
+
+from snakemake.utils import read_job_properties
+
+parser=argparse.ArgumentParser(add_help=False)
+
+parser.add_argument("--depend", help="Space separated list of ids for jobs this job should depend on.", default="", type=str)
+parser.add_argument("--extra", help="Any additional qsub args", default="", type=str)
+parser.add_argument("jobscript")
+
+args = parser.parse_args()
+
+cmd = ["qsub"]
+
+job_properties = read_job_properties(args.jobscript)
+resources = job_properties.get("resources", {})
+cluster = job_properties.get("cluster", {})
+
+# dependencies
+if args.depend:
+    depstr = ":".join(args.depend.split(" "))
+    cmd.append(f"-W 'depend=afterok:{depstr}'")
+
+# threads
+threads = job_properties.get("threads", 1)
+cmd.append(f"-l 'ncpus={threads}'")
+
+# memory
+mem = int(resources.get("mem_gb", 2))
+cmd.append(f"-l 'mem={mem}G'")
+
+# walltime
+time_min = resources.get("time_min", 60)
+cmd.append(f"-l 'walltime={time_min}:00'")
+
+# queue
+queue="normal"
+if resources.get("internet", False):
+    queue="copyq"
+cmd.append(f"-q '{queue}'")
+
+# logs
+if "output" in cluster:
+    out = cluster["output"]
+    os.makedirs(out, exist_ok=True, mode=0o775)
+    cmd.append(f"-o {out}")
+
+cmd.append(args.extra)
+cmd.append(args.jobscript)
+cmd = " ".join(cmd)
+
+res = subprocess.check_output(cmd, check=True, shell=True, stdout=subprocess.PIPE)
+print(res.strip())

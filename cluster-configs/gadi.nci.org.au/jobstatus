@@ -1,0 +1,24 @@
+#!/bin/bash
+
+qstatres="$(qstat -f -x $1)"
+
+jobstate=$(echo "$qstatres" | grep job_state | cut -f 2 -d = | xargs echo)
+case $jobstate in
+    F)
+        exitstatus=$(echo "$qstatres" | grep exit_status | cut -f 2 -d = | xargs echo)
+        echo finished $exitstatus >&2
+        if [ $exitstatus -ne 0 ]
+        then
+            echo "failed"
+        else
+            echo "success"
+        fi
+        ;;
+    H | Q | R)
+        echo running
+        ;;
+    *)
+        echo unknown status "'$jobstate'" >&2
+        echo failed
+        ;;
+esac

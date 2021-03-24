@@ -1,0 +1,18 @@
+cluster: "jobsubmit --depend '{dependencies}' --extra '-l storage=scratch/xe2+gdata/xe2 -l wd -j oe -P xe2 -l jobfs=400G'"
+cluster-config: "cluster.yml"
+cluster-status: "jobstatus"
+jobscript: "jobscript.sh"
+jobs: 5000
+immediate-submit: true
+verbose: false
+notemp: true
+use-conda: true
+conda-frontend: mamba
+rerun-incomplete: true
+keep-going: true
+nolock: true
+max-jobs-per-second: 1
+max-status-checks-per-second: 1
+latency-wait: 60
+local-cores: 1
+restart-times: 3
