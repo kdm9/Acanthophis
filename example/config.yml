@@ -179,3 +179,18 @@ varcall:
           INFO/DP >= 5 &&
           INFO/AN >= 3'
 
+
+#######################################################################
+#                        Cluster Configuration                        #
+#######################################################################
+# Here one can set the resources each job will request from the cluster. 
+cluster_resources:
+  DEBUG: True
+  max_values:
+    mem_gb: 192
+    time_min: 2880 # 48h
+  rules:
+    # A mapping of rule_name: resource overrides, e.g.
+    qcreads:
+      mem_gb: 192
+      time_min: 2880 # 48h

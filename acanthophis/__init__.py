@@ -4,6 +4,9 @@ from glob import glob
 from os.path import basename, splitext
 import os
 from sys import stderr
+from math import log, inf
+from functools import partial
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -18,6 +21,29 @@ rules = __Rules()
 
 def get_resource(file):
     return f"{HERE}/{file}"
+
+
+def resource(wildcards, attempt, value, maxvalue):
+    return int(min(value * 2^(attempt-1), maxvalue))
+
+def rule_resources(config, rule, **defaults):
+    # get config entry
+    C = config.get("cluster_resources", {})
+    maxes = C.get("max_values", {})
+    rules = C.get("rules", {})
+    
+    # now, we walk the default values provided here, overwriting each resource
+    # from the config file
+    ret = {}
+    values = {}
+    values.update(defaults)
+    values.update(rules.get(rule, {}))
+    for res, val in values.items():
+        maxval = maxes.get(res, inf)
+        if C.get("DEBUG", False):
+            print(rule, res, val, maxval)
+        ret[res] = partial(resource, value=val, maxvalue=maxval)
+    return ret
 
 
 def populate_metadata(config, runlib2samp=None, sample_meta=None, setfile_glob=None):

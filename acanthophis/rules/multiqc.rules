@@ -100,6 +100,7 @@ rule multiqc_bamstats:
         html="data/stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html",
     log:
         log="data/log/multiqc/bamstats/{aligner}~{ref}~{sampleset}.log",
+    resources: **acanthophis.rule_resources(config, "multiqc_bamstats", time_min=30, mem_gb=2)
     conda: acanthophis.get_resource("envs/qcstats.yml")
     shell:
         "multiqc"
@@ -123,6 +124,7 @@ rule multiqc_kraken:
     log:
         log="data/log/multiqc/kraken/{sampleset}.log",
     conda: acanthophis.get_resource("envs/qcstats.yml")
+    resources: **acanthophis.rule_resources(config, "multiqc_kraken", time_min=30, mem_gb=2)
     shell:
         "multiqc"
         "   --no-megaqc-upload"

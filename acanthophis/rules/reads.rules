@@ -5,6 +5,7 @@ rule rawreads_il_fromr1r2:
         r2=config["raw_paths"]["r2_path"],
     output:
         reads=temp("data/reads/raw_il/{run}~{lib}.fastq.gz"),
+    resources: **acanthophis.rule_resources(config, "rawreads_il_fromr1r2", time_min=30, mem_gb=1)
     log:
         log="data/log/pecheck/{run}~{lib}.log",
         stats="data/stats/pecheck/{run}~{lib}.tsv",
@@ -18,6 +19,7 @@ rule rawreads_il_fromil:
         il=config["raw_paths"]["il_path"],
     output:
         reads=temp("data/reads/raw_il/{run}~{lib}.fastq.gz"),
+    resources: **acanthophis.rule_resources(config, "rawreads_il_fromil", time_min=30, mem_gb=1)
     log:
         log="data/log/pecheck/{run}~{lib}.log",
         stats="data/stats/pecheck/{run}~{lib}.tsv",
@@ -34,6 +36,7 @@ rule qcreads:
     log:
         log="data/log/adapterremoval/{run}~{lib}.log",
         settings="data/stats/adapterremoval/{run}~{lib}.settings",
+    resources: **acanthophis.rule_resources(config, "qcreads", time_min=60, mem_gb=2)
     threads:
         8
     params:
@@ -71,6 +74,7 @@ rule read_count_librun_indiv:
     log:
         "data/log/readstats/seqhax-stats-librun/{run}~{lib}.log",
     conda: acanthophis.get_resource("envs/reads.yml")
+    resources: **acanthophis.rule_resources(config, "read_count_librun_indiv", time_min=30, mem_gb=1)
     shell:
         "( seqhax stats"
         "    {input}"
@@ -78,6 +82,7 @@ rule read_count_librun_indiv:
         " ) 2>{log}"
 
 
+localrules: read_count_fromindiv
 rule read_count_fromindiv:
     input:
         ["data/stats/reads/readnum_librun/{run}~{lib}.tsv".format(run=run, lib=lib)
@@ -96,13 +101,16 @@ rule read_count_fromindiv:
                         fh.write(line)
 
 
+localrules: qc_runlib
 rule qc_runlib:
     input:
         ["data/reads/runs/{run}~{lib}.fastq.gz".format(run=run, lib=lib) for run, lib in config["RUNLIB2SAMP"]],
 
-rule read_stats:
+localrules: readstats
+rule readstats:
     input:
         "data/stats/reads/readnum_librun.tsv",
+
 
 rule samplefastqpipe:
     input:
@@ -110,8 +118,10 @@ rule samplefastqpipe:
     output: pipe("data/reads/samples_pipe/{sample}.fastq.gz")
     log: "data/log/samplefastqpipe/{sample}.log"
     threads: 1
+    resources: **acanthophis.rule_resources(config, "samplefastqpipe", time_min=10, mem_gb=1)
     shell:
         "cat {input} > {output}"
+
 
 rule samplefastqfile:
     input:
@@ -119,6 +129,7 @@ rule samplefastqfile:
     output: "data/reads/samples/{sample}.fastq.gz"
     log: "data/log/samplefastqfile/{sample}.log"
     threads: 1
+    resources: **acanthophis.rule_resources(config, "samplefastqfile", time_min=10, mem_gb=1)
     shell:
         "cat {input} > {output}"
 
@@ -131,6 +142,7 @@ rule sample_fastqs:
 
 
 
+localrules: reads
 rule reads:
     input:
         rules.qc_runlib.input,
