@@ -31,7 +31,6 @@ rule ngmap:
 #######################################################################
 #                               BWAMem                                #
 #######################################################################
-localrules: bwaidx
 rule bwaidx:
     input:
         "{path}"
@@ -43,9 +42,10 @@ rule bwaidx:
         "{path}.sa",
     threads: 1
     conda: acanthophis.get_resource("envs/align.yml")
-    resources: **acanthophis.rule_resources(config, "bwamem", time_min=240, mem_gb=16)
+    log: "data/log/bwaidx/{path}.log"
+    resources: **acanthophis.rule_resources(config, "bwaidx", time_min=20, mem_gb=8)
     shell:
-        "bwa index {input}"
+        "bwa index {input} >{log} 2>&1"
 
 rule bwamem:
     input:
