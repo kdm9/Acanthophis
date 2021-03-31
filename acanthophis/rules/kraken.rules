@@ -1,3 +1,6 @@
+if config.get("cluster", {}).get("internet_only_localrules", False):
+    localrules: krakendb_dl
+
 rule krakendb_dl:
     output:
         hash="data/kraken/dbs/{dbname}/hash.k2d",

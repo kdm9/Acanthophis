@@ -186,6 +186,13 @@ varcall:
 # Here one can set the resources each job will request from the cluster. 
 cluster_resources:
   DEBUG: True
+  # Must jobs requiring intenet be run on the head node? set to True for
+  # clusters where no nodes have internet access, otherwise use a job to some
+  # queue that has internet (via the jobsubmit script).
+  internet_only_localrules: True
+  defaults:
+    mem_gb: 2
+    time_min: 60
   max_values:
     mem_gb: 192
     time_min: 2880 # 48h
