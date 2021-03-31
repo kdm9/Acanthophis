@@ -1,4 +1,4 @@
-if config.get("cluster", {}).get("internet_only_localrules", False):
+if config.get("cluster_resources", {}).get("internet_only_localrules", False):
     localrules: krakendb_dl
 
 rule krakendb_dl:
