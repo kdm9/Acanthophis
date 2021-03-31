@@ -5,8 +5,7 @@ qstatres="$(qstat -f -x $1)"
 jobstate=$(echo "$qstatres" | grep job_state | cut -f 2 -d = | xargs echo)
 case $jobstate in
     F)
-        exitstatus=$(echo "$qstatres" | grep exit_status | cut -f 2 -d = | xargs echo)
-        echo finished $exitstatus >&2
+        exitstatus=$(echo "$qstatres" | grep Exit_status | cut -f 2 -d = | xargs echo)
         if [ $exitstatus -ne 0 ]
         then
             echo "failed"
@@ -14,7 +13,7 @@ case $jobstate in
             echo "success"
         fi
         ;;
-    H | Q | R)
+    H | Q | R | E )
         echo running
         ;;
     *)

@@ -15,7 +15,7 @@ parser.add_argument("jobscript")
 
 args = parser.parse_args()
 
-cmd = ["qsub", "-l wd -j oe"]  # always start in wd, always join out/err logs
+cmd = ["qsub", "-terse -cwd -j y"]  # always start in wd, always join out/err logs
 
 job_properties = read_job_properties(args.jobscript)
 resources = job_properties.get("resources", {})
@@ -29,37 +29,32 @@ if args.depend:
 
 # threads
 threads = job_properties.get("threads", 1)
-cmd.append(f"-l 'ncpus={threads}'")
+cmd.append(f"-pe parallel {threads}")
 
 # memory
 mem = int(resources.get("mem_gb", 2))
-cmd.append(f"-l 'mem={mem}G'")
+mem_percpu = mem / threads
+cmd.append(f"-l 'h_vmem={mem_percpu:0.2f}G'")
 
 # walltime
-time_min = resources.get("time_min", 60)
-cmd.append(f"-l 'walltime={time_min}:00'")
+time_sec = int(resources.get("time_min", 60)) * 60
+cmd.append(f"-l 'h_rt={time_sec}'")
+# soft timeout 1 minute before
+time_sec = max(60, time_sec - 60)
+cmd.append(f"-l 's_rt={time_sec}'")
 
 # jobfs
 localdisk_gb = resources.get("localdisk_gb", 10)
-cmd.append(f"-l 'jobfs={localdisk_gb}G'")
-
-# storage
-# a special NCI pbs resource that mounts FSes
-
-if "storage" in cluster:
-    cmd.append(f"-l storage={quote(cluster['storage'])}")
-
-project = cluster.get("project", "xe2")
-cmd.append(f"-P {quote(project)}")
+cmd.append(f"-l 'tmpfs={localdisk_gb}G'")
 
 # queue
 # defaults: normal, unless internet=true
-queue = "normal"
-if resources.get("internet", False):
-    queue="copyq"
-# override with queue from resources
-queue = resources.get("queue", queue)
-cmd.append(f"-q '{queue}'")
+# queue = "normal"
+# if resources.get("internet", False):
+#     queue="copyq"
+# # override with queue from resources
+# queue = resources.get("queue", queue)
+# cmd.append(f"-q '{queue}'")
 
 # logs
 out = None
@@ -71,6 +66,8 @@ if out:
     os.makedirs(out, exist_ok=True, mode=0o775)
     cmd.append(f"-o {out}")
 
+if cluster.get('extra_qsub_args'):
+    cmd.append(cluster['extra_qsub_args'])
 cmd.append(args.extra)
 cmd.append(args.jobscript)
 cmd = " ".join(cmd)

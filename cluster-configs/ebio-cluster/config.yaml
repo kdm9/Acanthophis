@@ -1,8 +1,8 @@
-cluster: "gadi/jobsubmit"
-cluster-config: "gadi/cluster.yml"
-cluster-status: "gadi/jobstatus"
-jobscript: "gadi/jobscript.sh"
-jobs: 900
+cluster: "ebio-cluster/jobsubmit"
+cluster-config: "ebio-cluster/cluster.yml"
+cluster-status: "ebio-cluster/jobstatus"
+jobscript: "ebio-cluster/jobscript.sh"
+jobs: 100
 #immediate-submit: true
 verbose: false
 #notemp: true
@@ -11,7 +11,7 @@ conda-frontend: mamba
 rerun-incomplete: true
 keep-going: true
 nolock: true
-max-jobs-per-second: 50
+max-jobs-per-second: 5
 max-status-checks-per-second: 1
 latency-wait: 60
 local-cores: 1

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+qstat_status="$(qstat  -u '*' 2>/dev/null | awk '$1 == "'"$1"'"{print $5}')"
+
+#echo "qstat status $qstat_status" >&2
+
+if [ -z "$qstat_status" ] 
+then
+	# job has finished
+	qacct_errcode=$(qacct -j "$1" | awk '$1 == "exit_status"{print $2}')
+	#echo "qacct status $qacct_errcode" >&2
+	if [ "$qacct_errcode" -ne 0 ]
+	then
+		echo failed
+	else
+		echo success
+	fi
+else
+	# running or errored
+	if [[ "$qstat_status" =~ E ]]
+	then
+		echo failed
+	else
+		echo running
+	fi
+fi

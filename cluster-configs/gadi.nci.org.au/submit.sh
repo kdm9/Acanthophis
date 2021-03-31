@@ -11,13 +11,14 @@
 
 set -ueo pipefail
 TARGET=${TARGET:-all}
+set -x
 
-snakemake \
-    --use-conda \
-    --conda-frontend mamba \
-    --conda-create-envs-only \
+#snakemake \
+#    -j 1 \
+#    --use-conda \
+#    --conda-frontend mamba \
+#    --conda-create-envs-only 
 
 snakemake               \
-    -j 1000             \
     --profile ./gadi/   \
     "$TARGET"

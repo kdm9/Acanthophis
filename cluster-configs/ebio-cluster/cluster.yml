@@ -1,5 +1,3 @@
 __default__:
-  project: xe2
-  storage: "gdata/xe2+scratch/xe2"
   output: "data/log/cluster/"
   DEBUG: True
