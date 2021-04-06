@@ -16,18 +16,20 @@ class __Rules(object):
             rule = splitext(basename(rulefile))[0]
             setattr(self, rule, rulefile)
 
-
 rules = __Rules()
+
+profiles = {}
+for profiledir in glob(f"{HERE}/profiles/*"):
+    profile = basename(profiledir)
+    profiles[profile] = profiledir
+
 
 def get_resource(file):
     return f"{HERE}/{file}"
 
-
-def resource(wildcards, attempt, value, maxvalue):
-    return int(min(value * 2^(attempt-1), maxvalue))
-
 def rule_resources(config, rule, **defaults):
-    # get config entry
+    def resource(wildcards, attempt, value, maxvalue):
+        return int(min(value * 2^(attempt-1), maxvalue))
     C = config.get("cluster_resources", {})
     maxes = C.get("max_values", {})
     global_defaults = C.get("defaults", {})
