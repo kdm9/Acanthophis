@@ -203,6 +203,8 @@ rule bcfmerge:
         bcf="data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf",
     log:
         "data/log/mergebcf/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}.log"
+    params:
+        allow_overlaps = lambda wc: "--allow-overlaps" if config["varcall"].get("merge_allow_overlaps", False) else ""
     threads: 12
     resources: **acanthophis.rule_resources(config, "bcfstats", time_min=1440, mem_gb=12)
     conda: acanthophis.get_resource("envs/varcall.yml")
@@ -210,7 +212,7 @@ rule bcfmerge:
         "( bcftools concat"
         "   --threads {threads}"
         "   --file-list {input.fofn}"
-        "   --allow-overlaps"
+        "   {params.allow_overlaps}"
         "   -o {output.bcf}"
         "   -O b"
         " ) >{log} 2>&1"

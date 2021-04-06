@@ -119,6 +119,9 @@ align:
 #                   Non-gatk-based Variant Calling                    #
 #######################################################################
 varcall:
+  # Should bcftools concat allow overlaps while merging region files (generally
+  # false, occasionally needed with freebayes)
+  merge_allow_overlaps: False
   
   # Per-aligner minimum MAPQ thresholds for using a read.
   minmapq:
@@ -155,17 +158,6 @@ varcall:
       filters:
         - default
       snpeff: True
-    ## Example from our multispecies eucalyptus work
-    # AdnatariaHighCoverage:
-    #   theta_prior: 0.1
-    #   aligners:
-    #     - bwa
-    #   callers:
-    #     - mpileup
-    #     - freebayes
-    #   refs:
-    #     - E_grandis
-    #     - E_melliodora
 
 
   # Filters. These are series of command line arguments to pass to bcftools
