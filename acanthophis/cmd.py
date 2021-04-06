@@ -64,9 +64,6 @@ def init():
             else:
                 print("WARNING: {outf} exists, not copying. Remove it or use --force.", file=stderr)
 
-    
-
-
 
 if __name__ == "__main__":
     init()
