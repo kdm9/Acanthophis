@@ -28,7 +28,7 @@ jobs:
       - name: Run snakemake
         run: |
           pushd example
-          acanthophis-init --force.
+          acanthophis-init --force
           mamba env update -n base -f environment.yml
           snakemake --snakefile Snakefile.generate-rawdata -j 4 --use-conda --conda-frontend mamba
           snakemake --snakefile Snakefile -j 4 --use-conda --conda-frontend mamba
