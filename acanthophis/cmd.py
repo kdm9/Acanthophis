@@ -60,9 +60,22 @@ def init():
         outf = os.path.join(args.destdir, os.path.basename(file))
         if args.force or prompt_yn(f"copy {os.path.basename(file)} -> {outf}?"):
             if not os.path.exists(outf) or args.force: 
-                shutil.copyfile(file, outf)
+                shutil.copyfile(file, outf, dirs_exist_ok=True)
             else:
-                print("WARNING: {outf} exists, not copying. Remove it or use --force.", file=stderr)
+                print(f"WARNING: {outf} exists, not copying. Remove it or use --force.", file=stderr)
+
+
+    for profile in args.cluster_profile:
+        if profile not in acanthophis.profiles:
+            print(f"ERROR: unknown profile '{profile}'. see --list-available-profiles", file=stderr)
+            exit(1)
+        src = acanthophis.profiles[profile]
+        dst = os.path.join(args.destdir, profile)
+        if args.dryrun:
+            print(f"cp -r {src} {dst}")
+            continue
+        if args.force or prompt_yn(f"copy {src} -> {dst}?"):
+            shutil.copytree(src, dst)
 
 
 if __name__ == "__main__":
