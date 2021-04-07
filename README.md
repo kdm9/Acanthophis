@@ -5,7 +5,7 @@ A reusable, comprehensive, opinionated plant variant calling pipeline in Snakema
 Until I write the documentation, please see [the example workflow](example/).
 It should contain a fully working example workflow.
 
-![Acanthophis, the most beautiful and bad-ass of snakes](.github/logo.jpg)
+![Acanthophis, the most beautiful and badass of snakes](.github/logo.jpg)
 
 ## About & Authors
 
@@ -15,4 +15,4 @@ This is an amalgamation of several pipelines developed between the [Weigel Group
 # TODO:
 
 - [ ] break out more freebayes parameters to the config file
-- [ ] `acanthophis init` to generate boilerplate
+- [ ] merge sample bams before doing markdups
