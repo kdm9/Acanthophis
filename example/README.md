@@ -47,5 +47,3 @@ below files are of no use to you:
 - `Snakefile.generate-rawdata`
 - `lambda/*`
 - `conda.yml`
-
-

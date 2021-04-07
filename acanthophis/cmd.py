@@ -60,7 +60,7 @@ def init():
         outf = os.path.join(args.destdir, os.path.basename(file))
         if args.force or prompt_yn(f"copy {os.path.basename(file)} -> {outf}?"):
             if not os.path.exists(outf) or args.force: 
-                shutil.copyfile(file, outf, dirs_exist_ok=True)
+                shutil.copyfile(file, outf)
             else:
                 print(f"WARNING: {outf} exists, not copying. Remove it or use --force.", file=stderr)
 
