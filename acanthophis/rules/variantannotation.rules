@@ -3,10 +3,10 @@ localrules: snpeffdb_files
 rule snpeffdb_files:
     input:
         fasta=lambda wc: config["refs"][wc.ref]['fasta'],
-        gff=lambda wc: config["refs"][wc.ref]['gff'],
+        gtf=lambda wc: config["refs"][wc.ref]['gtf'],
     output:
         fasta="data/snpEff/db/{ref}/{ref}/sequences.fa",
-        gff="data/snpEff/db/{ref}/{ref}/genes.gff",
+        gtf="data/snpEff/db/{ref}/{ref}/genes.gtf",
         config="data/snpEff/db/{ref}/snpEff.config",
     params:
         extra=lambda wc: config["refs"][wc.ref].get("snpeff_extra_config", ""),
@@ -16,7 +16,7 @@ rule snpeffdb_files:
         with open(input.fasta) as infh, open(output.fasta, "w") as outfh:
             shutil.copyfileobj(infh, outfh)
 
-        with open(input.gff) as infh, open(output.gff, "w") as outfh:
+        with open(input.gtf) as infh, open(output.gtf, "w") as outfh:
             shutil.copyfileobj(infh, outfh)
 
         with open(output.config, "w") as outfh:
@@ -29,7 +29,7 @@ rule snpeffdb_files:
 rule snpeffdb:
     input:
         fasta="data/snpEff/db/{ref}/{ref}/sequences.fa",
-        gff="data/snpEff/db/{ref}/{ref}/genes.gff",
+        gtf="data/snpEff/db/{ref}/{ref}/genes.gtf",
         config="data/snpEff/db/{ref}/snpEff.config",
     output:
         "data/snpEff/db/{ref}/{ref}/snpEffectPredictor.bin",
@@ -40,7 +40,7 @@ rule snpeffdb:
         "data/log/snpeff/build/build_{ref}.log"
     shell:
         "( cd data/snpEff/db; "
-        "  snpEff build -d -config {wildcards.ref}/snpEff.config -gff3 {wildcards.ref}"
+        "  snpEff build -d -config {wildcards.ref}/snpEff.config -gtf22 {wildcards.ref}"
         ") > {log} 2>&1"
 
 
