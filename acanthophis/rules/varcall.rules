@@ -17,7 +17,7 @@ rule mpileup:
         theta=lambda wc: config["varcall"]["samplesets"][wc.sampleset].get("theta_prior", 0.01),
         minmq=lambda wc: config["varcall"]["minmapq"].get(wc.aligner, 5),
         minbq=config["varcall"]["minbq"],
-    threads: 2
+    threads: 1
     resources: **acanthophis.rule_resources(config, "mpileup", time_min=120, mem_gb=4)
     conda: acanthophis.get_resource("envs/varcall.yml")
     shell:
@@ -165,8 +165,8 @@ rule bcfstats:
     output:
         "data/variants/{path}.bcf.stats"
     conda: acanthophis.get_resource("envs/varcall.yml")
-    threads: 1 
-    resources: **acanthophis.rule_resources(config, "bcfstats", time_min=60, mem_gb=4)
+    threads: 4 
+    resources: **acanthophis.rule_resources(config, "bcfstats", time_min=120, mem_gb=4)
     shell:
         "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
 
