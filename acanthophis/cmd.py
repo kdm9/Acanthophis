@@ -37,6 +37,8 @@ def init():
     ap = argparse.ArgumentParser(description="Initialise an Acanthophis analysis directory", epilog=CLIDOC)
     ap.add_argument("--dryrun", "-n", action="store_true",
             help="Simply print what will be done without performing any action.")
+    ap.add_argument("--yes", action="store_true",
+            help="Don't ask to output files unless they exist.")
     ap.add_argument("--force", action="store_true",
             help="Overwite output files if they exist, rather than warning.")
     ap.add_argument("--list-available-profiles", action="store_true",
@@ -58,7 +60,7 @@ def init():
             print(f"cp {file} {args.destdir}")
             continue
         outf = os.path.join(args.destdir, os.path.basename(file))
-        if args.force or prompt_yn(f"copy {os.path.basename(file)} -> {outf}?"):
+        if args.force or args.yes or prompt_yn(f"copy {os.path.basename(file)} -> {outf}?"):
             if not os.path.exists(outf) or args.force: 
                 shutil.copyfile(file, outf)
             else:
@@ -74,7 +76,7 @@ def init():
         if args.dryrun:
             print(f"cp -r {src} {dst}")
             continue
-        if args.force or prompt_yn(f"copy {src} -> {dst}?"):
+        if args.force or args.yes or prompt_yn(f"copy {src} -> {dst}?"):
             shutil.copytree(src, dst)
 
 

@@ -1,0 +1,15 @@
+name: acanthophis-demo
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+  - kdm801
+dependencies:
+  - python
+  - snakemake
+  - ncdu
+  - pip
+  - numpy
+  - msprime
+  - wgsim
+  - samtools

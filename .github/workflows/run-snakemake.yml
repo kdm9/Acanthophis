@@ -2,7 +2,7 @@ name: Workflow CI
 
 on:
   push:
-    branches: [ main ]
+    branches: "**"
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -23,15 +23,19 @@ jobs:
       - name: Install conda deps
         run: |
           conda install mamba pip
+          mamba env update -n base -f example/environment.yml
           python3 -m pip install -e .
       
-      - name: Run snakemake
+      - name: Setup demo
         run: |
           pushd example
-          acanthophis-init --force
-          mamba env update -n base -f environment.yml
-          mamba install -c conda-forge -c bioconda -c kdm801 numpy msprime wgsim samtools
+          acanthophis-init --yes
           snakemake --snakefile Snakefile.generate-rawdata -j 4 --use-conda --conda-frontend mamba
+          popd
+
+      - name: Run Snakemake
+        run: |
+          pushd example
           snakemake --snakefile Snakefile -j 4 --use-conda --conda-frontend mamba
           popd
 
