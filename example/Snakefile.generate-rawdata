@@ -141,9 +141,9 @@ rule genomes:
             print(ANC_GENOME_SEQ, file=file)
 
         if ANCESTRAL:
-            ancgff = op.splitext(ANCESTRAL)[0] + ".gff"
+            ancgtf = op.splitext(ANCESTRAL)[0] + ".gtf"
             if op.exists(ancgff):
-                shutil.copyfile(ancgff, "rawdata/reference/genome.gff")
+                shutil.copyfile(ancgff, "rawdata/reference/genome.gtf")
 
         with open(output.varpos, "w") as file:
             for p in varpos:

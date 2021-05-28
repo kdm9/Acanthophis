@@ -26,7 +26,7 @@ raw_paths:
 #######################################################################
 refs:
   ancestral:
-    # For each reference we need a gff and a genome fasta file.
+    # For each reference we need a gtf and a genome fasta file.
     # The genome fasta file must be faidx-indexed **BEFORE** the pipeline is
     # run. Other indexes (e.g. bwa, ngm) are run as part of the pipeline, but
     # the pipeline code needs to know the lengths of chromosomes before it
