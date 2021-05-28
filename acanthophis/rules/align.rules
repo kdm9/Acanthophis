@@ -132,7 +132,7 @@ rule mergebam_samp:
 #######################################################################
 #                        samtools sort/markdup                        #
 #######################################################################
-rule bam_merge_markdups_sort:
+rule bam_markdups_sort:
     input:
         bam="data/alignments/samples.raw/{aligner}/{ref}/{sample}.bam",
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
