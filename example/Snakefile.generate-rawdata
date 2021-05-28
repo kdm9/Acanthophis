@@ -142,8 +142,8 @@ rule genomes:
 
         if ANCESTRAL:
             ancgtf = op.splitext(ANCESTRAL)[0] + ".gtf"
-            if op.exists(ancgff):
-                shutil.copyfile(ancgff, "rawdata/reference/genome.gtf")
+            if op.exists(ancgtf):
+                shutil.copyfile(ancgtf, "rawdata/reference/genome.gtf")
 
         with open(output.varpos, "w") as file:
             for p in varpos:
