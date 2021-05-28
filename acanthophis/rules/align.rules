@@ -77,15 +77,14 @@ rule bwamem:
 # ABRA2 requires input from bwa mem. We run ABRA2 as just another aligner,
 # whose name is bwa_abra2. One can use the outputs from abra2 by subsituting
 # `bwa` for `bwa_abra2` in the `aligner` wildcard of any subsequent rule.
-ruleorder: abra2 > bam_markdups_sort
 rule abra2:
     input:
-        bam="data/alignments/byrun/bwa/{ref}/{run}~{lib}~{sample}.bam",
-        bai="data/alignments/byrun/bwa/{ref}/{run}~{lib}~{sample}.bam.bai",
+        bam="data/alignments/samples/bwa/{ref}/{sample}.bam",
+        bai="data/alignments/samples/bwa/{ref}/{sample}.bam.bai",
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
-        bam=temp("data/alignments/byrun/bwa_abra2/{ref}/{run}~{lib}~{sample}.bam"),
-    log: "data/log/abra2/{ref}~{run}~{lib}~{sample}.log"
+        bam=temp("data/alignments/samples/bwa_abra2/{ref}/{sample}.bam"),
+    log: "data/log/abra2/{ref}~{sample}.log"
     threads:
         12
     resources: **acanthophis.rule_resources(config, "abra2", time_min=360, mem_gb=16)
@@ -151,13 +150,13 @@ rule bam_markdups_sort:
         "   {input.bam}"
         "   -"
         " | samtools sort"
-        "   -T ${{TMPDIR:-/tmp}}/{wildcards.run}_{wildcards.lib}_sort_$RANDOM"
+        "   -T ${{TMPDIR:-/tmp}}/{wildcards.sample}_sort_$RANDOM"
         "   --output-fmt bam,level=0"
         "   -@ {threads}"
         "   -m 1g"
         "   -"
         " | samtools markdup"
-        "   -T ${{TMPDIR:-/tmp}}/{wildcards.run}_{wildcards.lib}_markdup_$RANDOM"
+        "   -T ${{TMPDIR:-/tmp}}/{wildcards.sample}_markdup_$RANDOM"
         "   -s" # report stats
         "   -@ {threads}"
         "   --output-fmt bam,level=8"
