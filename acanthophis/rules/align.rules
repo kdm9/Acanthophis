@@ -47,6 +47,7 @@ rule bwaidx:
     shell:
         "bwa index {input} >{log} 2>&1"
 
+
 rule bwamem:
     input:
         reads="data/reads/runs/{run}~{lib}.fastq.gz",
@@ -67,42 +68,6 @@ rule bwamem:
         "   {input.ref}"
         "   {input.reads}"
         "| samtools view -Suh - >{output.bam}"
-        " ) >{log} 2>&1"
-
-
-#######################################################################
-#                        samtools sort/markdup                        #
-#######################################################################
-rule bam_markdups_sort:
-    input:
-        bam="data/alignments/byrun.raw/{aligner}/{ref}/{run}~{lib}~{sample}.bam",
-        ref=lambda wc: config['refs'][wc.ref]["fasta"],
-    output:
-        bam=temp("data/alignments/byrun/{aligner}/{ref}/{run}~{lib}~{sample}.bam"),
-    threads: 4
-    resources: **acanthophis.rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=16)
-    log: "data/log/markdup/{aligner}/{ref}/{run}~{lib}~{sample}.log"
-    conda: acanthophis.get_resource("envs/align.yml")
-    shell:
-        "( samtools fixmate "
-        "   -m"
-        "   -@ {threads}"
-        "   --output-fmt bam,level=0"
-        "   {input.bam}"
-        "   -"
-        " | samtools sort"
-        "   -T ${{TMPDIR:-/tmp}}/{wildcards.run}_{wildcards.lib}_sort_$RANDOM"
-        "   --output-fmt bam,level=0"
-        "   -@ {threads}"
-        "   -m 1g"
-        "   -"
-        " | samtools markdup"
-        "   -T ${{TMPDIR:-/tmp}}/{wildcards.run}_{wildcards.lib}_markdup_$RANDOM"
-        "   -s" # report stats
-        "   -@ {threads}"
-        "   --output-fmt bam,level=3"
-        "   -"
-        "   {output.bam}"
         " ) >{log} 2>&1"
 
 
@@ -145,16 +110,15 @@ rule abra2:
 #######################################################################
 rule mergebam_samp:
     input:
-        lambda wc: ["data/alignments/byrun/{aln}/{ref}/{run}~{lib}~{sample}.bam".format(
+        lambda wc: ["data/alignments/byrun.raw/{aln}/{ref}/{run}~{lib}~{sample}.bam".format(
                             run=r, lib=l, aln=wc.aligner, ref=wc.ref, sample=wc.sample)
 	                for r, l in config["SAMP2RUNLIB"][wc.sample]]
     output:
-        bam="data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+        bam=temp("data/alignments/samples.raw/{aligner}/{ref}/{sample}.bam"),
     log:
         "data/log/mergesamplebam/{aligner}/{ref}/{sample}.log"
     threads: 8
     resources: **acanthophis.rule_resources(config, "mergebam_samp", time_min=120, mem_gb=16)
-    priority: 1 # so the temps get cleaned sooner
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( samtools merge"
@@ -164,6 +128,42 @@ rule mergebam_samp:
         "   {input}"
         " ) >{log} 2>&1"
 
+
+#######################################################################
+#                        samtools sort/markdup                        #
+#######################################################################
+rule bam_merge_markdups_sort:
+    input:
+        bam="data/alignments/samples.raw/{aligner}/{ref}/{sample}.bam",
+        ref=lambda wc: config['refs'][wc.ref]["fasta"],
+    output:
+        bam="data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+    threads: 8
+    resources: **acanthophis.rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=16)
+    log: "data/log/markdup/{aligner}/{ref}/{run}~{lib}~{sample}.log"
+    conda: acanthophis.get_resource("envs/align.yml")
+    priority: 1 # so the temps get cleaned sooner
+    shell:
+        "( samtools fixmate "
+        "   -m"
+        "   -@ {threads}"
+        "   --output-fmt bam,level=0"
+        "   {input.bam}"
+        "   -"
+        " | samtools sort"
+        "   -T ${{TMPDIR:-/tmp}}/{wildcards.run}_{wildcards.lib}_sort_$RANDOM"
+        "   --output-fmt bam,level=0"
+        "   -@ {threads}"
+        "   -m 1g"
+        "   -"
+        " | samtools markdup"
+        "   -T ${{TMPDIR:-/tmp}}/{wildcards.run}_{wildcards.lib}_markdup_$RANDOM"
+        "   -s" # report stats
+        "   -@ {threads}"
+        "   --output-fmt bam,level=8"
+        "   -"
+        "   {output.bam}"
+        " ) >{log} 2>&1"
 
 
 #######################################################################
@@ -200,7 +200,7 @@ rule mergebam_set:
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( samtools merge"
-        "   --output-fmt bam,level=7"
+        "   --output-fmt bam,level=8"
         "   -@ {threads}"
         "   -"
         "   {input}"
