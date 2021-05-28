@@ -8,7 +8,7 @@ rule ngmap:
     output:
         bam=temp("data/alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam"),
     log:
-        "data/log/ngm/{ref}/{run}~{lib}~{sample}.log"
+        "data/log/ngm/{ref}~{run}~{lib}~{sample}.log"
     threads:
         12
     resources: **acanthophis.rule_resources(config, "ngmap", time_min=240, mem_gb=16)
@@ -55,7 +55,7 @@ rule bwamem:
         bwaidx=lambda wc: config['refs'][wc.ref]["fasta"]+ ".pac",
     output:
         bam=temp("data/alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam"),
-    log: "data/log/bwa/{ref}/{run}~{lib}~{sample}.log"
+    log: "data/log/bwa/{ref}~{run}~{lib}~{sample}.log"
     threads:
         12
     resources: **acanthophis.rule_resources(config, "bwamem", time_min=240, mem_gb=16)
@@ -85,7 +85,7 @@ rule abra2:
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
         bam=temp("data/alignments/byrun/bwa_abra2/{ref}/{run}~{lib}~{sample}.bam"),
-    log: "data/log/abra2/{ref}/{run}~{lib}~{sample}.log"
+    log: "data/log/abra2/{ref}~{run}~{lib}~{sample}.log"
     threads:
         12
     resources: **acanthophis.rule_resources(config, "abra2", time_min=360, mem_gb=16)
@@ -116,7 +116,7 @@ rule mergebam_samp:
     output:
         bam=temp("data/alignments/samples.raw/{aligner}/{ref}/{sample}.bam"),
     log:
-        "data/log/mergesamplebam/{aligner}/{ref}/{sample}.log"
+        "data/log/mergesamplebam/{aligner}~{ref}~{sample}.log"
     threads: 8
     resources: **acanthophis.rule_resources(config, "mergebam_samp", time_min=120, mem_gb=16)
     conda: acanthophis.get_resource("envs/align.yml")
@@ -140,7 +140,7 @@ rule bam_merge_markdups_sort:
         bam="data/alignments/samples/{aligner}/{ref}/{sample}.bam",
     threads: 8
     resources: **acanthophis.rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=16)
-    log: "data/log/markdup/{aligner}/{ref}/{run}~{lib}~{sample}.log"
+    log: "data/log/markdup/{aligner}~{ref}~{sample}.log"
     conda: acanthophis.get_resource("envs/align.yml")
     priority: 1 # so the temps get cleaned sooner
     shell:
@@ -194,7 +194,7 @@ rule mergebam_set:
         bam="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
         bai="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai",
     log:
-        "data/log/mergesetbam/{aligner}/{ref}/{sampleset}.log"
+        "data/log/mergesetbam/{aligner}~{ref}~{sampleset}.log"
     threads: 16
     resources: **acanthophis.rule_resources(config, "mergebam_set", time_min=2880, mem_gb=16)
     conda: acanthophis.get_resource("envs/align.yml")
