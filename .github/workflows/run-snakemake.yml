@@ -30,6 +30,7 @@ jobs:
           pushd example
           acanthophis-init --force
           mamba env update -n base -f environment.yml
+          mamba install -c conda-forge -c bioconda -c kdm801 numpy msprime wgsim samtools
           snakemake --snakefile Snakefile.generate-rawdata -j 4 --use-conda --conda-frontend mamba
           snakemake --snakefile Snakefile -j 4 --use-conda --conda-frontend mamba
           popd
