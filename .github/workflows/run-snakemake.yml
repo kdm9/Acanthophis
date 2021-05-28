@@ -22,8 +22,7 @@ jobs:
       
       - name: Install conda deps
         run: |
-          conda install mamba
-          which python3
+          conda install mamba pip
           python3 -m pip install -e .
       
       - name: Run snakemake
