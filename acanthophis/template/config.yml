@@ -33,7 +33,7 @@ refs:
     # runs, so for now you must `samtools faidx` each fasta file you put here
     # manually ahead of running snakemake.
     fasta: "rawdata/reference/genome.fa"
-    gff: "rawdata/reference/genome.gff"
+    gtf: "rawdata/reference/genome.gtf"
     # For snpEff, we need two other bits of metadata. The organism name (which
     # is used in snpEff reports), and any additional lines of config in the
     # snpEff.config file for this reference. This is where one should specificy
