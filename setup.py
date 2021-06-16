@@ -1,3 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import setuptools
-setuptools.setup()
+if __name__ == "__main__":
+    setuptools.setup()

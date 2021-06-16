@@ -7,6 +7,12 @@ from sys import stderr
 from math import log, inf
 from functools import partial
 
+try:
+    from ._version import version
+    __version__ = version
+except ImportError:
+    pass
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
