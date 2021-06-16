@@ -20,6 +20,10 @@ rule mpileup_bamlist:
 
 rule mpileup:
     input:
+        bam=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
+        bai=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam.bai",
+                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
         bamlist="data/variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}.bamlist",
         sset="data/samplelists/{sampleset}.txt",
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
