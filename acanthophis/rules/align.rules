@@ -168,22 +168,6 @@ rule bam_markdups_sort:
 #######################################################################
 #                     Merge samples -> samplesets                     #
 #######################################################################
-# we historically did this with a file of file names, but don't need it
-# anymore. FIXME delete this at some point unless it proves useful
-#
-#localrules: mergebam_set_bamlist
-#rule mergebam_set_bamlist:
-#    input:
-#        bam=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
-#                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
-#        bai=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam.bai",
-#                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
-#    output:
-#        temp("data/alignments/sets/{aligner}~{ref}~{sampleset}.bamlist"),
-#    run:
-#        with open(output[0], "w") as fh:
-#            for s in input.bam:
-#                print(s, file=fh)
 
 rule mergebam_set:
     input:

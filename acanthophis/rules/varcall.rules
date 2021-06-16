@@ -1,10 +1,26 @@
 #######################################################################
 #                               Mpileup                               #
 #######################################################################
+#
+# For mpileup, we don't merge the bams but make a list of bam files and use that. 
+
+localrules: mpileup_bamlist
+rule mpileup_bamlist:
+    input:
+        bam=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
+        bai=lambda wc: expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam.bai",
+                          aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset]),
+    output:
+        temp("data/variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}.bamlist"),
+    run:
+        with open(output[0], "w") as fh:
+            for s in input.bam:
+                print(s, file=fh)
+
 rule mpileup:
     input:
-        bam="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
-        bai="data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai",
+        bamlist="data/variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}.bamlist",
         sset="data/samplelists/{sampleset}.txt",
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
@@ -23,7 +39,7 @@ rule mpileup:
     shell:
         "( bcftools mpileup"
         "   --redo-BAQ"
-        "   --max-depth 100000" # the default per file max (250x) is insane, i.e. <1x for most sets. new limit of 20000x  equates to a max. of 20x across all samples.
+        "   --max-depth 1000" # per file (i.e. sample) max depth
         "   --min-MQ {params.minmq}"
         "   --min-BQ {params.minbq}"
         "   --fasta-ref {input.ref}"
