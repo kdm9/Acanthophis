@@ -10,3 +10,4 @@ build-backend = 'setuptools.build_meta'
 [tool.setuptools_scm]
 write_to = "acanthophis/_version.py"
 git_describe_command = "git describe --dirty --tags --first-parent"
+local_scheme = "no-local-version"
