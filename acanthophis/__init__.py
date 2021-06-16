@@ -122,7 +122,7 @@ def _iter_metadata(s2rl_file):
         if s2rl_file.endswith(".tsv"):
             dialect = "excel-tab"
         for samp in csv.DictReader(fh, dialect=dialect):
-            yield samp
+            yield {k.lower(): v for k, v in samp.items()}
 
 
 def make_runlib2samp(s2rl_file):
