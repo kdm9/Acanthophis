@@ -47,7 +47,7 @@ rule mpileup:
         "   --annotate FORMAT/DP,FORMAT/AD,FORMAT/SP,INFO/AD" #output extra tags
         "   --region '{wildcards.region}'"
         "   --output-type u" # uncompressed bam
-        "   {input.bam}"
+        "   --bam-list {input.bamlist}"
         " | bcftools call"
         "   --threads {threads}"
         "   --targets '{wildcards.region}'" # might not be needed
