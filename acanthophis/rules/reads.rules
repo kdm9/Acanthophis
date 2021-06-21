@@ -1,38 +1,49 @@
-ruleorder: rawreads_il_fromr1r2 > rawreads_il_fromil
-rule rawreads_il_fromr1r2:
+ruleorder: split_pairs_il > split_pairs_r12
+rule split_pairs_r12:
     input:
         r1=config["raw_paths"]["r1_path"],
         r2=config["raw_paths"]["r2_path"],
     output:
-        reads=temp("data/reads/raw_il/{run}~{lib}.fastq"),
-    resources: **acanthophis.rule_resources(config, "rawreads_il_fromr1r2", time_min=30, mem_gb=1)
+        paired=temp("data/reads/raw/{run}~{lib}_il.fastq"),
+        single=temp("data/reads/raw/{run}~{lib}_se.fastq"),
+    resources: **acanthophis.rule_resources(config, "split_pairs", time_min=30, mem_gb=1)
     log:
         log="data/log/pecheck/{run}~{lib}.log",
         stats="data/stats/pecheck/{run}~{lib}.tsv",
     conda: acanthophis.get_resource("envs/reads.yml")
     shell:
-        "seqhax pecheck -o {output.reads} {input.r1} {input.r2} >{log.stats} 2>{log.log}"
+        "seqhax pairs"
+        "   -p {output.paired}"
+        "   -u {output.single}"
+        "   -l 20"
+        "   -y {log.stats}"
+        "   {input.r1} {input.r2}"
 
-
-rule rawreads_il_fromil:
+rule split_pairs_il:
     input:
         il=config["raw_paths"]["il_path"],
     output:
-        reads=temp("data/reads/raw_il/{run}~{lib}.fastq"),
-    resources: **acanthophis.rule_resources(config, "rawreads_il_fromil", time_min=30, mem_gb=1)
+        paired=temp("data/reads/raw/{run}~{lib}_il.fastq"),
+        single=temp("data/reads/raw/{run}~{lib}_se.fastq"),
+    resources: **acanthophis.rule_resources(config, "split_pairs", time_min=30, mem_gb=1)
     log:
         log="data/log/pecheck/{run}~{lib}.log",
         stats="data/stats/pecheck/{run}~{lib}.tsv",
     conda: acanthophis.get_resource("envs/reads.yml")
     shell:
-        "seqhax pecheck -o {output.reads} -i {input.il} >{log.stats} 2>{log.log}"
+        "seqhax pairs"
+        "   -p {output.paired}"
+        "   -u {output.single}"
+        "   -l 20"
+        "   -y {log.stats}"
+        "   {input.r1} {input.r2}"
 
 
-rule qcreads:
+rule qcreads_paired:
     input:
-        reads="data/reads/raw_il/{run}~{lib}.fastq",
+        reads="data/reads/raw/{run}~{lib}_il.fastq",
     output:
-        reads="data/reads/runs/{run}~{lib}.fastq.gz",
+        reads=temp("data/reads/qc/{run}~{lib}_il.fastq"),
     log:
         log="data/log/adapterremoval/{run}~{lib}.log",
         settings="data/stats/adapterremoval/{run}~{lib}.settings",
@@ -49,9 +60,6 @@ rule qcreads:
         "   --file1 {input.reads}"
         "   --adapter1 {params.adp1}"
         "   --adapter2 {params.adp2}"
-        "   --combined-output"
-        "   --interleaved"
-        "   --interleaved-output"
         "   --trimns"
         "   --trimqualities"
         "   --trimwindows 10"
@@ -59,11 +67,53 @@ rule qcreads:
         "   --threads {threads}"
         "   --settings {log.settings}"
         "   --output1 /dev/stdout"
-        " | seqhax pairs"
-        "   -l 20"
-        "   -b >(pigz -p {threads} >{output.reads})"
-        "   /dev/stdin"
         ") >{log.log} 2>&1"
+
+rule qcreads_se:
+    input:
+        reads="data/reads/raw/{run}~{lib}_se.fastq",
+    output:
+        reads=temp("data/reads/qc/{run}~{lib}_se.fastq.gz"),
+    log:
+        log="data/log/adapterremoval/{run}~{lib}.log",
+        settings="data/stats/adapterremoval/{run}~{lib}.settings",
+    resources: **acanthophis.rule_resources(config, "qcreads", time_min=60, mem_gb=2)
+    threads:
+        8
+    params:
+        adp1=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter1"],
+        adp2=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter2"],
+        minqual=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["minqual"],
+    conda: acanthophis.get_resource("envs/reads.yml")
+    shell:
+        "( AdapterRemoval"
+        "   --file1 {input.reads}"
+        "   --adapter1 {params.adp1}"
+        "   --trimns"
+        "   --trimqualities"
+        "   --trimwindows 10"
+        "   --minquality {params.minqual}"
+        "   --threads {threads}"
+        "   --settings {log.settings}"
+        "   --output1 {output.reads}"
+        ") >{log.log} 2>&1"
+
+
+
+rule merge_qcd_reads:
+    input:
+        pe="data/reads/qc/{run}~{lib}_il.fastq",
+        se="data/reads/qc/{run}~{lib}_se.fastq",
+    output:
+        reads="data/reads/runs/{run}~{lib}.fastq.gz",
+    log:
+        log="data/log/mergeqcd/{run}~{lib}.log",
+        stats="data/stats/mergeqcd/{run}~{lib}.tsv",
+    threads: 4
+    resources: **acanthophis.rule_resources(config, "mergeqcd", time_min=30, mem_gb=2)
+    conda: acanthophis.get_resource("envs/reads.yml")
+    shell:
+        "(cat {input.pe} {input.se} | pigz -p {threads} >{output} ) 2>{log}"
 
 
 rule read_count_librun_indiv:
@@ -74,7 +124,7 @@ rule read_count_librun_indiv:
     log:
         "data/log/readstats/seqhax-stats-librun/{run}~{lib}.log",
     conda: acanthophis.get_resource("envs/reads.yml")
-    resources: **acanthophis.rule_resources(config, "read_count_librun_indiv", time_min=30, mem_gb=1)
+    resources: **acanthophis.rule_resources(config, "read_count_librun_indiv", time_min=10, mem_gb=1)
     shell:
         "( seqhax stats"
         "    {input}"
