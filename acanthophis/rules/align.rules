@@ -10,7 +10,7 @@ rule ngmap:
     log:
         "data/log/ngm/{ref}~{run}~{lib}~{sample}.log"
     threads:
-        12
+        8
     resources: **acanthophis.rule_resources(config, "ngmap", time_min=240, mem_gb=16)
     params:
         sensitivity=config["align"]["ngm"]["sensitivity"],
@@ -57,7 +57,7 @@ rule bwamem:
         bam=temp("data/alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam"),
     log: "data/log/bwa/{ref}~{run}~{lib}~{sample}.log"
     threads:
-        12
+        8
     resources: **acanthophis.rule_resources(config, "bwamem", time_min=240, mem_gb=16)
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
@@ -86,7 +86,7 @@ rule abra2:
         bam=temp("data/alignments/samples/bwa_abra2/{ref}/{sample}.bam"),
     log: "data/log/abra2/{ref}~{sample}.log"
     threads:
-        12
+        8
     resources: **acanthophis.rule_resources(config, "abra2", time_min=360, mem_gb=16)
     params:
         java_args=config["align"].get("abra2", {}).get("java_args", "-Xmx4G"),
@@ -116,13 +116,13 @@ rule mergebam_samp:
         bam=temp("data/alignments/samples.raw/{aligner}/{ref}/{sample}.bam"),
     log:
         "data/log/mergesamplebam/{aligner}~{ref}~{sample}.log"
-    threads: 8
+    threads: 4
     resources: **acanthophis.rule_resources(config, "mergebam_samp", time_min=120, mem_gb=16)
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "( samtools merge"
         "   -@ {threads}"
-        "   --output-fmt bam,level=4"
+        "   --output-fmt bam,level=0"
         "   {output.bam}"
         "   {input}"
         " ) >{log} 2>&1"
@@ -137,7 +137,7 @@ rule bam_markdups_sort:
         ref=lambda wc: config['refs'][wc.ref]["fasta"],
     output:
         bam="data/alignments/samples/{aligner}/{ref}/{sample}.bam",
-    threads: 8
+    threads: 4
     resources: **acanthophis.rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=16)
     log: "data/log/markdup/{aligner}~{ref}~{sample}.log"
     conda: acanthophis.get_resource("envs/align.yml")
