@@ -18,6 +18,7 @@ rule split_pairs_r12:
         "   -l 20"
         "   -y {log.stats}"
         "   {input.r1} {input.r2}"
+        ">{log.log} 2>&1"
 
 rule split_pairs_il:
     input:
@@ -36,7 +37,8 @@ rule split_pairs_il:
         "   -u {output.single}"
         "   -l 20"
         "   -y {log.stats}"
-        "   {input.r1} {input.r2}"
+        "   {input.il}"
+        ">{log.log} 2>&1"
 
 
 rule qcreads_paired:
@@ -46,7 +48,7 @@ rule qcreads_paired:
         reads=temp("data/reads/qc/{run}~{lib}_il.fastq"),
     log:
         log="data/log/adapterremoval/{run}~{lib}.log",
-        settings="data/stats/adapterremoval/{run}~{lib}.settings",
+        settings="data/stats/adapterremoval/{run}~{lib}_pe.settings",
     resources: **acanthophis.rule_resources(config, "qcreads", time_min=60, mem_gb=2)
     threads:
         8
@@ -60,23 +62,25 @@ rule qcreads_paired:
         "   --file1 {input.reads}"
         "   --adapter1 {params.adp1}"
         "   --adapter2 {params.adp2}"
+        "   --interleaved"
+        "   --combined-output"
         "   --trimns"
         "   --trimqualities"
         "   --trimwindows 10"
         "   --minquality {params.minqual}"
         "   --threads {threads}"
         "   --settings {log.settings}"
-        "   --output1 /dev/stdout"
+        "   --output1 {output.reads}"
         ") >{log.log} 2>&1"
 
 rule qcreads_se:
     input:
         reads="data/reads/raw/{run}~{lib}_se.fastq",
     output:
-        reads=temp("data/reads/qc/{run}~{lib}_se.fastq.gz"),
+        reads=temp("data/reads/qc/{run}~{lib}_se.fastq"),
     log:
         log="data/log/adapterremoval/{run}~{lib}.log",
-        settings="data/stats/adapterremoval/{run}~{lib}.settings",
+        settings="data/stats/adapterremoval/{run}~{lib}_se.settings",
     resources: **acanthophis.rule_resources(config, "qcreads", time_min=60, mem_gb=2)
     threads:
         8
@@ -89,6 +93,7 @@ rule qcreads_se:
         "( AdapterRemoval"
         "   --file1 {input.reads}"
         "   --adapter1 {params.adp1}"
+        "   --combined-output"
         "   --trimns"
         "   --trimqualities"
         "   --trimwindows 10"
@@ -108,7 +113,6 @@ rule merge_qcd_reads:
         reads="data/reads/runs/{run}~{lib}.fastq.gz",
     log:
         log="data/log/mergeqcd/{run}~{lib}.log",
-        stats="data/stats/mergeqcd/{run}~{lib}.tsv",
     threads: 4
     resources: **acanthophis.rule_resources(config, "mergeqcd", time_min=30, mem_gb=2)
     conda: acanthophis.get_resource("envs/reads.yml")
@@ -204,7 +208,8 @@ rule fastqc_adaptors_fa:
 
 rule fastqc_raw:
     input:
-        reads="data/reads/raw_il/{run}~{lib}.fastq",
+        paired="data/reads/raw/{run}~{lib}_il.fastq",
+        single="data/reads/raw/{run}~{lib}_se.fastq",
         adaptors="data/stats/fastqc/adaptors.txt"
     output:
         fqczip="data/stats/fastqc/raw/{run}~{lib}_fastqc.zip",
@@ -215,10 +220,11 @@ rule fastqc_raw:
     shell:
         "(T=$(mktemp -d);"
         ' trap "rm -rf $T" EXIT;'
+        " cat {input.paired} {input.single} > $T/{wildcards.run}~{wildcards.lib}.fastq &&"
         " fastqc "
         "   -o $T"
         "   -a {input.adaptors}"
-        "   {input.reads}"
+        "   $T/{wildcards.run}~{wildcards.lib}.fastq"
         " && mv $T/*_fastqc.zip {output.fqczip}"
         ") >{log} 2>&1"
 
@@ -250,9 +256,10 @@ rule multiqc_rawreads:
                             for sample in config["SAMPLESETS"][wc.sampleset]
                             for run, lib in config["SAMP2RUNLIB"][sample]
                             ],
-        ar=lambda wc: ["data/stats/adapterremoval/{run}~{lib}.settings".format(run=run, lib=lib)
+        ar=lambda wc: ["data/stats/adapterremoval/{run}~{lib}_{read}.settings".format(run=run, lib=lib, read=read)
                        for sample in config["SAMPLESETS"][wc.sampleset]
                        for run, lib in config["SAMP2RUNLIB"][sample]
+                       for read in ["se", "pe"]
                        ],
     output:
         html="data/stats/multiqc/rawreads/{sampleset}_multiqc_report.html",
