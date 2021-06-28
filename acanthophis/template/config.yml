@@ -55,7 +55,7 @@ qc:
     adapter2: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
     minqual: 20
     qualenc: 33
-    maxqualvalue: 45
+    maxqualval: 45
   # Example special run
   # some_run:
   #   # One can specify a different set of oligos like so for any runs run on a
