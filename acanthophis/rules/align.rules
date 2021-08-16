@@ -213,18 +213,38 @@ rule bamidx:
 #######################################################################
 #                              Bam stats                              #
 #######################################################################
-rule bamstat_samps:
+rule bamstat_sample:
     input:
         "data/alignments/samples/{aligner}/{ref}/{sample}.bam",
     output:
         "data/alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats",
     log:
-        "data/log/bamstats_sample/{aligner}~{ref}~{sample}.log"
+        "data/log/bamstat_sample/{aligner}~{ref}~{sample}.log"
     threads: 1
-    resources: **acanthophis.rule_resources(config, "bamstat_samps", time_min=120, mem_gb=4)
+    resources: **acanthophis.rule_resources(config, "bamstat_sample", time_min=120, mem_gb=4)
     conda: acanthophis.get_resource("envs/align.yml")
     shell:
         "(samtools stats -i 5000 -x {input} >{output}) >{log}"
+
+rule qualimap_sample:
+    input:
+        bam="data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+    output:
+        directory("data/alignments/qualimap/samples/{aligner}~{ref}~{sample}/"),
+    log:
+        "data/log/qualimap_sample/{aligner}~{ref}~{sample}.log"
+    resources: **acanthophis.rule_resources(config, "qualimap_sample", time_min=120, mem_gb=8)
+    conda: acanthophis.get_resource("envs/qualimap.yml")
+    threads: 4
+    shell:
+        "( unset DISPLAY; qualimap bamqc"
+        "   --java-mem-size=7G"
+        "   -bam {input.bam}"
+        "   -nr 10000"
+        "   -nt {threads}"
+        "   -outdir {output}"
+        "   {input}"
+        " ) >{log} 2>&1"
 
 
 #######################################################################
