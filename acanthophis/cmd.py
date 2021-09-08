@@ -55,8 +55,10 @@ def init():
         exit(0)
 
     template_dir = acanthophis.get_resource("template/")
-    if args.force or args.yes or prompt_yn(f"cp -r {template_dir} -> {args.destdir}?"):
-        shutil.copytree(template_dir, args.destdir)
+    if args.dryrun:
+        print(f"cp -r {template_dir} {args.destdir}")
+    elif args.force or args.yes or prompt_yn(f"cp -r {template_dir} -> {args.destdir}?"):
+        shutil.copytree(template_dir, args.destdir, dirs_exist_ok=True)
 
     for profile in args.cluster_profile:
         if profile not in acanthophis.profiles:
@@ -68,7 +70,7 @@ def init():
             print(f"cp -r {src} {dst}")
             continue
         if args.force or args.yes or prompt_yn(f"copy {src} -> {dst}?"):
-            shutil.copytree(src, dst)
+            shutil.copytree(src, dst, dirs_exist_ok=True)
 
 
 if __name__ == "__main__":
