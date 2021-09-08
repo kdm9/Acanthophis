@@ -213,7 +213,7 @@ rule fastqc_adaptors_fa:
                 with open(config["qc"][run]["adapter_file"]) as adaptfh:
                     for adapt_seq in adaptfh.read().split():
                         seqs.add(adapt_seq.strip())
-            for i, seq in seqs:
+            for i, seq in enumerate(seqs):
                 print(f"{i:02d}", seq, sep='\t', file=fh)
 
 rule fastqc_raw:
