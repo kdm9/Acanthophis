@@ -1,0 +1,57 @@
+rule qualimap_sample:
+    input:
+        bam="data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+    output:
+        bamqc=directory("data/alignments/qualimap/samples/{aligner}/{ref}/{sample}/"),
+    log:
+        "data/log/qualimap_sample/{aligner}~{ref}~{sample}.log"
+    threads: 8
+    resources: **acanthophis.rule_resources(config, "qualimap_sample", time_min=240, mem_gb=16)
+    conda: acanthophis.get_resource("envs/qualimap.yml")
+    shell:
+        "( unset DISPLAY; qualimap bamqc"
+        "   --java-mem-size=6G"
+        "   -bam {input.bam}"
+        "   -nt {threads}"
+        "   -nr 10000"
+        "   -outdir {output}"
+        "   {input}"
+        " ) >{log} 2>&1"
+
+
+
+localrules: qualimap_datafile
+rule qualimap_datafile:
+    input:
+        bam=lambda wc: expand("data/alignments/qualimap/samples/{{aligner}}/{{ref}}/{sample}",
+                              sample=config["SAMPLESETS"][wc.sampleset]),
+    output:
+        datafile="data/alignments/qualimap/sampleset/{aligner}~{ref}~{sampleset}.data",
+    run:
+        from path import Path
+        with open(output.datafile, "w") as fh:
+            for bam in input.bam:
+                bam = Path(bam)
+                print(str(bam.name.stem), str(bam), sep="\t", file=fh)
+
+
+rule qualimap_set:
+    input:
+        bam=lambda wc: expand("data/alignments/samples/{{aligner}}/{{ref}}/{sample}.bam",
+                              sample=config["SAMPLESETS"][wc.sampleset]),
+        datafile="data/alignments/qualimap/sampleset/{aligner}~{ref}~{sampleset}.data",
+    output:
+        directory("data/alignments/qualimap/sampleset/{aligner}~{ref}~{sampleset}/"),
+    log:
+        "data/log/qualimap_sampleset/{aligner}~{ref}~{sampleset}.log"
+    threads: 4
+    resources: **acanthophis.rule_resources(config, "qualimap_set", time_min=240, mem_gb=16)
+    conda: acanthophis.get_resource("envs/qualimap.yml")
+    shell:
+        "( unset DISPLAY; qualimap multi-bamqc"
+        "   --java-mem-size=6G"
+        "   --data {input.datafile}"
+        "   -nr 10000"
+        "   -outdir {output}"
+        "   {input}"
+        " ) >{log} 2>&1"
