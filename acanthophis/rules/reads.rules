@@ -96,7 +96,7 @@ rule qcreads_se:
     shell:
         "( AdapterRemoval"
         "   --file1 {input.reads}"
-        "   --adapter-file {params.adpfile}"
+        "   --adapter-list {params.adpfile}"
         "   --combined-output"
         "   --trimns"
         "   --trimqualities"
