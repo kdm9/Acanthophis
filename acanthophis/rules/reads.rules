@@ -210,7 +210,7 @@ rule fastqc_adaptors_fa:
         with open(output[0], "w") as fh:
             seqs = set()
             for run in config["qc"]:
-                with open(config["qc"][run][adapter_file]) as adaptfh:
+                with open(config["qc"][run]["adapter_file"]) as adaptfh:
                     for adapt_seq in adaptfh.read().split():
                         seqs.add(adapt_seq.strip())
             for i, seq in seqs:
