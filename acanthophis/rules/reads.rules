@@ -53,8 +53,7 @@ rule qcreads_paired:
     threads:
         8
     params:
-        adp1=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter1"],
-        adp2=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter2"],
+        adpfile=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter_file"],
         minqual=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["minqual"],
         qualenc=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["qualenc"],
         maxqualval=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["maxqualval"],
@@ -62,8 +61,7 @@ rule qcreads_paired:
     shell:
         "( AdapterRemoval"
         "   --file1 {input.reads}"
-        "   --adapter1 {params.adp1}"
-        "   --adapter2 {params.adp2}"
+        "   --adapter-list {params.adpfile}"
         "   --interleaved"
         "   --combined-output"
         "   --trimns"
@@ -90,8 +88,7 @@ rule qcreads_se:
     threads:
         8
     params:
-        adp1=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter1"],
-        adp2=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter2"],
+        adpfile=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["adapter_file"],
         minqual=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["minqual"],
         qualenc=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["qualenc"],
         maxqualval=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["maxqualval"],
@@ -99,7 +96,7 @@ rule qcreads_se:
     shell:
         "( AdapterRemoval"
         "   --file1 {input.reads}"
-        "   --adapter1 {params.adp1}"
+        "   --adapter-file {params.adpfile}"
         "   --combined-output"
         "   --trimns"
         "   --trimqualities"

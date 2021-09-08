@@ -49,10 +49,7 @@ qc:
   _DEFAULT_:
     # _DEFAULT_ describes the settings to use for all runs except those
     # specifically named below.
-    #
-    # The below settings match the NEB NextTera oligos.
-    adapter1: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
-    adapter2: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
+    adapter_file: "rawdata/adapters.txt"
     minqual: 20
     qualenc: 33
     maxqualval: 45
@@ -60,8 +57,6 @@ qc:
   # some_run:
   #   # One can specify a different set of oligos like so for any runs run on a
   #   # different platform. NB, this must be done per-run, not per library.
-  #   adapter1: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
-  #   adapter2: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
   #   minqual: 25
 
 
