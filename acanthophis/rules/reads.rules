@@ -208,10 +208,13 @@ rule fastqc_adaptors_fa:
         temp("data/stats/fastqc/adaptors.txt")
     run:
         with open(output[0], "w") as fh:
+            seqs = set()
             for run in config["qc"]:
-                print(run+"ad1", config["qc"][run]["adapter1"], sep='\t', file=fh)
-                print(run+"ad2", config["qc"][run]["adapter2"], sep='\t', file=fh)
-
+                with open(config["qc"][run][adapter_file]) as adaptfh:
+                    for adapt_seq in adaptfh.read().split():
+                        seqs.add(adapt_seq.strip())
+            for i, seq in seqs:
+                print(f"{i:02d}", seq, sep='\t', file=fh)
 
 rule fastqc_raw:
     input:
