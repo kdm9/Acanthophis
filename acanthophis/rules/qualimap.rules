@@ -28,16 +28,16 @@ rule qualimap_datafile:
     output:
         datafile="data/alignments/qualimap/sampleset/{aligner}~{ref}~{sampleset}.data",
     run:
-        from path import Path
+        from pathlib import Path
         with open(output.datafile, "w") as fh:
             for bam in input.bam:
                 bam = Path(bam)
-                print(str(bam.name.stem), str(bam), sep="\t", file=fh)
+                print(str(Path(bam.name).stem), str(bam), sep="\t", file=fh)
 
 
 rule qualimap_set:
     input:
-        bam=lambda wc: expand("data/alignments/samples/{{aligner}}/{{ref}}/{sample}.bam",
+        bam=lambda wc: expand("data/alignments/qualimap/samples/{{aligner}}/{{ref}}/{sample}",
                               sample=config["SAMPLESETS"][wc.sampleset]),
         datafile="data/alignments/qualimap/sampleset/{aligner}~{ref}~{sampleset}.data",
     output:
@@ -55,3 +55,5 @@ rule qualimap_set:
         "   -outdir {output}"
         "   {input}"
         " ) >{log} 2>&1"
+
+
