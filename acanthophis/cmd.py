@@ -55,17 +55,8 @@ def init():
         exit(0)
 
     template_dir = acanthophis.get_resource("template/")
-    for file in glob(f"{template_dir}/*"):
-        if args.dryrun:
-            print(f"cp {file} {args.destdir}")
-            continue
-        outf = os.path.join(args.destdir, os.path.basename(file))
-        if args.force or args.yes or prompt_yn(f"copy {os.path.basename(file)} -> {outf}?"):
-            if not os.path.exists(outf) or args.force: 
-                shutil.copyfile(file, outf)
-            else:
-                print(f"WARNING: {outf} exists, not copying. Remove it or use --force.", file=stderr)
-
+    if args.force or args.yes or prompt_yn(f"cp -r {template_dir} -> {args.destdir}?"):
+        shutil.copytree(template_dir, args.destdir)
 
     for profile in args.cluster_profile:
         if profile not in acanthophis.profiles:
