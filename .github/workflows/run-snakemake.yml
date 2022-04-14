@@ -29,8 +29,7 @@ jobs:
       - name: Setup demo
         run: |
           pushd example
-          acanthophis-init --yes
-          snakemake --snakefile Snakefile.generate-rawdata -j 4 --use-conda --conda-frontend mamba
+          bash setup.sh
           popd
 
       - name: Run Snakemake

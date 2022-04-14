@@ -68,7 +68,6 @@ rule faidx:
     shell:
         "samtools faidx {input}"
 
-
 rule metadata:
     output:
         rl2s="rawdata/rl2s.tsv",

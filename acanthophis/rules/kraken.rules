@@ -1,35 +1,12 @@
-if config.get("cluster_resources", {}).get("internet_only_localrules", False):
-    localrules: krakendb_dl
-
-rule krakendb_dl:
-    output:
-        hash="data/kraken/dbs/{dbname}/hash.k2d",
-        opts="data/kraken/dbs/{dbname}/opts.k2d",
-        taxo="data/kraken/dbs/{dbname}/taxo.k2d",
-    conda: acanthophis.get_resource("envs/kraken.yml")
-    params:
-        url=lambda wc: config["kraken"]["dburls"][wc.dbname]
-    resources: **acanthophis.rule_resources(config, "krakendb_dl", internet=1, time_min=180, mem_gb=1)
-    log: "data/log/kraken/dl/{dbname}.log"
-    shell:
-        "(D=$(dirname {output.hash});"
-        " pushd $D;"
-        " wget -O {wildcards.dbname}.tar.gz {params.url};"
-        " tar xf {wildcards.dbname}.tar.gz;"
-        " rm {wildcards.dbname}.tar.gz;"
-        " popd"
-        ") >{log} 2>&1"
-
-        
 rule kraken:
     input:
         reads="data/reads/samples/{sample}.fastq.gz",
-        hash="data/kraken/dbs/{dbname}/hash.k2d",
-        opts="data/kraken/dbs/{dbname}/opts.k2d",
-        taxo="data/kraken/dbs/{dbname}/taxo.k2d",
+        hash=lambda wc: config["kraken"]["dbs"][wc.krakendb] + "/hash.k2d",
+        opts=lambda wc: config["kraken"]["dbs"][wc.krakendb] + "/opts.k2d",
+        taxo=lambda wc: config["kraken"]["dbs"][wc.krakendb] + "/taxo.k2d",
     output: 
-        "data/kraken/persample/{dbname}/{sample}.txt",
-    log: "data/log/kraken/persample/{dbname}~{sample}.log"
+        "data/kraken/persample/{krakendb}/{sample}.txt",
+    log: "data/log/kraken/persample/{krakendb}~{sample}.log"
     threads: 4
     conda: acanthophis.get_resource("envs/kraken.yml")
     resources: **acanthophis.rule_resources(config, "kraken", time_min=60, mem_gb=8)
@@ -46,9 +23,9 @@ rule kraken:
 
 rule all_kraken:
     input:
-        [expand("data/kraken/persample/{dbname}/{sample}.txt",
+        [expand("data/kraken/persample/{krakendb}/{sample}.txt",
                sample=config["SAMPLESETS"][sampleset],
-               dbname=config["kraken"]["samplesets"][sampleset],
+               krakendb=config["kraken"]["samplesets"][sampleset],
                ) for sampleset in config["kraken"]["samplesets"]]
 
 
