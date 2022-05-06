@@ -13,16 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: setup-conda
-        uses: s-weigand/setup-conda@v1.0.5
+      - name: setup-mamba
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-conda: true
-          update-conda: true
-          conda-channels: "defaults,conda-forge,bioconda,kdm801"
+          mamba-version: "*"
+          channels: bioconda,kdm801,conda-forge,defaults
+          channel-priority: true
       
       - name: setup and run Snakemake
+        shell: bash -el {0}
         run: |
-          conda install mamba pip
+          mamba info
           pushd example
           source setup.sh
           snakemake --snakefile Snakefile -j 4 --use-conda --conda-frontend mamba
