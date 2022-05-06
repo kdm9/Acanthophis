@@ -20,21 +20,11 @@ jobs:
           update-conda: true
           conda-channels: "defaults,conda-forge,bioconda,kdm801"
       
-      - name: Install conda deps
+      - name: setup and run Snakemake
         run: |
           conda install mamba pip
-          mamba env update -n base -f example/environment.yml
-          python3 -m pip install -e .
-      
-      - name: Setup demo
-        run: |
           pushd example
-          bash setup.sh
-          popd
-
-      - name: Run Snakemake
-        run: |
-          pushd example
+          source setup.sh
           snakemake --snakefile Snakefile -j 4 --use-conda --conda-frontend mamba
           popd
 

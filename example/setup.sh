@@ -1,6 +1,5 @@
 #!/bin/bash
-echo $-
-set -xeuo pipefail
+#set -xeuo pipefail
 mamba env update -f environment.yml
 mamba activate acanthophis-demo
 pip install -e ../
