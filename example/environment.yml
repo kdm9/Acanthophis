@@ -7,9 +7,7 @@ channels:
 dependencies:
   - python
   - snakemake
+  - acanthophis
   - ncdu
-  - pip
-  - numpy
-  - msprime
-  - wgsim
-  - samtools
+  - git-annex
+  - pynvim

@@ -65,13 +65,9 @@ qc:
 #                               Kraken                                #
 #######################################################################
 kraken:
-
-  # A mapping of db_name -> download URL. DBs will be automatically downloaded.
-  dburls:
-    Viral: "https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20201202.tar.gz"
-    # typically the far more useful:
-    #PlusPFP: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspfp_20210127.tar.gz"
-
+  dbs:
+    # Viral db, download from "https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20201202.tar.gz"
+    Viral: "data/dbs/kraken/viral"
   samplesets:
     all:
       - Viral
