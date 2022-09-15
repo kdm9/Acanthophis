@@ -7,7 +7,7 @@ rule qualimap_sample:
         "data/log/qualimap_sample/{aligner}~{ref}~{sample}.log"
     threads: 8
     resources: **acanthophis.rule_resources(config, "qualimap_sample", time_min=240, mem_gb=16)
-    conda: acanthophis.get_resource("envs/qualimap.yml")
+    conda: "envs/qualimap.yml"
     shell:
         "( unset DISPLAY; qualimap bamqc"
         "   --java-mem-size=6G"
@@ -46,7 +46,7 @@ rule qualimap_set:
         "data/log/qualimap_sampleset/{aligner}~{ref}~{sampleset}.log"
     threads: 4
     resources: **acanthophis.rule_resources(config, "qualimap_set", time_min=240, mem_gb=16)
-    conda: acanthophis.get_resource("envs/qualimap.yml")
+    conda: "envs/qualimap.yml"
     shell:
         "( unset DISPLAY; qualimap multi-bamqc"
         "   --java-mem-size=6G"

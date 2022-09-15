@@ -4,12 +4,12 @@ import acanthophis
 acanthophis.populate_metadata(config)
 
 
-include: acanthophis.rules.base
-include: acanthophis.rules.reads
-include: acanthophis.rules.align
-include: acanthophis.rules.varcall
-include: acanthophis.rules.multiqc
-include: acanthophis.rules.kraken
+include: "rules/base.rules"
+include: "rules/reads.rules"
+include: "rules/align.rules"
+include: "rules/varcall.rules"
+include: "rules/multiqc.rules"
+include: "rules/kraken.rules"
 
 rule all:
     input:

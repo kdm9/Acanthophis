@@ -35,7 +35,7 @@ rule snpeffdb:
         "data/snpEff/db/{ref}/{ref}/snpEffectPredictor.bin",
     threads: 1
     resources: **acanthophis.rule_resources(config, "snpeffdb", time_min=30, mem_gb=8)
-    conda: acanthophis.get_resource("envs/snpeff.yml")
+    conda: "envs/snpeff.yml"
     log:
         "data/log/snpeff/build/build_{ref}.log"
     shell:
@@ -57,7 +57,7 @@ rule snpeff:
         "data/log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log"
     threads: 1
     resources: **acanthophis.rule_resources(config, "snpeff", time_min=1440, mem_gb=8)
-    conda: acanthophis.get_resource("envs/snpeff.yml")
+    conda: "envs/snpeff.yml"
     shell:
         "( snpEff ann"
         "   -config {input.config}"

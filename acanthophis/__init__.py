@@ -16,14 +16,6 @@ except ImportError:
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-class __Rules(object):
-    def __init__(self):
-        for rulefile in glob(f"{HERE}/rules/*.rules"):
-            rule = splitext(basename(rulefile))[0]
-            setattr(self, rule, rulefile)
-
-rules = __Rules()
-
 profiles = {}
 for profiledir in glob(f"{HERE}/profiles/*"):
     profile = basename(profiledir)

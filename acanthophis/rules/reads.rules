@@ -10,7 +10,7 @@ rule split_pairs_r12:
     log:
         log="data/log/pecheck/{run}~{lib}.log",
         stats="data/stats/pecheck/{run}~{lib}.tsv",
-    conda: acanthophis.get_resource("envs/reads.yml")
+    conda: "envs/reads.yml"
     shell:
         "seqhax pairs"
         "   -p >(gzip >{output.paired})"
@@ -30,7 +30,7 @@ rule split_pairs_il:
     log:
         log="data/log/pecheck/{run}~{lib}.log",
         stats="data/stats/pecheck/{run}~{lib}.tsv",
-    conda: acanthophis.get_resource("envs/reads.yml")
+    conda: "envs/reads.yml"
     shell:
         "seqhax pairs"
         "   -p >(gzip >{output.paired})"
@@ -57,7 +57,7 @@ rule qcreads_paired:
         minqual=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["minqual"],
         qualenc=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["qualenc"],
         maxqualval=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["maxqualval"],
-    conda: acanthophis.get_resource("envs/reads.yml")
+    conda: "envs/reads.yml"
     shell:
         "( AdapterRemoval"
         "   --file1 {input.reads}"
@@ -94,7 +94,7 @@ rule qcreads_se:
         minqual=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["minqual"],
         qualenc=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["qualenc"],
         maxqualval=lambda wc: config["qc"].get(wc.run, config["qc"]["_DEFAULT_"])["maxqualval"],
-    conda: acanthophis.get_resource("envs/reads.yml")
+    conda: "envs/reads.yml"
     shell:
         "( AdapterRemoval"
         "   --file1 {input.reads}"
@@ -124,7 +124,7 @@ rule merge_qcd_reads:
     log:
         log="data/log/mergeqcd/{run}~{lib}.log",
     resources: **acanthophis.rule_resources(config, "mergeqcd", time_min=30, mem_gb=2)
-    conda: acanthophis.get_resource("envs/reads.yml")
+    conda: "envs/reads.yml"
     shell:
         "(cat {input.pe} {input.se} >{output} ) 2>{log}"
 
@@ -136,7 +136,7 @@ rule read_count_librun_indiv:
         temp("data/stats/reads/readnum_librun/{run}~{lib}.tsv"),
     log:
         "data/log/readstats/seqhax-stats-librun/{run}~{lib}.log",
-    conda: acanthophis.get_resource("envs/reads.yml")
+    conda: "envs/reads.yml"
     resources: **acanthophis.rule_resources(config, "read_count_librun_indiv", time_min=10, mem_gb=1)
     shell:
         "( seqhax stats"
@@ -228,7 +228,7 @@ rule fastqc_raw:
     log:
         log="data/log/fastqc/raw/{run}~{lib}.log",
     resources: **acanthophis.rule_resources(config, "fastqc_raw", time_min=30, mem_gb=2)
-    conda: acanthophis.get_resource("envs/qcstats.yml")
+    conda: "envs/qcstats.yml"
     shell:
         "(T=$(mktemp -d);"
         ' trap "rm -rf $T" EXIT;'
@@ -250,7 +250,7 @@ rule fastqc_sample_postqc:
     log:
         log="data/log/fastqc/postqc_sample/{sample}.log",
     resources: **acanthophis.rule_resources(config, "fastqc_sample_postqc", time_min=30, mem_gb=2)
-    conda: acanthophis.get_resource("envs/qcstats.yml")
+    conda: "envs/qcstats.yml"
     shell:
         "set -x; (T=$(mktemp -d);"
         ' trap "rm -rf $T" EXIT;'
@@ -278,7 +278,7 @@ rule multiqc_rawreads:
     log:
         log="data/log/multiqc/rawreads/{sampleset}.log",
     resources: **acanthophis.rule_resources(config, "multiqc_rawreads", time_min=30, mem_gb=2)
-    conda: acanthophis.get_resource("envs/qcstats.yml")
+    conda: "envs/qcstats.yml"
     shell:
         "multiqc"
         "   --no-megaqc-upload"
@@ -298,7 +298,7 @@ rule multiqc_samplereads:
     log:
         log="data/log/multiqc/samplereads/{sampleset}.log",
     resources: **acanthophis.rule_resources(config, "multiqc_samplereads", time_min=30, mem_gb=2)
-    conda: acanthophis.get_resource("envs/qcstats.yml")
+    conda: "envs/qcstats.yml"
     shell:
         "multiqc"
         "   --no-megaqc-upload"

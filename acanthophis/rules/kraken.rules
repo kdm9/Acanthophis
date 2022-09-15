@@ -8,7 +8,7 @@ rule kraken:
         "data/kraken/persample/{krakendb}/{sample}.txt",
     log: "data/log/kraken/persample/{krakendb}~{sample}.log"
     threads: 4
-    conda: acanthophis.get_resource("envs/kraken.yml")
+    conda: "envs/kraken.yml"
     resources: **acanthophis.rule_resources(config, "kraken", time_min=60, mem_gb=8)
     shell:
         "kraken2"
