@@ -1,22 +1,160 @@
-configfile: "config.yml"
-include: "rules/base.rules"
-populate_metadata(config)
+#######################################################################
+#                             Data Paths                              #
+#######################################################################
+data_paths:
+  metadata:
+    runlib2samp_file: "rawdata/rl2s.tsv"
+    setfile_glob: "rawdata/samplesets/*.txt"
+  references:
+    lambda:
+      fasta: "rawdata/reference/genome.fa"
+  kraken:
+      PlusPFP8: "rawdata/kraken/PlusPFP8"
+  temp_prefix: "tmp/"
+  log_prefix: "output/"  # TODO ideally this would be the same as the persitent prefix but log: does't support remotes.
+  persistent_prefix: "output/"
 
-include: "rules/reads.rules"
-include: "rules/align.rules"
-include: "rules/denovo.rules"
-include: "rules/varcall.rules"
-include: "rules/kraken.rules"
-
-rule all:
-    input:
-        rules.reads.input,
-        rules.align.input,
-        rules.varcall.input,
-        rules.denovo.input,
-        rules.all_kraken.input,
+#######################################################################
+#                      Sample Set Configuration                       #
+#######################################################################
+#
+# This section is where we tell snakemake which files to generate for each set of samples.
+# Samplesets are configured as files of sample names (see setfile_glob above). 
+#
+# Tool settings (below) can be overridden per sampleset
 
 
-# This must always be put at the end. It scans all rules and updates their
-# resource requests per the config file.
-postprocess_rules(workflow, config)
+samplesets:
+  all_samples:
+    align:
+      aligners:
+        - bwa
+      references:
+        - lambda
+      unmapped_reads: true
+    kraken_dbs:
+      - PlusPFP8
+    mash: true
+    kwip: false  # TODO: khmer is broken, fix it
+    varcall:
+      callers:
+        - mpileup
+        - freebayes
+      aligners:
+        - bwa
+      refs:
+        - lambda
+      filters:
+        - default
+      snpeff: false
+
+
+
+
+#######################################################################
+#                       Alignment to Reference                        #
+#######################################################################
+tool_settings:
+  ngm:
+    sensitivity: 0.5
+  adapterremoval:
+    __default__:  # global defaults. modify per qc_type
+      adapter_file: "rawdata/adapters.txt"
+      minqual: 20
+      qualenc: 33
+      maxqualval: 45
+    example_qc_type:
+      adapter_file: "rawdata/adapters.txt"
+      minqual: 30
+      qualenc: 64
+      maxqualval: 45
+  kwip:
+    kmer_size: 21
+    sketch_size: 300000000
+  mash:
+    kmer_size: 21
+    sketch_size: 100000
+  varcall:
+    # Per-aligner minimum MAPQ thresholds for using a read.
+    minmapq:
+      bwa: 30  # bwa scores approximately follow a PHRED scale (-10*log10(p))
+      ngm: 10  # NGM scores are bonkers, and don't follow a particularly clear scale. In practice ~10 seems appropriate
+
+    # Minimum base quality to count *base* in pileup
+    minbq: 15 
+    
+    # Chunk size for parallisation across genome. Per variant caller as they take
+    # have different runtime and memory requirements, and all need to fit in
+    # ~12hours on a single job.
+    chunksize:
+      mpileup:   2000000
+      freebayes: 2000000
+      gatk-hc:   2000000
+
+    # Prior on proportion of variable sites, per sample set
+    theta_prior:
+      all_samples: 0.01
+
+    # Stop counting reads after this many. Per variant caller. It depends on the tool as to whether or not this is per-sample or per-file.
+    max_depth:
+      mpileup:   10000    # Per file
+      freebayes: 10000    # Per file
+
+    # Can the coordinates of each variant caller overlap between regions?
+    # Setting to false will greatly accelerate BCF merging, but can crash with
+    # some Freebayes runs.
+    merge_allow_overlaps:
+      mpileup: false
+      freebayes: true
+
+    # Filters. These are series of command line arguments to pass to bcftools
+    # view. These filters apply while multiallelic variants have been decomposed
+    # into multiple overlapping variant calls. This allows e.g. allele frequency
+    # filters to be performed on a per-allele basis.
+    filters:
+      default: >
+        -i 'QUAL >= 10 &&
+            INFO/DP >= 5 &&
+            INFO/AN >= 3'
+
+  kwip:
+    kmer_size: 21
+    sketch_size: "1e9"
+
+
+
+
+#######################################################################
+#                           Resource Config                           #
+#######################################################################
+# TODO split this to a separate file, and make a snakemake rule to generate the defaults.
+resources:
+  # set to true to see all the resources for each rule
+  __DEBUG__: false
+  __default__:
+    # A default set of resources. Jobs not configured individually will inherit these values.
+    cores: 1
+    disk_mb: 32000
+    mem_mb: 1000
+    time_min: 120
+    localrule: 0  # this must be an integer, so 0 = false & 1 = true
+  __max__:
+    # A maximum of each resource permitted by your execution environment. Each job's
+    # request will be capped at these values.
+    # 
+    # On cloud environments, use the maximum available resources of your machine type. On
+    # HPC clusters, use the size of an individual node. On a local machine, use the size
+    # of the machine you run snakemake on.
+    cores: 32
+    disk_mb: 300000
+    mem_mb:  120000
+    time_min: 2880
+  # What follows overrides both the defaults above and any per-job specification in the 
+  # snakemake rules files. The keys of this should be individual rule names as passed to
+  # configure_resources() in the snakemake rules files. Run snakemake -np with the
+  # __DEBUG__ variable above set to true to see a full list of the defaults.
+  example_rule_name:
+    cores: 8
+    disk_mb: 300000
+    mem_mb: 16000
+    time_min: 120

@@ -32,6 +32,7 @@ def prompt_yn(message, default=False):
         pass
     return res
 
+
 def init():
     """acanthophis-init command entry point"""
     ap = argparse.ArgumentParser(description="Initialise an Acanthophis analysis directory", epilog=CLIDOC)
@@ -56,7 +57,7 @@ def init():
 
     template_dir = acanthophis.get_resource("template/")
     rules_dir = acanthophis.get_resource("rules/")
-    envs_dir = acanthophis.get_resource("envs/")
+    envs_dir = acanthophis.get_resource("rules/envs/")
     if args.dryrun:
         print(f"cp -r {template_dir} {args.destdir}")
         print(f"cp -r {rules_dir} {args.destdir}/")
