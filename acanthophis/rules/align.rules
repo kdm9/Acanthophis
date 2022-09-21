@@ -1,6 +1,21 @@
 #######################################################################
 #                                NGMap                                #
 #######################################################################
+rule ngmap_idx:
+    input:
+        ref=R("{path}")
+    output:
+        R("{path}-enc.2.ngm"),
+        R("{path}-ht-13-2.3.ngm"),
+    log:
+        L("log/ngm-idx/{path}.log")
+    resources: **rule_resources(config, "ngmap_idx", time_min=40, mem_gb=2, cores=1)
+    conda: "envs/align.yml"
+    shell:
+        "( ngm"
+        "   -r {input.ref}"
+        " ) >{log} 2>&1"
+
 rule ngmap:
     input:
         reads=P("reads/runs/{run}~{lib}.fastq.gz"),
