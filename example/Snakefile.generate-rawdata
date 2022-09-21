@@ -80,23 +80,12 @@ rule faidx:
 rule metadata:
     output:
         rl2s="rawdata/rl2s.tsv",
-        samples="rawdata/samples.tsv",
         setfile="rawdata/setfiles/all.txt",
     run:
         with open(output.rl2s, "w") as file:
-            print("run", "library", "sample", "include", sep="\t", file=file)
+            print("run", "library", "sample", "include", "read1_uri", "read2_uri", "interleaved_uri", "single_uri", sep="\t", file=file)
             for (R, L), S in RUNLIB2SAMP.items():
-                print(R, L, S, "Y", sep="\t", file=file)
-
-        with open(output.samples, "w") as file:
-            print("sample", "species", "latitude", "longitude", "altitude", "datum", sep="\t", file=file)
-            for sample in SAMPLES:
-                tue = (48.52, 9.055556, 341)
-                lat = np.random.normal(loc=tue[0], scale=0.5, size=1)[0]
-                lon = np.random.normal(loc=tue[1], scale=0.5, size=1)[0]
-                alt = np.random.normal(loc=tue[2], scale=100, size=1)[0]
-                sp = "Pseudoplantus harddrivensis"
-                print(sample, sp, lat, lon, alt, "WGS84", sep="\t", file=file)
+                print(R, L, S, "Y", f"rawdata/reads/{R}/{L}_R1.fastq.gz", f"rawdata/reads/{R}/{L}_R2.fastq.gz", "", "",  sep="\t", file=file)
 
         with open(output.setfile, "w") as file:
             for sample in SAMPLES:
