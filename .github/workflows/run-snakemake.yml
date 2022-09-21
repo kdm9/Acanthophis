@@ -25,6 +25,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: example/rawdata
+          key: rawdata
       
       - name: setup and run Snakemake
         shell: bash -el {0}
