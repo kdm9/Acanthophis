@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -xeuo pipefail
-mamba env update -f environment_demo.yml
+mamba env update -f environment.yml
 conda activate acanthophis-demo
 pip install -e ../
 acanthophis-init --yes

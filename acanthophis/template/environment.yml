@@ -7,7 +7,10 @@ channels:
 dependencies:
   - python
   - snakemake
-  - acanthophis
   - ncdu
-  - git-annex
-  - pynvim
+  - pip
+  - numpy
+  - wgsim
+  - samtools
+  - pip:
+    - msprime  # gsl on conda broken, install from pip
