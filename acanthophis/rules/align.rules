@@ -20,6 +20,7 @@ rule ngmap:
     input:
         reads=P("reads/runs/{run}~{lib}.fastq.gz"),
         ref=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
+        idx=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"] + "-enc.2.ngm"),
     output:
         bam=temp(T("alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam")),
     log:
@@ -46,13 +47,13 @@ rule ngmap:
 #######################################################################
 rule bwaidx:
     input:
-        P("{path}")
+        R("{path}")
     output:
-        P("{path}.amb"),
-        P("{path}.ann"),
-        P("{path}.bwt"),
-        P("{path}.pac"),
-        P("{path}.sa"),
+        R("{path}.amb"),
+        R("{path}.ann"),
+        R("{path}.bwt"),
+        R("{path}.pac"),
+        R("{path}.sa"),
     conda: "envs/align.yml"
     log: L("log/bwaidx/{path}.log")
     resources: **rule_resources(config, "bwaidx", time_min=20, mem_mb=8000)
