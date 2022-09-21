@@ -10,6 +10,7 @@ dependencies:
   - ncdu
   - pip
   - numpy
-  - msprime
   - wgsim
   - samtools
+  - pip:
+    - msprime  # gsl on conda broken, install from pip

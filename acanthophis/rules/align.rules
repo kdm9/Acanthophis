@@ -3,12 +3,12 @@
 #######################################################################
 rule ngmap:
     input:
-        reads=P("data/reads/runs/{run}~{lib}.fastq.gz"),
-        ref=lambda wc: P(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
+        reads=P("reads/runs/{run}~{lib}.fastq.gz"),
+        ref=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
     output:
-        bam=temp(T("data/alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam")),
+        bam=temp(T("alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam")),
     log:
-        L("data/log/ngm/{ref}~{run}~{lib}~{sample}.log")
+        L("log/ngm/{ref}~{run}~{lib}~{sample}.log")
     resources: **rule_resources(config, "ngmap", time_min=240, mem_mb=16000, cores=8)
     params:
         sensitivity=config["tool_settings"]["ngm"]["sensitivity"],
@@ -39,7 +39,7 @@ rule bwaidx:
         P("{path}.pac"),
         P("{path}.sa"),
     conda: "envs/align.yml"
-    log: L("data/log/bwaidx/{path}.log")
+    log: L("log/bwaidx/{path}.log")
     resources: **rule_resources(config, "bwaidx", time_min=20, mem_mb=8000)
     shell:
         "bwa index {input} >{log} 2>&1"
@@ -47,16 +47,16 @@ rule bwaidx:
 
 rule bwamem:
     input:
-        reads=T("data/reads/runs/{run}~{lib}.fastq.gz"),
-        ref=lambda wc: P(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
-        bwaidxamb=lambda wc: P(config["data_paths"]['references'][wc.ref]["fasta"]+ ".amb", keep_local=True),
-        bwaidxann=lambda wc: P(config["data_paths"]['references'][wc.ref]["fasta"]+ ".ann", keep_local=True),
-        bwaidxbwt=lambda wc: P(config["data_paths"]['references'][wc.ref]["fasta"]+ ".bwt", keep_local=True),
-        bwaidxpac=lambda wc: P(config["data_paths"]['references'][wc.ref]["fasta"]+ ".pac", keep_local=True),
-        bwaidxsa=lambda wc: P(config["data_paths"]['references'][wc.ref]["fasta"]+ ".sa", keep_local=True),
+        reads=T("reads/runs/{run}~{lib}.fastq.gz"),
+        ref=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
+        bwaidxamb=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"]+ ".amb", keep_local=True),
+        bwaidxann=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"]+ ".ann", keep_local=True),
+        bwaidxbwt=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"]+ ".bwt", keep_local=True),
+        bwaidxpac=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"]+ ".pac", keep_local=True),
+        bwaidxsa=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"]+ ".sa", keep_local=True),
     output:
-        bam=temp(T("data/alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam")),
-    log: L("data/log/bwa/{ref}~{run}~{lib}~{sample}.log")
+        bam=temp(T("alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam")),
+    log: L("log/bwa/{ref}~{run}~{lib}~{sample}.log")
     resources: **rule_resources(config, "bwamem", time_min=240, mem_gb=10, cores=8)
     conda: "envs/align.yml"
     shell:
@@ -75,15 +75,15 @@ rule bwamem:
 #######################################################################
 rule bam_merge_markdups_sort:
     input:
-        bams=lambda wc: T(["data/alignments/byrun.raw/{aln}/{ref}/{run}~{lib}~{sample}.bam".format(
+        bams=lambda wc: T(["alignments/byrun.raw/{aln}/{ref}/{run}~{lib}~{sample}.bam".format(
                             run=r, lib=l, aln=wc.aligner, ref=wc.ref, sample=wc.sample)
 	                for r, l in config["SAMP2RUNLIB"][wc.sample]]),
-        ref=lambda wc: P(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
+        ref=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
     output:
-        bam=P("data/alignments/samples/{aligner}/{ref}/{sample}.bam"),
-        bai=P("data/alignments/samples/{aligner}/{ref}/{sample}.bam.bai"),
+        bam=P("alignments/samples/{aligner}/{ref}/{sample}.bam"),
+        bai=P("alignments/samples/{aligner}/{ref}/{sample}.bam.bai"),
     resources: **rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=8, disk_gb=10, cores=4)
-    log: L("data/log/markdup/{aligner}~{ref}~{sample}.log")
+    log: L("log/markdup/{aligner}~{ref}~{sample}.log")
     conda: "envs/align.yml"
     priority: 1 # so the temps get cleaned sooner
     shell:
@@ -123,13 +123,13 @@ rule bam_merge_markdups_sort:
 
 rule mergebam_set:
     input:
-        lambda wc: P(expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+        lambda wc: P(expand("alignments/samples/{aligner}/{ref}/{sample}.bam",
                           aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
     output:
-        bam=P("data/alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
-        bai=P("data/alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
+        bam=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
+        bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
     log:
-        L("data/log/mergesetbam/{aligner}~{ref}~{sampleset}.log"),
+        L("log/mergesetbam/{aligner}~{ref}~{sampleset}.log"),
     resources: **rule_resources(config, "mergebam_set", time_min=2880, mem_gb=16, disk_gb=1000, cores=16)
     conda: "envs/align.yml"
     shell:
@@ -148,11 +148,11 @@ rule mergebam_set:
 #######################################################################
 rule bamstat_sample:
     input:
-        P("data/alignments/samples/{aligner}/{ref}/{sample}.bam"),
+        P("alignments/samples/{aligner}/{ref}/{sample}.bam"),
     output:
-        P("data/alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats"),
+        P("alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats"),
     log:
-        L("data/log/bamstat_sample/{aligner}~{ref}~{sample}.log")
+        L("log/bamstat_sample/{aligner}~{ref}~{sample}.log")
     resources: **rule_resources(config, "bamstat_sample", time_min=120, mem_gb=4)
     conda: "envs/align.yml"
     shell:
@@ -164,11 +164,11 @@ rule bamstat_sample:
 
 rule extract_unmapped:
     input:
-        P("data/alignments/samples/{aligner}/{ref}/{sample}.bam"),
+        P("alignments/samples/{aligner}/{ref}/{sample}.bam"),
     output:
-        P("data/alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz"),
+        P("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz"),
     log:
-        L("data/log/bamstat_sample/{aligner}~{ref}~{sample}.log")
+        L("log/bamstat_sample/{aligner}~{ref}~{sample}.log")
     resources: **rule_resources(config, "extract_unmapped", time_min=120, mem_gb=1, cores=2)
     conda: "envs/align.yml"
     shell:
@@ -182,7 +182,7 @@ rule extract_unmapped:
 
 rule align_samples:
     input:
-        [ P(expand("data/alignments/samples/{aligner}/{ref}/{sample}.bam",
+        [ P(expand("alignments/samples/{aligner}/{ref}/{sample}.bam",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sample=config["SAMPLESETS"][ss]))
@@ -191,7 +191,7 @@ rule align_samples:
 
 rule unmapped_reads:
     input:
-        [ P(expand("data/alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz",
+        [ P(expand("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sample=config["SAMPLESETS"][ss]))
@@ -200,7 +200,7 @@ rule unmapped_reads:
 
 rule align_samplesets:
     input:
-        [ P(expand("data/alignments/sets/{aligner}~{ref}~{sampleset}.bam",
+        [ P(expand("alignments/sets/{aligner}~{ref}~{sampleset}.bam",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sampleset=ss))

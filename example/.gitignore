@@ -1,3 +1,4 @@
 rawdata
-data
 .snakemake
+tmp/
+output/

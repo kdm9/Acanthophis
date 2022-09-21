@@ -6,13 +6,13 @@
 
 rule countsketch:
     input:
-        P("data/reads/samples/{sample}.fastq.gz"),
+        P("reads/samples/{sample}.fastq.gz"),
     output:
-        ct=temp(T("data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz")),
-        info=P("data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info"),
-        tsv=P("data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info.tsv"),
+        ct=temp(T("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz")),
+        info=P("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info"),
+        tsv=P("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info.tsv"),
     log:
-        L("data/log/kwip/sketch/k{ksize}-s{sketchsize}-{sample}.log")
+        L("log/kwip/sketch/k{ksize}-s{sketchsize}-{sample}.log")
     resources: **rule_resources(config, "countsketch", time_min=60, mem_mb=16000, cores=1)
     conda: "envs/kwip.yml"
     shell:
@@ -31,14 +31,14 @@ rule countsketch:
 
 rule kwipdist:
     input:
-        lambda wc: expand(T("data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz"),
+        lambda wc: expand(T("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz"),
                           ksize=wc.ksize, sketchsize=wc.sketchsize,
                           sample=config["SAMPLESETS"][wc.set]),
     output:
-        d=P("data/kwip/{set}~k{ksize}~s{sketchsize}.dist"),
-        k=P("data/kwip/{set}~k{ksize}~s{sketchsize}.kern"),
+        d=P("kwip/{set}~k{ksize}~s{sketchsize}.dist"),
+        k=P("kwip/{set}~k{ksize}~s{sketchsize}.kern"),
     log:
-        L("data/log/kwip/dist/k{ksize}-s{sketchsize}-{set}.log")
+        L("log/kwip/dist/k{ksize}-s{sketchsize}-{set}.log")
     resources: **rule_resources(config, "countsketch", time_min=2880, mem_mb=15000, cores=8)
     conda: "envs/kwip.yml"
     shell:
@@ -52,17 +52,17 @@ rule kwipdist:
 
 rule unique_kmers:
     input:
-        lambda wc: P(expand("data/reads/samples/{sample}.fastq.gz",
+        lambda wc: P(expand("reads/samples/{sample}.fastq.gz",
                           sample=SAMPLESETS[wc.set])),
     output:
-        P("data/readstats/unique-kmers/{set}.tsv"),
+        P("readstats/unique-kmers/{set}.tsv"),
     threads:
         27
     params:
         kmersize=config["tool_settings"]["kwip"]["kmer_size"],
     resources: **rule_resources(config, "unique_kmers", time_min=2880, mem_gb=1)
     log:
-        L("data/log/readstats/unique-kmers/{set}.log"),
+        L("log/readstats/unique-kmers/{set}.log"),
     conda: "envs/kwip.yml"
     shell:
         "( kdm-unique-kmers.py"
@@ -75,13 +75,14 @@ rule unique_kmers:
 
 rule mash_sketch_set:
     input:
-        lambda wc: P(expand("data/reads/samples/{sample}.fastq.gz",
+        lambda wc: P(expand("reads/samples/{sample}.fastq.gz",
                           sample=config["SAMPLESETS"][wc.set])),
     output:
-        temp(T("data/mash/{set}~k{ksize}~s{sketchsize}.sketch"))
+        temp(T("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh"))
     log:
-        L("data/log/mash_sketch_set/{set}~k{ksize}-s{sketchsize}.log")
+        L("log/mash_sketch_set/{set}~k{ksize}-s{sketchsize}.log")
     resources: **rule_resources(config, "mash_sketch_set", time_min=2880, mem_gb=16, cores=48)
+    conda: "envs/mash.yml"
     shell:
         " mash sketch"
         "   -k {wildcards.ksize}"
@@ -94,12 +95,13 @@ rule mash_sketch_set:
 
 rule mash_dist_set:
     input:
-        T("data/mash/{set}~k{ksize}~s{sketchsize}.sketch")
+        T("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh")
     output:
-        P("data/mash/{set}~k{ksize}~s{sketchsize}.dist")
+        P("mash/{set}~k{ksize}~s{sketchsize}.dist")
     log:
-        L("data/log/mash_dist_set/{set}~k{ksize}~s{sketchsize}.log")
+        L("log/mash_dist_set/{set}~k{ksize}~s{sketchsize}.log")
     resources: **rule_resources(config, "mash_dist_set", time_min=2880, mem_gb=16, cores=48)
+    conda: "envs/mash.yml"
     shell:
         "mash dist"
         "   -p {threads}"
@@ -111,7 +113,7 @@ rule mash_dist_set:
 
 rule kwip:
     input:
-        [ P(expand("data/kwip/{set}~k{ksize}~s{sketchsize}.dist",
+        [ P(expand("kwip/{set}~k{ksize}~s{sketchsize}.dist",
                ksize=config["tool_settings"]["kwip"]["kmer_size"],
                sketchsize=config["tool_settings"]["kwip"]["sketch_size"],
                set=sampleset))
@@ -122,7 +124,7 @@ rule kwip:
 
 rule mash:
     input:
-        [ P(expand("data/mash/{set}~k{ksize}~s{sketchsize}.dist",
+        [ P(expand("mash/{set}~k{ksize}~s{sketchsize}.dist",
                ksize=config["tool_settings"]["mash"]["kmer_size"],
                sketchsize=config["tool_settings"]["mash"]["sketch_size"],
                set=sampleset))

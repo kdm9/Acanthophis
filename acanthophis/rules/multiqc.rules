@@ -1,10 +1,10 @@
 rule multiqc_samstats:
     input:
-        stats=lambda wc: expand("data/alignments/bamstats/sample/{{aligner}}~{{ref}}~{sample}.samtools.stats", sample=config["SAMPLESETS"][wc.sampleset]),
+        stats=lambda wc: expand("alignments/bamstats/sample/{{aligner}}~{{ref}}~{sample}.samtools.stats", sample=config["SAMPLESETS"][wc.sampleset]),
     output:
-        html="data/stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html",
+        html="stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html",
     log:
-        log="data/log/multiqc/bamstats/{aligner}~{ref}~{sampleset}.log",
+        log="log/multiqc/bamstats/{aligner}~{ref}~{sampleset}.log",
     resources: **acanthophis.rule_resources(config, "multiqc_bamstats", time_min=30, mem_gb=2)
     conda: "envs/qcstats.yml"
     shell:

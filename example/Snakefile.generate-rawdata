@@ -8,7 +8,7 @@ RECOMBINATION_RATE = 1e-8
 MU = 1e-6
 SEED = 1337
 READ_ERRRATE = 0.002  # q score of 27
-ANCESTRAL = "./lambda/lambda.fasta"
+ANCESTRAL = "rawdata/lambda/lambda.fasta"
 
 
 import msprime
@@ -57,7 +57,16 @@ rule all:
         "rawdata/rl2s.tsv",
         "rawdata/samples.tsv",
         "rawdata/setfiles/all.txt",
+        "rawdata/kraken/PlusPFP8",
 
+rule krakendb:
+    output:
+        directory("rawdata/kraken/PlusPFP8"),
+    shell:
+            "mkdir -p {output} &&"
+            " cd {output} &&"
+            " curl -LO https://genome-idx.s3.amazonaws.com/kraken/k2_pluspfp_08gb_20220908.tar.gz &&"
+            " tar xvf k2_pluspfp_08gb_20220908.tar.gz"
 
 rule faidx:
     input:

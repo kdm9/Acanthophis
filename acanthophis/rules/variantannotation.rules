@@ -7,14 +7,14 @@
 
 rule snpeff:
     input:
-        vcf=P("data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz"),
-        dbdir=lambda wc: directory(P(config["data_paths"]["references"][wc.ref]["snpeff_db"]))
+        vcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz"),
+        dbdir=lambda wc: directory(R(config["data_paths"]["references"][wc.ref]["snpeff_db"]))
     output:
-        vcf=P("data/variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz"),
-        csv=P("data/variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.csv"),
-        html=P("data/variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.html"),
+        vcf=P("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz"),
+        csv=P("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.csv"),
+        html=P("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.html"),
     log:
-        L("data/log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log")
+        L("log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log")
     resources: **rule_resources(config, "snpeff", time_min=1440, mem_gb=1, cores=1)
     conda: "envs/snpeff.yml"
     shell:
@@ -30,7 +30,7 @@ rule snpeff:
 
 rule all_snpeff:
     input:
-        [P(expand("data/variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz",
+        [P(expand("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz",
                   caller=config["samplesets"][sampleset]["varcall"]["callers"],
                   aligner=config["samplesets"][sampleset]["varcall"]["aligners"],
                   ref=config["samplesets"][sampleset]["varcall"]["refs"],

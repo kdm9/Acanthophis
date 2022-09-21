@@ -29,6 +29,7 @@ import os
 from sys import stderr
 from math import log, inf
 from functools import partial
+import pathlib
 
 try:
     from ._version import version
@@ -176,22 +177,6 @@ def make_samplesets(config, s2rl_file, setfile_glob):
         ssets[setname] = samples
     ssets["all_samples"] = list(sorted(everything))
 
-    if not os.path.exists("data/samplelists"):
-        os.makedirs("data/samplelists", exist_ok=True)
-    with open("data/samplelists/GENERATED_FILES_DO_NOT_EDIT", "w") as fh:
-        print("you're probably looking for", setfile_glob, file=fh)
-    for setname, setsamps in ssets.items():
-        fname = "data/samplelists/{}.txt".format(setname)
-        try:
-            with open(fname) as fh:
-                currsamps = set([l.strip() for l in fh])
-        except IOError:
-            currsamps = set()
-        if set(setsamps) != currsamps:
-            with open(fname, "w") as fh:
-                print("WARNING: updating sample sets, this will trigger reruns", setname, file=stderr)
-                for s in sorted(setsamps):
-                    print(s, file=fh)
     # Don't sort these sample lists
     return ssets
 
@@ -286,29 +271,45 @@ def T(paths):
     return opaths
 
 def L(path):
-    return config["data_paths"].get("log_prefix", "") + path
+    #return config["data_paths"].get("log_prefix", "") + path
+    return P(path)
+
 
 def R(paths, keep_local=False):
-    from snakemake.remote import AUTO
     from snakemake.common import parse_uri
     if isinstance(paths, str):
         paths = [paths, ]
     opaths = []
     for path in paths:
         uri = parse_uri(path)
-        PM = AUTO.protocol_mapping
-        if uri.scheme in AUTO.protocol_mapping:
-            try:
-                opaths.append(AUTO.remote(path, keep_local=keep_local))
-            except:
-                opaths.append(AUTO.remote(path))
-        else:
+        # This logic is very similar to snakemake.remotes.AUTO, except that
+        # this actually works and doesn't wait 10 minutes for various remotes
+        # to time out before failing to import them. TODO port this upstream to
+        # Snakemake's AutoRemoteProvider.
+        if uri.scheme.lower() in ["", "file"]:
             opaths.append(path)
+        elif uri.scheme.lower() == "s3":
+            from snakemake.remote import S3
+            opaths.append(S3.remote(path, keep_local=keep_local))
+        elif uri.scheme.lower() == "gs":
+            from snakemake.remote import GS
+            opaths.append(GS.remote(path, keep_local=keep_local))
+        elif uri.scheme.lower() in ["ftp", "ftps"]:
+            from snakemake.remote import FTP
+            opaths.append(FTP.remote(path, keep_local=keep_local))
+        elif uri.scheme.lower() in ["http", "https"]:
+            from snakemake.remote import HTTP
+            opaths.append(HTTP.remote(path, keep_local=keep_local))
+        elif uri.scheme.lower() in ["az", "azblob"]:
+            from snakemake.remote import AzBlob
+            opaths.append(AzBlob.remote(path, keep_local=keep_local))
+        else:
+            raise ValueError(f"Unsupported scheme in remote URI: {path} = '{uri.scheme}'")
     if len(opaths) == 1:
         return opaths[0]
     return opaths
 
 def P(paths, keep_local=False):
-    if isinstance(paths, str):
+    if isinstance(paths, str) or isinstance(paths, pathlib.Path):
         paths = [paths, ]
     return [R(config["data_paths"].get("persistent_prefix", "") + p, keep_local=keep_local) for p in paths]
