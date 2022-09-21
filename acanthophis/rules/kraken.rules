@@ -1,31 +1,63 @@
-rule kraken:
+rule kraken_reads:
     input:
-        reads="data/reads/samples/{sample}.fastq.gz",
-        hash=lambda wc: config["kraken"]["dbs"][wc.krakendb] + "/hash.k2d",
-        opts=lambda wc: config["kraken"]["dbs"][wc.krakendb] + "/opts.k2d",
-        taxo=lambda wc: config["kraken"]["dbs"][wc.krakendb] + "/taxo.k2d",
-    output: 
-        "data/kraken/persample/{krakendb}/{sample}.txt",
-    log: "data/log/kraken/persample/{krakendb}~{sample}.log"
-    threads: 4
+        reads=P("data/reads/samples/{sample}.fastq.gz"),
+        hash=lambda wc: P(config["data_paths"]["kraken"][wc.krakendb] + "/hash.k2d", keep_local=True),
+        opts=lambda wc: P(config["data_paths"]["kraken"][wc.krakendb] + "/opts.k2d", keep_local=True),
+        taxo=lambda wc: P(config["data_paths"]["kraken"][wc.krakendb] + "/taxo.k2d", keep_local=True),
+    output:
+        fastq_un=P("data/taxonid/{sampleset}/kraken/{krakendb}/{sample}_unclassified.fastq.gz"),
+        fastq_cl=P("data/taxonid/{sampleset}/kraken/{krakendb}/{sample}_classified.fastq.gz"),
+        outtxt=P("data/taxonid/{sampleset}/kraken/{krakendb}/{sample}_output.txt"),
+        report=P("data/taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt"),
+    log: L("data/taxonid/{sampleset}/kraken/{krakendb}/{sample}.log"),
+    resources: **rule_resources(config, "kraken_unclassified", time_min=90, mem_gb=32, disk_gb=24, cores=4)
     conda: "envs/kraken.yml"
-    resources: **acanthophis.rule_resources(config, "kraken", time_min=60, mem_gb=8)
     shell:
         "kraken2"
-        "   --db $(dirname {input.hash})/"
+        "   --db $(dirname {input.hash})"
+        "   --memory-mapping"
         "   --threads {threads}"
         "   --use-names"
-        "   --output -"
-        "   --report {output}"
+        "   --report-minimizer-data"
+        "   --report {output.report}"
+        "   --classified-out {output.fastq_cl}"
+        "   --unclassified-out {output.fastq_un}"
+        "   --output {output.outtxt}"
         "   {input.reads}"
-        ">{log} 2>&1"
+        "   >{log} 2>&1"
+
+
+rule multiqc_kraken:
+    input:
+        lambda wc: P(expand("data/taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt",
+                            sample=config["SAMPLESETS"][wc.sampleset],
+                            dbname=config["samplesets"][wc.sampleset].get("kraken_dbs", []),
+                            sampleset=wc.sampleset,
+                   ))
+    output:
+        html=P("data/taxonid/{sampleset}_kraken_multiqc.html"),
+    log:
+        log=L("data/log/multiqc/kraken/{sampleset}.log"),
+    conda: "envs/qcstats.yml"
+    resources: **rule_resources(config, "multiqc_kraken", time_min=30, mem_gb=2)
+    shell:
+        "multiqc"
+        "   --no-megaqc-upload"
+        "   --flat"
+        "   --no-data-dir"
+        "   --comment 'Report for sample set {wildcards.sampleset}'"
+        "   --filename {output.html}"
+        "   {input}"
+        " >{log} 2>&1"
 
 
 rule all_kraken:
     input:
-        [expand("data/kraken/persample/{krakendb}/{sample}.txt",
+        [P(expand("data/taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt",
+               sampleset=sampleset,
                sample=config["SAMPLESETS"][sampleset],
-               krakendb=config["kraken"]["samplesets"][sampleset],
-               ) for sampleset in config["kraken"]["samplesets"]]
-
-
+               krakendb=config["samplesets"][sampleset]["kraken_dbs"],
+               ))
+         for sampleset in config["samplesets"]
+         if "kraken_dbs" in config["samplesets"][sampleset]
+        ]

@@ -1,84 +1,41 @@
-
-localrules: snpeffdb_files
-rule snpeffdb_files:
-    input:
-        fasta=lambda wc: config["refs"][wc.ref]['fasta'],
-        gtf=lambda wc: config["refs"][wc.ref]['gtf'],
-    output:
-        fasta="data/snpEff/db/{ref}/{ref}/sequences.fa",
-        gtf="data/snpEff/db/{ref}/{ref}/genes.gtf",
-        config="data/snpEff/db/{ref}/snpEff.config",
-    params:
-        extra=lambda wc: config["refs"][wc.ref].get("snpeff_extra_config", ""),
-        organsim=lambda wc: config["refs"][wc.ref].get("organism", wc.ref),
-    run:
-        import shutil
-        with open(input.fasta) as infh, open(output.fasta, "w") as outfh:
-            shutil.copyfileobj(infh, outfh)
-
-        with open(input.gtf) as infh, open(output.gtf, "w") as outfh:
-            shutil.copyfileobj(infh, outfh)
-
-        with open(output.config, "w") as outfh:
-            print("data.dir = .", file=outfh)
-            print(f"{wildcards.ref}.genome: {params.organsim}", file=outfh)
-            if params.extra is not None and len(params.extra):
-                print(params.extra, file=outfh)
-
-
-rule snpeffdb:
-    input:
-        fasta="data/snpEff/db/{ref}/{ref}/sequences.fa",
-        gtf="data/snpEff/db/{ref}/{ref}/genes.gtf",
-        config="data/snpEff/db/{ref}/snpEff.config",
-    output:
-        "data/snpEff/db/{ref}/{ref}/snpEffectPredictor.bin",
-    threads: 1
-    resources: **acanthophis.rule_resources(config, "snpeffdb", time_min=30, mem_gb=8)
-    conda: "envs/snpeff.yml"
-    log:
-        "data/log/snpeff/build/build_{ref}.log"
-    shell:
-        "( cd data/snpEff/db; "
-        "  snpEff build -d -config {wildcards.ref}/snpEff.config -gtf22 {wildcards.ref}"
-        ") > {log} 2>&1"
+# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
 rule snpeff:
     input:
-        vcf="data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz",
-        db="data/snpEff/db/{ref}/{ref}/snpEffectPredictor.bin",
-        config="data/snpEff/db/{ref}/snpEff.config",
+        vcf=P("data/variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz"),
+        dbdir=lambda wc: directory(P(config["data_paths"]["references"][wc.ref]["snpeff_db"]))
     output:
-        vcf="data/variants/annotated/snpeff/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz",
-        csv="data/variants/annotated/snpeff/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.csv",
-        html="data/variants/annotated/snpeff/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.html",
+        vcf=P("data/variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz"),
+        csv=P("data/variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.csv"),
+        html=P("data/variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.html"),
     log:
-        "data/log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log"
-    threads: 1
-    resources: **acanthophis.rule_resources(config, "snpeff", time_min=1440, mem_gb=8)
+        L("data/log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log")
+    resources: **rule_resources(config, "snpeff", time_min=1440, mem_gb=1, cores=1)
     conda: "envs/snpeff.yml"
     shell:
         "( snpEff ann"
-        "   -config {input.config}"
+        "   -config {input.dbdir}/snpEff.config"
         "   -csvStats {output.csv}"
         "   -htmlStats {output.html}"
-        "   {wildcards.ref}"
+        "   $(basename {input.dbdir})"
         "   {input.vcf}"
         "   > {output.vcf}"
         ") >{log} 2>&1"
 
 
-
-localrules: all_snpeff
 rule all_snpeff:
     input:
-        [expand("data/variants/annotated/snpeff/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz",
-               caller=config["varcall"]["samplesets"][sampleset]["callers"],
-               aligner=config["varcall"]["samplesets"][sampleset]["aligners"],
-               ref=config["varcall"]["samplesets"][sampleset]["refs"],
-               filter=config["varcall"]["samplesets"][sampleset]["filters"],
-               sampleset=sampleset
-               ) for sampleset in config["varcall"]["samplesets"]
-                 if config["varcall"]["samplesets"][sampleset].get("snpeff", False)],
-
+        [P(expand("data/variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz",
+                  caller=config["samplesets"][sampleset]["varcall"]["callers"],
+                  aligner=config["samplesets"][sampleset]["varcall"]["aligners"],
+                  ref=config["samplesets"][sampleset]["varcall"]["refs"],
+                  filter=config["samplesets"][sampleset]["varcall"]["filters"],
+                  sampleset=sampleset))
+         for sampleset in config["samplesets"]
+         if config["samplesets"][sampleset].get("varcall", {}).get("snpeff", False)
+         ],
