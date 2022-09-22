@@ -2,9 +2,6 @@
 
 A reusable, comprehensive, opinionated plant variant calling pipeline in Snakemake
 
-Until I write the documentation, please see [the example workflow](example/).
-It should contain a fully working example workflow.
-
 ![Acanthophis, the most beautiful and badass of snakes](.github/logo.jpg)
 
 ## Installation & Use
@@ -17,10 +14,13 @@ conda activate someproject
 # install acanthophis itself
 pip install acanthophis
 
-# generate boilerplate
+# generate a workspace. This copies all files the workflow will need to your workspace directory.
 acanthophis-init /path/to/someproject/
 
-# edit config.yml to suit your project
+# edit config.yml to suit your project. Hopefully this config file documents
+# all options available in an understandable fashion. If not, please raise an
+# issue on github.
+
 vim config.yml
 
 # run snakemake
@@ -28,6 +28,9 @@ snakemake -j 16 -p --use-conda --conda-frontend mamba --ri
 # or on a cluster, see acanthophis-init --list-available-profiles
 snakemake --profile ./ebio-cluster/
 ```
+
+Until I write the documentation, please see [the example workflow](example/).
+It should contain a fully working example workflow.
 
 
 ## About & Authors
