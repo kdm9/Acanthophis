@@ -29,6 +29,7 @@ samplesets:
     align:
       aligners:
         - bwa
+        #- ngm
       references:
         - lambda
       unmapped_reads: true
@@ -49,8 +50,6 @@ samplesets:
       filters:
         - default
       snpeff: false
-
-
 
 
 #######################################################################
@@ -118,12 +117,6 @@ tool_settings:
         -i 'QUAL >= 10 &&
             INFO/DP >= 5 &&
             INFO/AN >= 3'
-
-  kwip:
-    kmer_size: 21
-    sketch_size: "1e9"
-
-
 
 
 #######################################################################
