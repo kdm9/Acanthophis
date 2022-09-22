@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  runsnkmk:
+  run_workflow:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       - name: setup-mamba
         uses: conda-incubator/setup-miniconda@v2
