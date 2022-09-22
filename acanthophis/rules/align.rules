@@ -226,4 +226,5 @@ rule align_samplesets:
 rule align:
     input:
         rules.align_samples.input,
+        rules.unmapped_reads.input,
         rules.align_samplesets.input,
