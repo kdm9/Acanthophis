@@ -172,7 +172,7 @@ rule bamstat_sample:
     resources: **rule_resources(config, "bamstat_sample", time_min=120, mem_gb=4)
     conda: "envs/align.yml"
     shell:
-        "(samtools stats -i 5000 -x {input} >{output}) >{log}"
+        "(samtools stats -i 5000 -x {input} >{output}) >{log} 2>&1"
 
 #######################################################################
 #                           Unmapped reads                            #
@@ -188,7 +188,7 @@ rule extract_unmapped:
     resources: **rule_resources(config, "extract_unmapped", time_min=120, mem_gb=1, cores=2)
     conda: "envs/align.yml"
     shell:
-        "(samtools fastq -t -i -f4 -c8 -@ {threads} -o {output} {input} ) >{log}"
+        "(samtools fastq -t -i -f4 -c8 -@ {threads} -o {output} {input} ) >{log} 2>&1"
 
 
 #######################################################################
