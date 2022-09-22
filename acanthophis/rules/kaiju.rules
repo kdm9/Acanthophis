@@ -24,7 +24,7 @@ rule all_kaiju:
         [P(expand("taxonid/{sampleset}/kaiju/{db}/{sample}.txt",
                   sampleset=sampleset,
                   sample=config["SAMPLESETS"][sampleset],
-                  krakendb=config["samplesets"][sampleset]["kaiju_dbs"],
+                  db=config["samplesets"][sampleset]["kaiju_dbs"],
                   ))
          for sampleset in config["samplesets"]
          if "kaiju_dbs" in config["samplesets"][sampleset]
