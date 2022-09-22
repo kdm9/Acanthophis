@@ -32,6 +32,8 @@ samplesets:
       references:
         - lambda
       unmapped_reads: true
+    # Output (un)-classified read fastqs from Kraken?
+    kraken_reads: false
     kraken_dbs:
       - Viral
     mash: true

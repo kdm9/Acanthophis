@@ -1,3 +1,27 @@
+rule kraken_noreads:
+    input:
+        reads=P("reads/samples/{sample}.fastq.gz"),
+        hash=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/hash.k2d", keep_local=True),
+        opts=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/opts.k2d", keep_local=True),
+        taxo=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/taxo.k2d", keep_local=True),
+    output:
+        outtxt=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_output.txt"),
+        report=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt"),
+    log: L("taxonid/{sampleset}/kraken/{krakendb}/{sample}.log"),
+    resources: **rule_resources(config, "kraken", time_min=90, mem_gb=32, disk_gb=24, cores=4)
+    conda: "envs/kraken.yml"
+    shell:
+        "kraken2"
+        "   --db $(dirname {input.hash})"
+        "   --memory-mapping"
+        "   --threads {threads}"
+        "   --use-names"
+        "   --report-minimizer-data"
+        "   --report {output.report}"
+        "   --output {output.outtxt}"
+        "   {input.reads}"
+        "   >{log} 2>&1"
+
 rule kraken_reads:
     input:
         reads=P("reads/samples/{sample}.fastq.gz"),
@@ -10,7 +34,7 @@ rule kraken_reads:
         outtxt=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_output.txt"),
         report=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt"),
     log: L("taxonid/{sampleset}/kraken/{krakendb}/{sample}.log"),
-    resources: **rule_resources(config, "kraken_unclassified", time_min=90, mem_gb=32, disk_gb=24, cores=4)
+    resources: **rule_resources(config, "kraken", time_min=90, mem_gb=32, disk_gb=24, cores=4)
     conda: "envs/kraken.yml"
     shell:
         "kraken2"
@@ -20,8 +44,8 @@ rule kraken_reads:
         "   --use-names"
         "   --report-minimizer-data"
         "   --report {output.report}"
-        "   --classified-out {output.fastq_cl}"
-        "   --unclassified-out {output.fastq_un}"
+        "   --classified-out >(gzip >{output.fastq_cl})"
+        "   --unclassified-out >(gzip >{output.fastq_un})"
         "   --output {output.outtxt}"
         "   {input.reads}"
         "   >{log} 2>&1"
@@ -54,10 +78,18 @@ rule multiqc_kraken:
 rule all_kraken:
     input:
         [P(expand("taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt",
-               sampleset=sampleset,
-               sample=config["SAMPLESETS"][sampleset],
-               krakendb=config["samplesets"][sampleset]["kraken_dbs"],
-               ))
+                  sampleset=sampleset,
+                  sample=config["SAMPLESETS"][sampleset],
+                  krakendb=config["samplesets"][sampleset]["kraken_dbs"],
+                  ))
          for sampleset in config["samplesets"]
          if "kraken_dbs" in config["samplesets"][sampleset]
+        ],
+        [P(expand("taxonid/{sampleset}/kraken/{krakendb}/{sample}_unclassified.fastq.gz",
+                  sampleset=sampleset,
+                  sample=config["SAMPLESETS"][sampleset],
+                  krakendb=config["samplesets"][sampleset]["kraken_dbs"],
+                  ))
+         for sampleset in config["samplesets"]
+         if config["samplesets"][sampleset].get("kraken_reads", False)
         ]
