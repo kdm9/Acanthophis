@@ -9,7 +9,7 @@ data_paths:
     lambda:
       fasta: "rawdata/reference/genome.fa"
   kraken:
-      Viral: "rawdata/kraken/viral"
+      Viral: "rawdata/kraken/Viral"
   temp_prefix: "tmp/"
   log_prefix: "output/"  # TODO ideally this would be the same as the persitent prefix but log: does't support remotes.
   persistent_prefix: "output/"

@@ -5,3 +5,4 @@ conda activate acanthophis-example
 pip install -e ../
 acanthophis-init --yes
 snakemake --snakefile Snakefile.generate-rawdata -j 4 --use-conda --conda-frontend mamba
+tree rawdata
