@@ -2,3 +2,7 @@ rawdata
 .snakemake
 tmp/
 output/
+Snakefile
+rules
+environment.yml
+config.yml
