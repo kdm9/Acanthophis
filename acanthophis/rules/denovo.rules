@@ -111,7 +111,7 @@ rule mash_dist_set:
         " 2>{log}"
 
 
-rule kwip:
+rule all_kwip:
     input:
         [ P(expand("kwip/{set}~k{ksize}~s{sketchsize}.dist",
                ksize=config["tool_settings"]["kwip"]["kmer_size"],
@@ -122,7 +122,7 @@ rule kwip:
         ],
 
 
-rule mash:
+rule all_mash:
     input:
         [ P(expand("mash/{set}~k{ksize}~s{sketchsize}.dist",
                ksize=config["tool_settings"]["mash"]["kmer_size"],
@@ -133,8 +133,8 @@ rule mash:
         ],
 
 
-rule denovo:
+rule all_denovo:
     input:
-        rules.kwip.input,
-        rules.mash.input,
+        rules.all_kwip.input,
+        rules.all_mash.input,
 

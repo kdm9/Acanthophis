@@ -196,7 +196,7 @@ rule extract_unmapped:
 #######################################################################
 
 
-rule align_samples:
+rule all_align_samples:
     input:
         [ P(expand("alignments/samples/{aligner}/{ref}/{sample}.bam",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
@@ -205,7 +205,7 @@ rule align_samples:
           for ss in config["samplesets"]
           if config["samplesets"][ss].get("align", {}) ]
 
-rule unmapped_reads:
+rule all_unmapped_reads:
     input:
         [ P(expand("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
@@ -214,7 +214,7 @@ rule unmapped_reads:
           for ss in config["samplesets"]
           if config["samplesets"][ss].get("align", {}).get("unmapped_reads", False) ]
 
-rule align_samplesets:
+rule all_align_samplesets:
     input:
         [ P(expand("alignments/sets/{aligner}~{ref}~{sampleset}.bam",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
@@ -223,8 +223,8 @@ rule align_samplesets:
           for ss in config["samplesets"]
           if config["samplesets"][ss].get("align", {}) ]
 
-rule align:
+rule all_align:
     input:
-        rules.align_samples.input,
-        rules.unmapped_reads.input,
-        rules.align_samplesets.input,
+        rules.all_align_samples.input,
+        rules.all_unmapped_reads.input,
+        rules.all_align_samplesets.input,

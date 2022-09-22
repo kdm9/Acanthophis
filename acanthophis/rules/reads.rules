@@ -162,18 +162,6 @@ rule read_count_fromindiv:
                         fh.write(line)
 
 
-rule qc_runlib:
-    input:
-        T(["reads/runs/{run}~{lib}.fastq.gz".format(run=run, lib=lib)
-          for sset in config["samplesets"]
-          for samp in config["SAMPLESETS"][sset]
-          for run, lib in config["SAMP2RUNLIB"][samp]
-        ]),
-
-rule readstats:
-    input:
-        P("stats/reads/readnum_librun.tsv"),
-
 
 rule samplefastqpipe:
     input:
@@ -194,11 +182,6 @@ rule samplefastqfile:
     shell:
         "cat {input} > {output}"
 
-
-rule sample_fastqs:
-    input:
-        P([expand("reads/samples/{sample}.fastq.gz", sample=config["SAMPLESETS"][sset])
-            for sset in config.get("persample_reads", {}).get("samplesets", [])])
 
 
 rule fastqc_adaptors_fa:
@@ -258,8 +241,32 @@ rule fastqc_sample_postqc:
         ") >{log} 2>&1"
 
 
-rule reads:
+rule all_sample_fastqs:
     input:
-        rules.qc_runlib.input,
-        rules.readstats.input,
+        P([expand("reads/samples/{sample}.fastq.gz", sample=config["SAMPLESETS"][sset])
+            for sset in config["samplesets"]
+            if config["samplesets"][sset].get("persample_reads", false)
+            ])
+
+
+rule all_runlib_qc:
+    input:
+        T(["reads/runs/{run}~{lib}.fastq.gz".format(run=run, lib=lib)
+          for sset in config["samplesets"]
+          for samp in config["SAMPLESETS"][sset]
+          for run, lib in config["SAMP2RUNLIB"][samp]
+        ]),
+
+
+rule all_runlib_readstats:
+    input:
+        P("stats/reads/readnum_librun.tsv"),
+
+
+rule all_reads:
+    input:
+        rules.all_runlib_qc.input,
+        rules.all_runlib_readstats.input,
+        rules.all_sample_fastqs.input,
+        rules.all_sample_fastqc_prepost.input,
 

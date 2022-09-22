@@ -265,7 +265,7 @@ rule finalvariantidx:
 #######################################################################
 #                             Target Rules                            #
 #######################################################################
-rule filtered_variants:
+rule all_filtered_variants:
     input:
         [P(expand("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
                ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "bcf.stats"],
@@ -279,6 +279,6 @@ rule filtered_variants:
          ],
 
 
-rule varcall:
+rule all_varcall:
     input:
-        rules.filtered_variants.input,
+        rules.all_filtered_variants.input,

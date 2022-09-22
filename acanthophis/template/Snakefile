@@ -11,10 +11,10 @@ include: "rules/kaiju.rules"
 
 rule all:
     input:
-        rules.reads.input,
-        rules.align.input,
-        rules.varcall.input,
-        rules.denovo.input,
+        rules.all_reads.input,
+        rules.all_align.input,
+        rules.all_varcall.input,
+        rules.all_denovo.input,
         rules.all_kraken.input,
         rules.all_kaiju.input,
 
