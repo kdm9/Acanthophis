@@ -16,7 +16,7 @@ rule countsketch:
     resources: **rule_resources(config, "countsketch", time_min=60, mem_mb=16000, cores=1)
     conda: "envs/kwip.yml"
     shell:
-        "load-into-counting.py"
+        "(load-into-counting.py"
         "   -N 1"
         "   -x {wildcards.sketchsize}"
         "   -k {wildcards.ksize}"
@@ -26,7 +26,9 @@ rule countsketch:
         "   -T {threads}"
         "   {output.ct}"
         "   {input}"
-        " >{log} 2>&1"
+        " && cp {output.ct}.info {output.info}" # need these as the countsketch is T() while these are P()
+        " && cp {output.ct}.info.tsv {output.tsv}"
+        ") >{log} 2>&1"
 
 
 rule kwipdist:

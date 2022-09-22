@@ -55,7 +55,7 @@ samplesets:
     persample_reads: false # don't specifically make sample.fastq.gz
     fastqc: true
     mash: true
-    kwip: false  # TODO: khmer is broken, fix it
+    kwip: true
     varcall:
       callers:
         - mpileup
