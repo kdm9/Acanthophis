@@ -9,7 +9,7 @@ data_paths:
     lambda:
       fasta: "rawdata/reference/genome.fa"
   kraken:
-      PlusPFP8: "rawdata/kraken/PlusPFP8"
+      Viral: "rawdata/kraken/viral"
   temp_prefix: "tmp/"
   log_prefix: "output/"  # TODO ideally this would be the same as the persitent prefix but log: does't support remotes.
   persistent_prefix: "output/"
@@ -33,7 +33,7 @@ samplesets:
         - lambda
       unmapped_reads: true
     kraken_dbs:
-      - PlusPFP8
+      - Viral
     mash: true
     kwip: false  # TODO: khmer is broken, fix it
     varcall:
