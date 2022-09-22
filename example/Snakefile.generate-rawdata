@@ -55,16 +55,15 @@ rule all:
         expand("rawdata/genomes/{sample}.fa.fai", sample=SAMPLES),
         expand("rawdata/reads/{run}/{lib}_{R}.fastq.gz", run=RUNS, lib=LIBS, R=["R1", "R2"]),
         "rawdata/rl2s.tsv",
-        "rawdata/kraken/PlusPFP8",
+        "rawdata/kraken/Viral",
 
 rule krakendb:
     output:
-        directory("rawdata/kraken/PlusPFP8"),
+        directory("rawdata/kraken/Viral"),
     shell:
-            "mkdir -p {output} &&"
-            " cd {output} &&"
-            " curl -LO https://genome-idx.s3.amazonaws.com/kraken/k2_pluspfp_08gb_20220908.tar.gz &&"
-            " tar xvf k2_pluspfp_08gb_20220908.tar.gz"
+            "mkdir -p {output}"
+            " && curl -L https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20201202.tar.gz"
+            "  | tar xv -C {output}"
 
 rule faidx:
     input:
