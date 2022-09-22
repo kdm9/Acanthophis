@@ -63,7 +63,7 @@ rule krakendb:
     shell:
             "mkdir -p {output}"
             " && curl -L https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20201202.tar.gz"
-            "  | tar xv -C {output}"
+            "  | tar xzv -C {output}"
 
 rule faidx:
     input:
