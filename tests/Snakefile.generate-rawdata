@@ -56,11 +56,34 @@ rule all:
         expand("rawdata/reads/{run}/{lib}_{R}.fastq.gz", run=RUNS, lib=LIBS, R=["R1", "R2"]),
         "rawdata/rl2s.tsv",
         "rawdata/kraken/Viral",
-        "rawdata/kaiju/Viral",
+        "rawdata/kaiju/Viral/kaiju_db_viruses.fmi",
+        "rawdata/kaiju/Viral/nodes.dmp",
+        "rawdata/kaiju/Viral/names.dmp",
+        "rawdata/centrifuge/lambda",
+
+rule centrifuge:
+    input:
+        ref="rawdata/reference/genome.fa",
+        nodes="rawdata/kaiju/Viral/nodes.dmp",
+        names="rawdata/kaiju/Viral/names.dmp",
+        map="rawdata/lambda/centrifuge-map.txt",
+    output:
+        directory("rawdata/centrifuge/lambda")
+    shell:
+        "mkdir -p {output} && "
+        "centrifuge-build"
+        "   --conversion-table {input.map}"
+        "   --taxonomy-tree {input.nodes}"
+        "   --name-table {input.names}"
+        "   {input.ref}"
+        "   {output}/lambda"
+
 
 rule kaijudb:
     output:
-        directory("rawdata/kaiju/Viral"),
+        "rawdata/kaiju/Viral/kaiju_db_viruses.fmi",
+        "rawdata/kaiju/Viral/nodes.dmp",
+        "rawdata/kaiju/Viral/names.dmp",
     shell:
             "mkdir -p {output}"
             " && curl -L https://kaiju.binf.ku.dk/database/kaiju_db_viruses_2020-05-25.tgz"

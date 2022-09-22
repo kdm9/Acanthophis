@@ -1,3 +1,7 @@
+#######################################################################
+#                               KRAKEN                                #
+#######################################################################
+
 ruleorder: kraken_noreads > kraken_reads
 rule kraken_noreads:
     input:
@@ -75,6 +79,76 @@ rule multiqc_kraken:
         "   {input}"
         " >{log} 2>&1"
 
+#######################################################################
+#                                KAIJU                                #
+#######################################################################
+
+
+rule kaiju:
+    input:
+        reads=P("reads/samples/{sample}.fastq.gz"),
+        taxon=lambda wc: R(config["data_paths"]["kaiju"][wc.db]["nodes"], keep_local=True),
+        index=lambda wc: R(config["data_paths"]["kaiju"][wc.db]["fmi"], keep_local=True),
+    output:
+        P("taxonid/{sampleset}/kaiju/{db}/{sample}.txt"),
+    log: L("taxonid/{sampleset}/kaiju/{db}/{sample}.log"),
+    resources: **rule_resources(config, "kaiju", time_min=90, mem_gb=32, disk_gb=24, cores=4)
+    conda: "envs/kaiju.yml"
+    shell:
+        "kaiju"
+        "   -t {input.taxon}"
+        "   -f {input.index}"
+        "   -o {output}"
+        "   -z {threads}"
+        "   -i {input.reads}"
+        "   >{log} 2>&1"
+
+
+#######################################################################
+#                             CENTRIFUGE                              #
+#######################################################################
+
+rule centrifuge:
+    input:
+        reads=P("reads/samples/{sample}.fastq.gz"),
+        db=lambda wc: R(config["data_paths"]["centrifuge"][wc.db], keep_local=True),
+    output:
+        out=P("taxonid/{sampleset}/centrifuge/{db}/{sample}.txt"),
+        report=P("taxonid/{sampleset}/centrifuge/{db}/{sample}_report.txt"),
+        metrics=P("taxonid/{sampleset}/centrifuge/{db}/{sample}_metrics.txt"),
+    log: L("taxonid/{sampleset}/centrifuge/{db}/{sample}.log"),
+    resources: **rule_resources(config, "centrifuge", time_min=90, mem_gb=16, disk_gb=8, cores=16)
+    conda: "envs/centrifuge.yml"
+    params:
+        idx_prefix=lambda wc, input: stripext(input.db, [".1.cf", ".2.cf", ".3.cf", ".4.cf"])
+    shell:
+        "centrifuge"
+        "   --mm"
+        "   --met-file {output.metrics}"
+        "   --report-file {output.report}"
+        "   -S {output.out}"
+        "   --threads {threads}"
+        "   -x {params.idx_prefix}"
+        "   -U {input.reads}"  # TODO: make it recognise pairs??
+        "   >{log} 2>&1"
+
+
+
+#######################################################################
+#                               Targets                               #
+#######################################################################
+
+
+rule all_kaiju:
+    input:
+        [P(expand("taxonid/{sampleset}/kaiju/{db}/{sample}.txt",
+                  sampleset=sampleset,
+                  sample=config["SAMPLESETS"][sampleset],
+                  db=config["samplesets"][sampleset]["kaiju_dbs"],
+                  ))
+         for sampleset in config["samplesets"]
+         if "kaiju_dbs" in config["samplesets"][sampleset]
+        ],
 
 rule all_kraken:
     input:
@@ -94,3 +168,23 @@ rule all_kraken:
          for sampleset in config["samplesets"]
          if config["samplesets"][sampleset].get("kraken_reads", False)
         ]
+
+
+
+rule all_centrifuge:
+    input:
+        [P(expand("taxonid/{sampleset}/centrifuge/{db}/{sample}.txt",
+                  sampleset=sampleset,
+                  sample=config["SAMPLESETS"][sampleset],
+                  db=config["samplesets"][sampleset]["centrifuge_dbs"],
+                  ))
+         for sampleset in config["samplesets"]
+         if "centrifuge_dbs" in config["samplesets"][sampleset]
+        ],
+
+
+rule all_taxonid:
+    input:
+        rules.all_kraken.input,
+        rules.all_kaiju.input,
+        rules.all_centrifuge.input,

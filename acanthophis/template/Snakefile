@@ -6,8 +6,7 @@ include: "rules/reads.rules"
 include: "rules/align.rules"
 include: "rules/denovo.rules"
 include: "rules/varcall.rules"
-include: "rules/kraken.rules"
-include: "rules/kaiju.rules"
+include: "rules/taxonid.rules"
 
 rule all:
     input:
@@ -15,8 +14,7 @@ rule all:
         rules.all_align.input,
         rules.all_varcall.input,
         rules.all_denovo.input,
-        rules.all_kraken.input,
-        rules.all_kaiju.input,
+        rules.all_taxonid.input,
 
 
 # This must always be put at the end. It scans all rules and updates their
