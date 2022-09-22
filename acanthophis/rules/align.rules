@@ -188,7 +188,7 @@ rule extract_unmapped:
     resources: **rule_resources(config, "extract_unmapped", time_min=120, mem_gb=1, cores=2)
     conda: "envs/align.yml"
     shell:
-        "(samtools fastq -t -i -f4 -c8 -@ {threads} -o {output} {input} ) >{log} 2>&1"
+        "(samtools fastq -t -f4 -c8 -@ {threads} -o {output} {input} ) >{log} 2>&1"
 
 
 #######################################################################
