@@ -22,3 +22,8 @@ rule all:
 # This must always be put at the end. It scans all rules and updates their
 # resource requests per the config file.
 postprocess_rules(workflow, config)
+
+# Unlike other code files in Acathophis, this file is placed in the public
+# domain, so there are no restrictions on its modification. Specifically, these
+# example files are licensed under the Creative Commons Zero licence, as that
+# is a more portable concept of "public domain".

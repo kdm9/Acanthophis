@@ -170,3 +170,8 @@ resources:
     disk_mb: 300000
     mem_mb: 16000
     time_min: 120
+
+# Unlike other code files in Acathophis, this file is placed in the public
+# domain, so there are no restrictions on its modification. Specifically, these
+# example files are licensed under the Creative Commons Zero licence, as that
+# is a more portable concept of "public domain".

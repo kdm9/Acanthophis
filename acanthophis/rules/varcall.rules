@@ -1,8 +1,13 @@
+# These rules are part of Acanthophis. See https://github.com/kdm9/Acanthophis.
+# This file *could* be modified, but then be careful when you update them. And
+# please, if you find a bug, raise an issue on github so the fix gets shared
+# with everyone.
+#
 # Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
 #
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 
 #######################################################################
 #                               Mpileup                               #
