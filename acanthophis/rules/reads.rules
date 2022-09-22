@@ -184,23 +184,9 @@ rule samplefastqfile:
 
 
 
-rule fastqc_adaptors_fa:
-    output:
-        temp(T("stats/fastqc/adaptors.txt"))
-    run:
-        with open(output[0], "w") as fh:
-            seqs = set()
-            for run in config["qc"]:
-                with open(config["qc"][run]["adapter_file"]) as adaptfh:
-                    for adapt_seq in adaptfh.read().split():
-                        seqs.add(adapt_seq.strip())
-            for i, seq in enumerate(seqs):
-                print(f"{i:02d}", seq, sep='\t', file=fh)
-
-rule fastqc_raw:
+rule fastqc_preqc:
     input:
-        paired=T("reads/raw/{run}~{lib}_il.fastq.gz"),
-        single=T("reads/raw/{run}~{lib}_se.fastq.gz"),
+        reads=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)].values()),
         adaptors=T("stats/fastqc/adaptors.txt"),
     output:
         fqczip=P("stats/fastqc/raw/{run}~{lib}_fastqc.zip"),
@@ -211,23 +197,21 @@ rule fastqc_raw:
     shell:
         "(T=$(mktemp -d);"
         ' trap "rm -rf $T" EXIT;'
-        " cat {input.paired} {input.single} > $T/{wildcards.run}~{wildcards.lib}.fastq.gz &&"
+        " cat {input.reads} > $T/{wildcards.run}~{wildcards.lib}.fastq.gz &&"
         " fastqc "
         "   -o $T"
-        "   -a {input.adaptors}"
         "   $T/{wildcards.run}~{wildcards.lib}.fastq.gz"
         " && mv $T/*_fastqc.zip {output.fqczip}"
         ") >{log} 2>&1"
 
 
-rule fastqc_sample_postqc:
+rule fastqc_postqc:
     input:
-        il=P("reads/samples/{sample}.fastq.gz"),
-        adaptors=T("stats/fastqc/adaptors.txt")
+        reads=T("reads/runs/{run}~{lib}.fastq.gz"),
     output:
-        fqczip=P("stats/fastqc/postqc_sample/{sample}_fastqc.zip"),
+        fqczip=P("stats/fastqc/postqc/{run}~{lib}_fastqc.zip"),
     log:
-        log=L("log/fastqc/postqc_sample/{sample}.log"),
+        log=L("log/fastqc/postqc_sample/{run}~{lib}.log"),
     resources: **rule_resources(config, "fastqc", time_min=30, mem_mb=2000)
     conda: "envs/qcstats.yml"
     shell:
@@ -235,8 +219,7 @@ rule fastqc_sample_postqc:
         ' trap "rm -rf $T" EXIT;'
         " fastqc "
         "   -o $T"
-        "   --adapters {input.adaptors}"
-        "   {input.il}"
+        "   {input.reads}"
         " && mv $T/*_fastqc.zip {output.fqczip}"
         ") >{log} 2>&1"
 
@@ -261,6 +244,17 @@ rule all_runlib_qc:
 rule all_runlib_readstats:
     input:
         P("stats/reads/readnum_librun.tsv"),
+
+rule all_runlib_qc:
+    input:
+        P([f"stats/fastqc/{prepost}/{run}~{lib}_fastqc.zip",
+          for prepost in ["preqc", "postqc"]
+          for sset in config["SAMPLESETS"]
+          for samp in config["SAMPLESETS"][sset]
+          for run, lib in config["SAMP2RUNLIB"][samp]
+          if config["samplesets"][sset].get("fastqc", False)
+        ]),
+
 
 
 rule all_reads:

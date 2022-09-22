@@ -43,6 +43,8 @@ samplesets:
       - Viral
     kaiju_dbs:
       - Viral
+    persample_reads: false # don't specifically make sample.fastq.gz
+    fastqc: true
     mash: true
     kwip: false  # TODO: khmer is broken, fix it
     varcall:
