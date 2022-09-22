@@ -146,11 +146,11 @@ rule mergebam_set:
         bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
     log:
         L("log/mergesetbam/{aligner}~{ref}~{sampleset}.log"),
-    resources: **rule_resources(config, "mergebam_set", time_min=2880, mem_gb=16, disk_gb=1000, cores=16)
+    resources: **rule_resources(config, "mergebam_set", time_min=2880, mem_gb=16, disk_gb=1000, cores=64)
     conda: "envs/align.yml"
     shell:
         "( samtools merge"
-        "   --output-fmt bam,level=8"
+        "   --output-fmt bam,level=6"
         "   -@ {threads}"
         "   -"
         "   {input}"
