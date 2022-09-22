@@ -1,3 +1,4 @@
+ruleorder: kraken_noreads > kraken_reads
 rule kraken_noreads:
     input:
         reads=P("reads/samples/{sample}.fastq.gz"),
