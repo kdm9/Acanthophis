@@ -12,4 +12,5 @@ dependencies:
   - numpy
   - wgsim
   - samtools
-  - msprime
+  - pip:
+    - msprime
