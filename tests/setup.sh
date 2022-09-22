@@ -1,8 +1,7 @@
 #!/bin/bash
-#set -xeuo pipefail
 mamba env update -f environment-setup.yml
 conda activate acanthophis-example
 pip install -e ../
-acanthophis-init --yes
+set -xeuo pipefail
 snakemake --snakefile Snakefile.generate-rawdata -j 4 --use-conda --conda-frontend mamba
 tree rawdata

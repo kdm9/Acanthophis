@@ -2,7 +2,7 @@ name: Workflow CI
 
 on:
   push:
-    branches: "**"
+    branches: "main"
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -24,15 +24,20 @@ jobs:
         id: cache-inputs
         uses: actions/cache@v3
         with:
-          path: example/rawdata
+          path: tests/rawdata
           key: rawdata
       
-      - name: setup and run Snakemake
+      - name: setup data
         shell: bash -el {0}
         run: |
           mamba info
-          pushd example
+          pushd tests
           source setup.sh
-          snakemake --snakefile Snakefile -j 4 --use-conda --conda-frontend mamba
           popd
 
+      - name: run workflow
+        shell: bash -el {0}
+        run: |
+          pushd tests
+          source test.sh
+          popd

@@ -182,14 +182,21 @@ rule samplefastqfile:
     shell:
         "cat {input} > {output}"
 
-
+def all_raw_fastqs(wc):
+    files = []
+    for file in config["RAWDATA_PATHS"][(wc.run, wc.lib)].values():
+        if isinstance(file, dict):
+            for file2 in file.values():
+                files.append(R(file2))
+        else:
+            files.append(R(file))
+    return files
 
 rule fastqc_preqc:
     input:
-        reads=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)].values()),
-        adaptors=T("stats/fastqc/adaptors.txt"),
+        reads=all_raw_fastqs,
     output:
-        fqczip=P("stats/fastqc/raw/{run}~{lib}_fastqc.zip"),
+        fqczip=P("stats/fastqc/preqc/{run}~{lib}_fastqc.zip"),
     log:
         log=L("log/fastqc/raw/{run}~{lib}.log"),
     resources: **rule_resources(config, "fastqc", time_min=30, mem_mb=2000)
@@ -228,7 +235,7 @@ rule all_sample_fastqs:
     input:
         P([expand("reads/samples/{sample}.fastq.gz", sample=config["SAMPLESETS"][sset])
             for sset in config["samplesets"]
-            if config["samplesets"][sset].get("persample_reads", false)
+            if config["samplesets"][sset].get("persample_reads", False)
             ])
 
 
@@ -245,9 +252,9 @@ rule all_runlib_readstats:
     input:
         P("stats/reads/readnum_librun.tsv"),
 
-rule all_runlib_qc:
+rule all_runlib_fastqc:
     input:
-        P([f"stats/fastqc/{prepost}/{run}~{lib}_fastqc.zip",
+        P([f"stats/fastqc/{prepost}/{run}~{lib}_fastqc.zip"
           for prepost in ["preqc", "postqc"]
           for sset in config["SAMPLESETS"]
           for samp in config["SAMPLESETS"][sset]
@@ -261,6 +268,6 @@ rule all_reads:
     input:
         rules.all_runlib_qc.input,
         rules.all_runlib_readstats.input,
+        rules.all_runlib_fastqc.input,
         rules.all_sample_fastqs.input,
-        rules.all_sample_fastqc_prepost.input,
 
