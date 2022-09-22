@@ -8,7 +8,7 @@ rule ngmap_idx:
         R("{path}-enc.2.ngm"),
         R("{path}-ht-13-2.3.ngm"),
     log:
-        L("log/ngm-idx/{path}.log")
+        L("{path}-index.log"),
     resources: **rule_resources(config, "ngmap_idx", time_min=40, mem_gb=2, cores=1)
     conda: "envs/align.yml"
     shell:
@@ -24,7 +24,7 @@ rule ngmap:
     output:
         bam=temp(T("alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam")),
     log:
-        L("log/ngm/{ref}~{run}~{lib}~{sample}.log")
+        L("alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam.log"),
     resources: **rule_resources(config, "ngmap", time_min=240, mem_mb=16000, cores=8)
     params:
         sensitivity=config["tool_settings"]["ngm"]["sensitivity"],
@@ -55,7 +55,7 @@ rule bwaidx:
         R("{path}.pac"),
         R("{path}.sa"),
     conda: "envs/align.yml"
-    log: L("log/bwaidx/{path}.log")
+    log: L("{path}_index.log"),
     resources: **rule_resources(config, "bwaidx", time_min=20, mem_mb=8000)
     shell:
         "bwa index {input} >{log} 2>&1"
@@ -72,7 +72,7 @@ rule bwamem:
         bwaidxsa=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"]+ ".sa", keep_local=True),
     output:
         bam=temp(T("alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam")),
-    log: L("log/bwa/{ref}~{run}~{lib}~{sample}.log")
+    log: L("alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam.log")
     resources: **rule_resources(config, "bwamem", time_min=240, mem_gb=10, cores=8)
     conda: "envs/align.yml"
     shell:
@@ -99,9 +99,8 @@ rule bam_merge_markdups_sort:
         bam=P("alignments/samples/{aligner}/{ref}/{sample}.bam"),
         bai=P("alignments/samples/{aligner}/{ref}/{sample}.bam.bai"),
     resources: **rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=8, disk_gb=10, cores=4)
-    log: L("log/markdup/{aligner}~{ref}~{sample}.log")
+    log: L("alignments/samples/{aligner}/{ref}/{sample}.bam.log")
     conda: "envs/align.yml"
-    priority: 1 # so the temps get cleaned sooner
     shell:
         "( samtools merge"
         "   -@ {threads}"
@@ -145,7 +144,7 @@ rule mergebam_set:
         bam=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
         bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
     log:
-        L("log/mergesetbam/{aligner}~{ref}~{sampleset}.log"),
+        L("alignments/sets/{aligner}~{ref}~{sampleset}.bam.log"),
     resources: **rule_resources(config, "mergebam_set", time_min=2880, mem_gb=16, disk_gb=1000, cores=64)
     conda: "envs/align.yml"
     shell:
@@ -168,7 +167,7 @@ rule bamstat_sample:
     output:
         P("alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats"),
     log:
-        L("log/bamstat_sample/{aligner}~{ref}~{sample}.log")
+        L("alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats.log")
     resources: **rule_resources(config, "bamstat_sample", time_min=120, mem_gb=4)
     conda: "envs/align.yml"
     shell:
@@ -184,7 +183,7 @@ rule extract_unmapped:
     output:
         P("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz"),
     log:
-        L("log/bamstat_sample/{aligner}~{ref}~{sample}.log")
+        L("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz.log"),
     resources: **rule_resources(config, "extract_unmapped", time_min=120, mem_gb=1, cores=2)
     conda: "envs/align.yml"
     shell:

@@ -11,8 +11,7 @@ rule qcreads_paired_il:
         reads=temp(T("reads/qc/{run}~{lib}_il.fastq")),
         settings=P("stats/adapterremoval/{run}~{lib}_il.settings"),
     resources: **rule_resources(config, "qcreads", time_min=60, mem_gb=1, disk_gb=2, cores=1)
-    log:
-        log=L("log/adapterremoval/{run}~{lib}_il.log"),
+    log: L("reads/qc/{run}~{lib}_il.fastq.log"),
     params:
         adpfile=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["adapter_file"],
         minqual=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["minqual"],
@@ -36,7 +35,7 @@ rule qcreads_paired_il:
         "   --threads {threads}"
         "   --settings {output.settings}"
         "   --output1 {output.reads}"
-        ") >{log.log} 2>&1"
+        ") >{log} 2>&1"
 
 
 rule qcreads_paired_r12:
@@ -47,8 +46,7 @@ rule qcreads_paired_r12:
         reads=temp(T("reads/qc/{run}~{lib}_r12.fastq")),
         settings=P("stats/adapterremoval/{run}~{lib}_r12.settings"),
     resources: **rule_resources(config, "qcreads", time_min=60, mem_gb=1, disk_gb=2, cores=1)
-    log:
-        log=L("log/adapterremoval/{run}~{lib}_r12.log"),
+    log: L("reads/qc/{run}~{lib}_r12.fastq.log"),
     params:
         adpfile=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["adapter_file"],
         minqual=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["minqual"],
@@ -73,7 +71,7 @@ rule qcreads_paired_r12:
         "   --threads {threads}"
         "   --settings {output.settings}"
         "   --output1 {output.reads}"
-        ") >{log.log} 2>&1"
+        ") >{log} 2>&1"
 
 
 rule qcreads_se:
@@ -83,7 +81,7 @@ rule qcreads_se:
         reads=temp(T("reads/qc/{run}~{lib}_se.fastq")),
         settings=P("stats/adapterremoval/{run}~{lib}_se.settings"),
     log:
-        log=L("log/adapterremoval/{run}~{lib}_se.log"),
+        L("reads/qc/{run}~{lib}_se.fastq.log"),
     resources: **rule_resources(config, "qcreads", time_min=60, mem_gb=1, disk_gb=2, cores=1)
     params:
         adpfile=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["adapter_file"],
@@ -107,7 +105,7 @@ rule qcreads_se:
         "   --threads {threads}"
         "   --settings {output.settings}"
         "   --output1 {output.reads}"
-        ") >{log.log} 2>&1"
+        ") >{log} 2>&1"
 
 
 
@@ -119,11 +117,11 @@ rule merge_qcd_reads:
         reads=T("reads/runs/{run}~{lib}.fastq.gz"),
     group: "qc_one_sample"
     log:
-        log=L("log/mergeqcd/{run}~{lib}.log"),
+        L("reads/runs/{run}~{lib}.fastq.gz.log"),
     resources: **rule_resources(config, "mergeqcd", time_min=30, mem_mb=100, disk_gb=1, cores=1)
     conda: "envs/reads.yml"
     shell:
-        "(cat {input} | gzip -1 >{output} ) 2>{log}"
+        "(cat {input} | gzip -1 >{output} ) >{log} 2>&1"
 
 
 rule read_count_librun_indiv:
@@ -132,7 +130,7 @@ rule read_count_librun_indiv:
     output:
         temp(T("stats/reads/readnum_librun/{run}~{lib}.tsv")),
     log:
-        L("log/readstats/seqhax-stats-librun/{run}~{lib}.log"),
+        L("stats/reads/readnum_librun/{run}~{lib}.tsv.log"),
     conda: "envs/reads.yml"
     resources: **rule_resources(config, "read_count_librun_indiv", time_min=10, mem_mb=500, disk_gb=1)
     shell:
@@ -167,7 +165,7 @@ rule samplefastqpipe:
     input:
         lambda wc: T(["reads/runs/{run}~{lib}.fastq.gz".format(run=r, lib=l) for r, l in config["SAMP2RUNLIB"][wc.sample]]),
     output: pipe(T("reads/samples_pipe/{sample}.fastq.gz"))
-    log: L("log/samplefastqpipe/{sample}.log")
+    log: L("reads/samples_pipe/{sample}.fastq.gz.log")
     resources: **rule_resources(config, "samplefastqpipe", time_min=10, mem_mb=100, disk_gb=1)
     shell:
         "cat {input} > {output}"
@@ -177,7 +175,7 @@ rule samplefastqfile:
     input:
         lambda wc: T(["reads/runs/{run}~{lib}.fastq.gz".format(run=r, lib=l) for r, l in config["SAMP2RUNLIB"][wc.sample]]),
     output: P("reads/samples/{sample}.fastq.gz")
-    log: L("log/samplefastqfile/{sample}.log")
+    log: L("reads/samples/{sample}.fastq.gz.log")
     resources: **rule_resources(config, "samplefastqfile", time_min=10, mem_mb=100, disk_gb=1)
     shell:
         "cat {input} > {output}"
@@ -197,8 +195,7 @@ rule fastqc_preqc:
         reads=all_raw_fastqs,
     output:
         fqczip=P("stats/fastqc/preqc/{run}~{lib}_fastqc.zip"),
-    log:
-        log=L("log/fastqc/raw/{run}~{lib}.log"),
+    log: L("stats/fastqc/preqc/{run}~{lib}_fastqc.log"),
     resources: **rule_resources(config, "fastqc", time_min=30, mem_mb=2000)
     conda: "envs/qcstats.yml"
     shell:
@@ -217,8 +214,7 @@ rule fastqc_postqc:
         reads=T("reads/runs/{run}~{lib}.fastq.gz"),
     output:
         fqczip=P("stats/fastqc/postqc/{run}~{lib}_fastqc.zip"),
-    log:
-        log=L("log/fastqc/postqc_sample/{run}~{lib}.log"),
+    log: L("stats/fastqc/postqc/{run}~{lib}_fastqc.zip.log"),
     resources: **rule_resources(config, "fastqc", time_min=30, mem_mb=2000)
     conda: "envs/qcstats.yml"
     shell:

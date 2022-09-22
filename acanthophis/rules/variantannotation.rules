@@ -14,7 +14,7 @@ rule snpeff:
         csv=P("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.csv"),
         html=P("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.html"),
     log:
-        L("log/snpeff/annotate/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpeff.log")
+        L("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.log"),
     resources: **rule_resources(config, "snpeff", time_min=1440, mem_gb=1, cores=1)
     conda: "envs/snpeff.yml"
     shell:

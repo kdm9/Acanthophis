@@ -4,7 +4,7 @@ rule multiqc_samstats:
     output:
         html="stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html",
     log:
-        log="log/multiqc/bamstats/{aligner}~{ref}~{sampleset}.log",
+        log="stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.log",
     resources: **acanthophis.rule_resources(config, "multiqc_bamstats", time_min=30, mem_gb=2)
     conda: "envs/qcstats.yml"
     shell:

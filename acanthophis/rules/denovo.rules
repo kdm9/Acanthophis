@@ -12,7 +12,7 @@ rule countsketch:
         info=P("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info"),
         tsv=P("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info.tsv"),
     log:
-        L("log/kwip/sketch/k{ksize}-s{sketchsize}-{sample}.log")
+        L("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.log"),
     resources: **rule_resources(config, "countsketch", time_min=60, mem_mb=16000, cores=1)
     conda: "envs/kwip.yml"
     shell:
@@ -37,8 +37,7 @@ rule kwipdist:
     output:
         d=P("kwip/{set}~k{ksize}~s{sketchsize}.dist"),
         k=P("kwip/{set}~k{ksize}~s{sketchsize}.kern"),
-    log:
-        L("log/kwip/dist/k{ksize}-s{sketchsize}-{set}.log")
+    log: L("kwip/{set}~k{ksize}~s{sketchsize}.dist.log"),
     resources: **rule_resources(config, "countsketch", time_min=2880, mem_mb=15000, cores=8)
     conda: "envs/kwip.yml"
     shell:
@@ -50,37 +49,13 @@ rule kwipdist:
         " >{log} 2>&1"
 
 
-rule unique_kmers:
-    input:
-        lambda wc: P(expand("reads/samples/{sample}.fastq.gz",
-                          sample=SAMPLESETS[wc.set])),
-    output:
-        P("readstats/unique-kmers/{set}.tsv"),
-    threads:
-        27
-    params:
-        kmersize=config["tool_settings"]["kwip"]["kmer_size"],
-    resources: **rule_resources(config, "unique_kmers", time_min=2880, mem_gb=1)
-    log:
-        L("log/readstats/unique-kmers/{set}.log"),
-    conda: "envs/kwip.yml"
-    shell:
-        "( kdm-unique-kmers.py"
-        "    -t {threads}"
-        "    -k {params.kmersize}"
-        "    {input}"
-        "    >{output}"
-        " ) 2>{log}"
-
-
 rule mash_sketch_set:
     input:
         lambda wc: P(expand("reads/samples/{sample}.fastq.gz",
                           sample=config["SAMPLESETS"][wc.set])),
     output:
         temp(T("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh"))
-    log:
-        L("log/mash_sketch_set/{set}~k{ksize}-s{sketchsize}.log")
+    log: L("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh.log")
     resources: **rule_resources(config, "mash_sketch_set", time_min=2880, mem_gb=16, cores=48)
     conda: "envs/mash.yml"
     shell:
@@ -99,7 +74,7 @@ rule mash_dist_set:
     output:
         P("mash/{set}~k{ksize}~s{sketchsize}.dist")
     log:
-        L("log/mash_dist_set/{set}~k{ksize}~s{sketchsize}.log")
+        L("mash/{set}~k{ksize}~s{sketchsize}.dist.log")
     resources: **rule_resources(config, "mash_dist_set", time_min=2880, mem_gb=16, cores=48)
     conda: "envs/mash.yml"
     shell:

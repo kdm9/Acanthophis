@@ -6,13 +6,13 @@ ruleorder: kraken_noreads > kraken_reads
 rule kraken_noreads:
     input:
         reads=P("reads/samples/{sample}.fastq.gz"),
-        hash=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/hash.k2d", keep_local=True),
-        opts=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/opts.k2d", keep_local=True),
-        taxo=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/taxo.k2d", keep_local=True),
+        hash=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/hash.k2d", keep_local=True),
+        opts=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/opts.k2d", keep_local=True),
+        taxo=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/taxo.k2d", keep_local=True),
     output:
-        outtxt=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_output.txt"),
-        report=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt"),
-    log: L("taxonid/{sampleset}/kraken/{krakendb}/{sample}.log"),
+        outtxt=P("taxonid/kraken/{db}~{sample}_output.txt"),
+        report=P("taxonid/kraken/{db}~{sample}_report.txt"),
+    log: L("taxonid/kraken/{db}~{sample}.log"),
     resources: **rule_resources(config, "kraken", time_min=90, mem_gb=32, disk_gb=24, cores=4)
     conda: "envs/kraken.yml"
     shell:
@@ -30,15 +30,15 @@ rule kraken_noreads:
 rule kraken_reads:
     input:
         reads=P("reads/samples/{sample}.fastq.gz"),
-        hash=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/hash.k2d", keep_local=True),
-        opts=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/opts.k2d", keep_local=True),
-        taxo=lambda wc: R(config["data_paths"]["kraken"][wc.krakendb] + "/taxo.k2d", keep_local=True),
+        hash=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/hash.k2d", keep_local=True),
+        opts=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/opts.k2d", keep_local=True),
+        taxo=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/taxo.k2d", keep_local=True),
     output:
-        fastq_un=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_unclassified.fastq.gz"),
-        fastq_cl=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_classified.fastq.gz"),
-        outtxt=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_output.txt"),
-        report=P("taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt"),
-    log: L("taxonid/{sampleset}/kraken/{krakendb}/{sample}.log"),
+        fastq_un=P("taxonid/kraken/{db}~{sample}_unclassified.fastq.gz"),
+        fastq_cl=P("taxonid/kraken/{db}~{sample}_classified.fastq.gz"),
+        outtxt=P("taxonid/kraken/{db}/{sample}_output.txt"),
+        report=P("taxonid/kraken/{db}~{sample}_report.txt"),
+    log: L("taxonid/kraken/{db}~{sample}.log"),
     resources: **rule_resources(config, "kraken", time_min=90, mem_gb=32, disk_gb=24, cores=4)
     conda: "envs/kraken.yml"
     shell:
@@ -58,15 +58,14 @@ rule kraken_reads:
 
 rule multiqc_kraken:
     input:
-        lambda wc: P(expand("taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt",
+        lambda wc: P(expand("taxonid/{sampleset}/kraken/{db}/{sample}_report.txt",
                             sample=config["SAMPLESETS"][wc.sampleset],
                             dbname=config["samplesets"][wc.sampleset].get("kraken_dbs", []),
                             sampleset=wc.sampleset,
                    ))
     output:
         html=P("taxonid/{sampleset}_kraken_multiqc.html"),
-    log:
-        log=L("log/multiqc/kraken/{sampleset}.log"),
+    log: L("taxonid/{sampleset}_kraken_multiqc.log"),
     conda: "envs/qcstats.yml"
     resources: **rule_resources(config, "multiqc_kraken", time_min=30, mem_gb=2)
     shell:
@@ -90,8 +89,8 @@ rule kaiju:
         taxon=lambda wc: R(config["data_paths"]["kaiju"][wc.db]["nodes"], keep_local=True),
         index=lambda wc: R(config["data_paths"]["kaiju"][wc.db]["fmi"], keep_local=True),
     output:
-        P("taxonid/{sampleset}/kaiju/{db}/{sample}.txt"),
-    log: L("taxonid/{sampleset}/kaiju/{db}/{sample}.log"),
+        P("taxonid/kaiju/{db}~{sample}.txt"),
+    log: L("taxonid/kaiju/{db}~{sample}.log"),
     resources: **rule_resources(config, "kaiju", time_min=90, mem_gb=32, disk_gb=24, cores=4)
     conda: "envs/kaiju.yml"
     shell:
@@ -113,10 +112,10 @@ rule centrifuge:
         reads=P("reads/samples/{sample}.fastq.gz"),
         db=lambda wc: R(config["data_paths"]["centrifuge"][wc.db], keep_local=True),
     output:
-        out=P("taxonid/{sampleset}/centrifuge/{db}/{sample}.txt"),
-        report=P("taxonid/{sampleset}/centrifuge/{db}/{sample}_report.txt"),
-        metrics=P("taxonid/{sampleset}/centrifuge/{db}/{sample}_metrics.txt"),
-    log: L("taxonid/{sampleset}/centrifuge/{db}/{sample}.log"),
+        out=P("taxonid/centrifuge/{db}~{sample}.txt"),
+        report=P("taxonid/centrifuge/{db}~{sample}_report.txt"),
+        metrics=P("taxonid/centrifuge/{db}~{sample}_metrics.txt"),
+    log: L("taxonid/centrifuge/{db}~{sample}.log"),
     resources: **rule_resources(config, "centrifuge", time_min=90, mem_gb=16, disk_gb=8, cores=16)
     conda: "envs/centrifuge.yml"
     params:
@@ -141,8 +140,7 @@ rule centrifuge:
 
 rule all_kaiju:
     input:
-        [P(expand("taxonid/{sampleset}/kaiju/{db}/{sample}.txt",
-                  sampleset=sampleset,
+        [P(expand("taxonid/kaiju/{db}~{sample}.txt",
                   sample=config["SAMPLESETS"][sampleset],
                   db=config["samplesets"][sampleset]["kaiju_dbs"],
                   ))
@@ -152,18 +150,16 @@ rule all_kaiju:
 
 rule all_kraken:
     input:
-        [P(expand("taxonid/{sampleset}/kraken/{krakendb}/{sample}_report.txt",
-                  sampleset=sampleset,
+        [P(expand("taxonid/kraken/{db}~{sample}_report.txt",
                   sample=config["SAMPLESETS"][sampleset],
-                  krakendb=config["samplesets"][sampleset]["kraken_dbs"],
+                  db=config["samplesets"][sampleset]["kraken_dbs"],
                   ))
          for sampleset in config["samplesets"]
          if "kraken_dbs" in config["samplesets"][sampleset]
         ],
-        [P(expand("taxonid/{sampleset}/kraken/{krakendb}/{sample}_unclassified.fastq.gz",
-                  sampleset=sampleset,
+        [P(expand("taxonid/kraken/{db}~{sample}_unclassified.fastq.gz",
                   sample=config["SAMPLESETS"][sampleset],
-                  krakendb=config["samplesets"][sampleset]["kraken_dbs"],
+                  db=config["samplesets"][sampleset]["kraken_dbs"],
                   ))
          for sampleset in config["samplesets"]
          if config["samplesets"][sampleset].get("kraken_reads", False)
@@ -173,8 +169,7 @@ rule all_kraken:
 
 rule all_centrifuge:
     input:
-        [P(expand("taxonid/{sampleset}/centrifuge/{db}/{sample}.txt",
-                  sampleset=sampleset,
+        [P(expand("taxonid/centrifuge/{db}~{sample}.txt",
                   sample=config["SAMPLESETS"][sampleset],
                   db=config["samplesets"][sampleset]["centrifuge_dbs"],
                   ))

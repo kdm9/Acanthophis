@@ -28,9 +28,8 @@ rule mpileup:
         bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
     output:
-        bcf=T("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf"),
-    log:
-        L("log/mpileup/{aligner}~{ref}~{sampleset}/{region}.log")
+        bcf=P("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf"),
+    log: L("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
     params:
         theta=lambda wc: config["tool_settings"]["varcall"]["theta_prior"].get(wc.sampleset, 0.01),
         minmq=lambda wc: config["tool_settings"]["varcall"]["minmapq"].get(wc.aligner, 5),
@@ -70,9 +69,8 @@ rule freebayes:
         bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
     output:
-        bcf=T("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf"),
-    log:
-        L("log/freebayes/{aligner}~{ref}~{sampleset}/{region}.log")
+        bcf=P("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf"),
+    log: L("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
     group: "varcall_oneregion"
     params:
         theta=lambda wc: config["tool_settings"]["varcall"]["theta_prior"].get(wc.sampleset, 0.01),
@@ -106,13 +104,12 @@ rule freebayes:
 #######################################################################
 rule bcfnorm:
     input:
-        bcf=T("variants/raw_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
+        bcf=P("variants/raw_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"]),
     output:
         # Not a pipe! can't run multiple filters if a pipe
         bcf=temp(T("variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf")),
-    log:
-        L("log/bcfnormalise/{caller}~{aligner}~{ref}~{sampleset}/{region}.log")
+    log: L("variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
     group: "varcall_oneregion"
     resources: **rule_resources(config, "bcfnorm", time_min=120, mem_gb=4, cores=1)
     conda: "envs/varcall.yml"
@@ -137,7 +134,7 @@ rule bcffilter:
         # Not a pipe! can't run all regions separately if this is a pipe into merge
         bcf=temp(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf")),
     log:
-        L("log/bcffilter/{caller}~{aligner}~{ref}~{sampleset}/{filter}/{region}.log")
+        L("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf.log"),
     params:
         filtarg=lambda wc: config["tool_settings"]["varcall"]["filters"][wc.filter].replace('\n', ' ')
     group: "varcall_oneregion"
@@ -181,6 +178,8 @@ rule premergevariantidx:
         T("variants/filter_split/{path}")
     output:
         T("variants/filter_split/{path}.csi")
+    log:
+        T("variants/filter_split/{path}.csi.log")
     resources: **rule_resources(config, "variantidx", time_min=720, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
     shell:
@@ -199,11 +198,11 @@ rule bcfmerge:
     output:
         bcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf"),
     log:
-        L("log/mergebcf/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}.log")
+        L("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.log"),
     params:
         allow_overlaps=lambda wc: "--allow-overlaps" if config["tool_settings"]["varcall"]["merge_allow_overlaps"].get(wc.caller, False) else ""
     group: "bcfmerge"
-    resources: **rule_resources(config, "bcfstats", time_min=1440, mem_gb=12, cores=16)
+    resources: **rule_resources(config, "bcfstats", time_min=1440, mem_gb=12, cores=64)
     conda: "envs/varcall.yml"
     shell:
         "( bcftools concat"
@@ -223,6 +222,7 @@ rule bcfstats:
         P("variants/{path}.bcf")
     output:
         P("variants/{path}.bcf.stats")
+    log: L("variants/{path}.bcf.stats.log")
     conda: "envs/varcall.yml"
     resources: **rule_resources(config, "bcfstats", time_min=120, mem_gb=4, cores=4)
     shell:
@@ -239,8 +239,7 @@ rule bcf2vcf:
         bcf=P("{path}.bcf"),
     output:
         vcf=P("{path}.vcf.gz"),
-    log:
-        L("log/bcf2vcf/{path}.log")
+    log: L("{path}.vcf.gz.log"),
     resources: **rule_resources(config, "bcf2vcf", time_min=720, mem_gb=8, cores=8)
     conda: "envs/varcall.yml"
     shell:
