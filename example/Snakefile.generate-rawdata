@@ -56,6 +56,15 @@ rule all:
         expand("rawdata/reads/{run}/{lib}_{R}.fastq.gz", run=RUNS, lib=LIBS, R=["R1", "R2"]),
         "rawdata/rl2s.tsv",
         "rawdata/kraken/Viral",
+        "rawdata/kaiju/Viral",
+
+rule kaijudb:
+    output:
+        directory("rawdata/kaiju/Viral"),
+    shell:
+            "mkdir -p {output}"
+            " && curl -L https://kaiju.binf.ku.dk/database/kaiju_db_viruses_2020-05-25.tgz"
+            "  | tar xzv -C {output}"
 
 rule krakendb:
     output:

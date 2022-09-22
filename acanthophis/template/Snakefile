@@ -7,6 +7,7 @@ include: "rules/align.rules"
 include: "rules/denovo.rules"
 include: "rules/varcall.rules"
 include: "rules/kraken.rules"
+include: "rules/kaiju.rules"
 
 rule all:
     input:
@@ -15,6 +16,7 @@ rule all:
         rules.varcall.input,
         rules.denovo.input,
         rules.all_kraken.input,
+        rules.all_kaiju.input,
 
 
 # This must always be put at the end. It scans all rules and updates their

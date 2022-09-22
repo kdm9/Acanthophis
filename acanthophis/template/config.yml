@@ -10,6 +10,10 @@ data_paths:
       fasta: "rawdata/reference/genome.fa"
   kraken:
       Viral: "rawdata/kraken/Viral"
+  kaiju:
+      Viral:
+        nodes: "rawdata/kaiju/Viral/nodes.dmp"
+        fmi: "rawdata/kaiju/Viral/kaiju_db_viruses.fmi"
   temp_prefix: "tmp/"
   log_prefix: "output/"  # TODO ideally this would be the same as the persitent prefix but log: does't support remotes.
   persistent_prefix: "output/"
@@ -36,6 +40,8 @@ samplesets:
     # Output (un)-classified read fastqs from Kraken?
     kraken_reads: false
     kraken_dbs:
+      - Viral
+    kaiju_dbs:
       - Viral
     mash: true
     kwip: false  # TODO: khmer is broken, fix it
