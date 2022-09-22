@@ -280,6 +280,8 @@ def R(paths, keep_local=False):
     if isinstance(paths, str):
         paths = [paths, ]
     opaths = []
+    if "REMOTE_PROVIDERS" not in config:
+        config["REMOTE_PROVIDERS"] = {}
     for path in paths:
         uri = parse_uri(path)
         # This logic is very similar to snakemake.remotes.AUTO, except that
@@ -289,20 +291,41 @@ def R(paths, keep_local=False):
         if uri.scheme.lower() in ["", "file"]:
             opaths.append(path)
         elif uri.scheme.lower() == "s3":
-            from snakemake.remote import S3
+            from snakemake.remote.S3 import RemoteProvider
+            if "S3" not in config["REMOTE_PROVIDERS"]:
+                config["REMOTE_PROVIDERS"]["S3"] = RemoteProvider()
+            S3 = config["REMOTE_PROVIDERS"]["S3"]
             opaths.append(S3.remote(path, keep_local=keep_local))
         elif uri.scheme.lower() == "gs":
-            from snakemake.remote import GS
+            from snakemake.remote.GS import RemoteProvider
+            if "GS" not in config["REMOTE_PROVIDERS"]:
+                config["REMOTE_PROVIDERS"]["GS"] = RemoteProvider()
+            GS = config["REMOTE_PROVIDERS"]["GS"]
             opaths.append(GS.remote(path, keep_local=keep_local))
         elif uri.scheme.lower() in ["ftp", "ftps"]:
-            from snakemake.remote import FTP
+            from snakemake.remote.FTP import RemoteProvider
+            if "FTP" not in config["REMOTE_PROVIDERS"]:
+                config["REMOTE_PROVIDERS"]["FTP"] = RemoteProvider()
+            FTP = config["REMOTE_PROVIDERS"]["FTP"]
             opaths.append(FTP.remote(path, keep_local=keep_local))
         elif uri.scheme.lower() in ["http", "https"]:
-            from snakemake.remote import HTTP
+            from snakemake.remote.HTTP import RemoteProvider
+            if "HTTP" not in config["REMOTE_PROVIDERS"]:
+                config["REMOTE_PROVIDERS"]["HTTP"] = RemoteProvider()
+            HTTP = config["REMOTE_PROVIDERS"]["HTTP"]
             opaths.append(HTTP.remote(path, keep_local=keep_local))
         elif uri.scheme.lower() in ["az", "azblob"]:
-            from snakemake.remote import AzBlob
+            from snakemake.remote.AzBlob import RemoteProvider
+            if "AzBlob" not in config["REMOTE_PROVIDERS"]:
+                config["REMOTE_PROVIDERS"]["AzBlob"] = RemoteProvider()
+            AzBlob = config["REMOTE_PROVIDERS"]["AzBlob"]
             opaths.append(AzBlob.remote(path, keep_local=keep_local))
+        elif uri.scheme.lower() in ["sftp", "ssh"]:
+            from snakemake.remote.SFTP import RemoteProvider
+            if "SFTP" not in config["REMOTE_PROVIDERS"]:
+                config["REMOTE_PROVIDERS"]["SFTP"] = RemoteProvider()
+            SFTP = config["REMOTE_PROVIDERS"]["SFTP"]
+            opaths.append(SFTP.remote(path, keep_local=keep_local))
         else:
             raise ValueError(f"Unsupported scheme in remote URI: {path} = '{uri.scheme}'")
     if len(opaths) == 1:
