@@ -1,0 +1,33 @@
+rule megahit_sample:
+    input:
+        reads=P("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz"),
+    output:
+        outtar=P("metagenome/megahit/{sample}~{aligner}~{ref}/{sample}.tar.gz"),
+        contigs=P("metagenome/megahit/{sample}~{aligner}~{ref}/{sample}.contigs.fa"),
+    log:
+        L("metagenome/megahit/{sample}~{aligner}~{ref}/{sample}.log"),
+    resources: **rule_resources(config, "megahit", time_min=180, mem_gb=64, disk_gb=64, cores=64)
+    conda: "envs/megahit.yml"
+    shell:
+        "(T=$(mktemp -d)/$RANDOM;"
+        ' trap "rm -rf $T" EXIT;'
+        " megahit"
+        "   --out-dir $T"
+        "   --out-prefix {wildcards.sample}"
+        "   --memory $(({resources.mem_mb}*1000))"
+        "   --12 {input.reads}"
+        "   --num-cpu-threads {threads}"
+        " && cp $T/{wildcards.sample}.contigs.fa {output.contigs}"
+        " && tar czf {output.outtar} $T"
+        ")   >{log} 2>&1"
+
+
+rule all_megahit:
+    input:
+        [P(f"metagenome/megahit/{sample}~{aligner}~{ref}/{sample}.contigs.fa")
+           for sampleset in config["samplesets"]
+           for sample in config["SAMPLESETS"][sampleset]
+           for aligner in config["samplesets"][sampleset]["megahit"].get("aligners", [])
+           for ref in config["samplesets"][sampleset]["megahit"].get("references", [])
+           if "megahit" in config["samplesets"][sampleset]
+           ],

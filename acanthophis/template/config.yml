@@ -32,6 +32,11 @@ data_paths:
 
 samplesets:
   all_samples:
+    megahit:
+      aligners:
+        - bwa
+      references:
+        - lambda
     align:
       aligners:
         - bwa
