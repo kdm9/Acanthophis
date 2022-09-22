@@ -5,12 +5,4 @@ channels:
   - bioconda
   - kdm801
 dependencies:
-  - python
   - snakemake
-  - ncdu
-  - pip
-  - numpy
-  - wgsim
-  - samtools
-  - pip:
-    - msprime  # gsl on conda broken, install from pip

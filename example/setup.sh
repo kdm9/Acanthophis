@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -xeuo pipefail
-mamba env update -f environment.yml
-conda activate acanthophis-demo
+mamba env update -f environment-setup.yml
+conda activate acanthophis-example
 pip install -e ../
 acanthophis-init --yes
 # download kraken DB
