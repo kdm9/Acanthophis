@@ -32,6 +32,10 @@ data_paths:
 
 samplesets:
   all_samples:
+    multiqc:
+      - reads
+      - sample_bams
+      - kraken
     megahit:
       aligners:
         - bwa
