@@ -192,7 +192,7 @@ rule split_pair_sample:
     output:
         r1=T("reads/samples/{sample}_R1.fastq.gz"),
         r2=T("reads/samples/{sample}_R2.fastq.gz"),
-        rs=T("reads/samples/{sample}_se.fastq.gz"),
+        se=T("reads/samples/{sample}_se.fastq.gz"),
         yml=P("reads/samples/{sample}_split.stats.yml")
     log:
         L("reads/samples/{sample}_split.log"),

@@ -207,7 +207,7 @@ rule split_pair_unmapped:
     output:
         r1=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_R1.fastq.gz"),
         r2=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_R2.fastq.gz"),
-        rs=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_se.fastq.gz"),
+        se=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_se.fastq.gz"),
         yml=P("alignments/unmapped_reads/{sample}~{aligner}~{ref}_split.stats.yml")
     log:
         L("alignments/unmapped_reads/{sample}~{aligner}~{ref}_split.log"),
