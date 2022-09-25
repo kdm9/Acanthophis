@@ -219,6 +219,7 @@ rule split_pair_unmapped:
         "   -2 >(gzip >{output.r2})"
         "   -u >(gzip >{output.se})"
         "   -y {output.yml}"
+        "   {input}"
         " ) &>{log}"
 
 
