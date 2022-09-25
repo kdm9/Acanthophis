@@ -1,15 +1,10 @@
 #!/bin/bash -l 
 
 set -ueo pipefail
-TARGET=${TARGET:-all}
+TARGET="${TARGET:-all}"
 set -x
+mkdir -p "output/log/cluster/"
 
-snakemake \
-    -j 1 \
-    --use-conda \
-    --conda-frontend mamba \
-    --conda-create-envs-only 
-
-snakemake               \
-    --profile ./ebio-cluster/   \
+snakemake                               \
+    --profile ./profiles/ebio-cluster/  \
     "$TARGET"

@@ -24,7 +24,7 @@ rule kraken_noreads:
         outtxt=P("taxonid/kraken/{db}~{sample}_output.txt"),
         report=P("taxonid/kraken/{db}~{sample}_report.txt"),
     log: L("taxonid/kraken/{db}~{sample}.log"),
-    resources: **rule_resources(config, "kraken", time_min=90, mem_gb=32, disk_gb=24, cores=4)
+    resources: **rule_resources(config, "kraken_noreads", time_min=90, mem_gb=100, disk_gb=24, cores=4)
     conda: "envs/kraken.yml"
     shell:
         "kraken2"
@@ -50,7 +50,7 @@ rule kraken_reads:
         outtxt=P("taxonid/kraken/{db}/{sample}_output.txt"),
         report=P("taxonid/kraken/{db}~{sample}_report.txt"),
     log: L("taxonid/kraken/{db}~{sample}.log"),
-    resources: **rule_resources(config, "kraken", time_min=90, mem_gb=32, disk_gb=24, cores=4)
+    resources: **rule_resources(config, "kraken_reads", time_min=90, mem_gb=100, disk_gb=24, cores=4)
     conda: "envs/kraken.yml"
     shell:
         "kraken2"
@@ -69,22 +69,22 @@ rule kraken_reads:
 
 rule multiqc_kraken:
     input:
-        lambda wc: P(expand("taxonid/{sampleset}/kraken/{db}/{sample}_report.txt",
+        lambda wc: P(expand("taxonid/kraken/{db}~{sample}_report.txt",
                             sample=config["SAMPLESETS"][wc.sampleset],
-                            dbname=config["samplesets"][wc.sampleset].get("kraken_dbs", []),
+                            db=wc.db,
                             sampleset=wc.sampleset,
                    ))
     output:
-        html=P("taxonid/{sampleset}_kraken_multiqc.html"),
-    log: L("taxonid/{sampleset}_kraken_multiqc.log"),
+        html=P("taxonid/{sampleset}~{db}_kraken_multiqc.html"),
+    log: L("taxonid/{sampleset}~{db}_kraken_multiqc.log"),
     conda: "envs/qcstats.yml"
     resources: **rule_resources(config, "multiqc_kraken", time_min=30, mem_gb=2)
     shell:
         "multiqc"
         "   --no-megaqc-upload"
-        "   --flat"
+        "   --interactive"
         "   --no-data-dir"
-        "   --comment 'Report for sample set {wildcards.sampleset}'"
+        "   --comment 'Kraken report for sample set {wildcards.sampleset}'"
         "   --filename {output.html}"
         "   {input}"
         " >{log} 2>&1"
@@ -133,7 +133,6 @@ rule centrifuge:
         idx_prefix=lambda wc, input: stripext(input.db, [".1.cf", ".2.cf", ".3.cf", ".4.cf"])
     shell:
         "centrifuge"
-        "   --mm"
         "   --met-file {output.metrics}"
         "   --report-file {output.report}"
         "   -S {output.out}"
@@ -161,6 +160,11 @@ rule all_kaiju:
 
 rule all_kraken:
     input:
+        P([f"taxonid/{sampleset}~{db}_kraken_multiqc.html"
+           for sampleset in config["samplesets"]
+           for db in config["samplesets"][sampleset].get("kraken_dbs", [])
+           if "kraken_dbs" in config["samplesets"][sampleset]
+        ]),
         [P(expand("taxonid/kraken/{db}~{sample}_report.txt",
                   sample=config["SAMPLESETS"][sampleset],
                   db=config["samplesets"][sampleset]["kraken_dbs"],

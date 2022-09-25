@@ -1,0 +1,44 @@
+#######################################################################
+#                           Resource Config                           #
+#######################################################################
+resources:
+  # set to true to see all the resources for each rule
+  __DEBUG__: false
+  __default__:
+    # A default set of resources. Jobs not configured individually will inherit these values.
+    cores: 1
+    disk_gb: 32
+    mem_gb: 1
+    time_min: 120
+    localrule: 0  # this must be an integer, so 0 = false & 1 = true
+  __max__:
+    # A maximum of each resource permitted by your execution environment. Each job's
+    # request will be capped at these values.
+    # 
+    # On cloud environments, use the maximum available resources of your machine type. On
+    # HPC clusters, use the size of an individual node. On a local machine, use the size
+    # of the machine you run snakemake on.
+    cores: 128
+    disk_gb: 300
+    mem_gb:  1024
+    time_min: 2880
+  # What follows overrides both the defaults above and any per-job specification in the 
+  # snakemake rules files. The keys of this should be individual rule names as passed to
+  # configure_resources() in the snakemake rules files. Run snakemake -np with the
+  # __DEBUG__ variable above set to true to see a full list of the defaults.
+  kraken_noreads:
+    cores: 8
+    mem_gb: 120
+    time_min: 120
+  megahit:
+    cores: 16
+    mem_gb: 16
+    time_min: 120
+  centrifuge:
+    cores: 16
+    mem_gb: 325
+    time_min: 120
+  kaiju:
+    cores: 48
+    mem_gb: 256
+    time_min: 120

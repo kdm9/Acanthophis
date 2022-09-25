@@ -109,9 +109,9 @@ tool_settings:
     # have different runtime and memory requirements, and all need to fit in
     # ~12hours on a single job.
     chunksize:
-      mpileup:   2000000
-      freebayes: 2000000
-      gatk-hc:   2000000
+      mpileup:   1000000
+      freebayes:  200000
+      gatk-hc:   1000000
 
     # Prior on proportion of variable sites, per sample set
     theta_prior:

@@ -1,41 +1,29 @@
 #!/bin/bash -l
-#PBS -q normal
-#PBS -l ncpus=48
-#PBS -l walltime=48:00:00
-#PBS -l mem=190G
-#PBS -l jobfs=400G
-#PBS -l wd
-#PBS -l storage=scratch/xe2+gdata/xe2
-#PBS -j oe
-#PBS -o data/log/
-#PBS -M pbs@kdmurray.id.au
-#PBS -m abe
-#PBS -P xe2
-#PBS -N PANEUCACANTH
+#$ -pe parallel 128
+#$ -l h_vmem=500G
+#$ -l h_rt=48:0:0
+#$ -j y
+#$ -S /bin/bash
+#$ -cwd 
+#$ -m beas
 
-
-conda activate paneuc-acanthophis
+if [ -n "${GLOBAL_CONDA_ENV_NAME}" ]
+then
+    conda activate ${GLOBAL_CONDA_ENV_NAME}
+fi
 
 set -xeuo pipefail
 
 TARGET=${TARGET:-all}
 SNAKEFILE=${SNAKEFILE:-Snakefile}
 SELFSUB=${SELFSUB:-yes}
-RMTEMP="${RMTEMP:-yes}"
-echo TARGET=${TARGET} SNAKEFILE=${SNAKEFILE} SELFSUB=${SELFSUB} RMTEMP="${RMTEMP}"
+echo TARGET=${TARGET} SNAKEFILE=${SNAKEFILE} SELFSUB=${SELFSUB}
 
 if [ "$SELFSUB" == "yes" ]
 then
-    NEXT=$(qsub -v "TARGET=${TARGET},SNAKEFILE=${SNAKEFILE},SELFSUB=${SELFSUB},RMTEMP=${RMTEMP}" \
-                -W depend=afterany:$PBS_JOBID -N ${PBS_JOBNAME:-RUNEMEL}             \
+    NEXT=$(qsub -v "TARGET=${TARGET},SNAKEFILE=${SNAKEFILE},GLOBAL_CONDA_ENV_NAME=${GLOBAL_CONDA_ENV_NAME}" \
+                -hold_jid $JOB_ID -N ${JOB_NAME:-OMNI}             \
 		run.job)
-fi
-
-if [ "${RMTEMP}" == yes ]
-then
-	temp=''
-else
-	temp='--notemp'
 fi
 
 mkdir -p data/log
@@ -44,12 +32,12 @@ snakemake                    \
     --nolock                 \
     --snakefile ${SNAKEFILE} \
     $temp                    \
-    -j ${PBS_NCPUS:-2}       \
+    -j ${NSLOTS:-2}          \
     --rerun-incomplete       \
     --keep-going             \
     --use-conda              \
     ${TARGET}                \
-    >data/log/$(date +%Y-%m-%d)_${PBS_JOBID:-nopbs}_snakemake.log 2>&1
+    >log/$(date +%Y-%m-%d)_${JOB_ID:-nopbs}_snakemake.log 2>&1
 
 if [ -n "${NEXT:-}" ]
 then
