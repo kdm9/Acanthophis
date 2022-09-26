@@ -1,3 +1,4 @@
+#!/bin/bash
 conda activate acanthophis-example
 set -xeuo pipefail
 acanthophis-init --yes
