@@ -255,6 +255,28 @@ rule fastqc_postqc:
         ") >{log} 2>&1"
 
 
+rule multiqc_fastqc:
+    input:
+        lambda wc: P([f"stats/fastqc/{wc.prepost}/{run}~{lib}_fastqc.zip"
+                      for samp in config["SAMPLESETS"][wc.sampleset]
+                      for run, lib in config["SAMP2RUNLIB"][samp]])
+    output:
+        html=P("stats/multiqc/reads/{prepost}~{sampleset}_multiqc_fastqc.html"),
+    log:
+        log=L("stats/multiqc/reads/{prepost}~{sampleset}_multiqc_fastqc.log"),
+    resources: **rule_resources(config, "multiqc_samstats", time_min=30, mem_gb=2)
+    conda: "envs/qcstats.yml"
+    shell:
+        "multiqc"
+        "   --no-megaqc-upload"
+        "   --interactive"
+        "   --no-data-dir"
+        "   --comment 'Fastqc stats {wildcards.prepost} for sample set {wildcards.sampleset}'"
+        "   --filename {output.html}"
+        "   {input}"
+        " >{log} 2>&1"
+
+
 rule all_sample_fastqs:
     input:
         P([expand("reads/samples/{sample}.fastq.gz", sample=config["SAMPLESETS"][sset])
@@ -276,6 +298,7 @@ rule all_runlib_readstats:
     input:
         P("stats/reads/readnum_librun.tsv"),
 
+
 rule all_runlib_fastqc:
     input:
         P([f"stats/fastqc/{prepost}/{run}~{lib}_fastqc.zip"
@@ -283,6 +306,11 @@ rule all_runlib_fastqc:
           for sset in config["SAMPLESETS"]
           for samp in config["SAMPLESETS"][sset]
           for run, lib in config["SAMP2RUNLIB"][samp]
+          if config["samplesets"][sset].get("fastqc", False)
+        ]),
+        P([f"stats/multiqc/reads/{prepost}~{sset}_multiqc_fastqc.html"
+          for prepost in ["preqc", "postqc"]
+          for sset in config["SAMPLESETS"]
           if config["samplesets"][sset].get("fastqc", False)
         ]),
 

@@ -184,6 +184,26 @@ rule bamstat_sample:
     shell:
         "(samtools stats -i 5000 -x {input} >{output}) >{log} 2>&1"
 
+
+rule multiqc_samstats:
+    input:
+        stats=lambda wc: P(expand("alignments/bamstats/sample/{{aligner}}~{{ref}}~{sample}.samtools.stats", sample=config["SAMPLESETS"][wc.sampleset])),
+    output:
+        html=P("stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html"),
+    log:
+        log=L("stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.log"),
+    resources: **rule_resources(config, "multiqc_samstats", time_min=30, mem_gb=2)
+    conda: "envs/qcstats.yml"
+    shell:
+        "multiqc"
+        "   --no-megaqc-upload"
+        "   --interactive"
+        "   --no-data-dir"
+        "   --comment 'Samtools stats for sample set {wildcards.sampleset} against {wildcards.ref} with {wildcards.aligner}'"
+        "   --filename {output.html}"
+        "   {input.stats}"
+        " >{log} 2>&1"
+
 #######################################################################
 #                           Unmapped reads                            #
 #######################################################################
@@ -236,7 +256,13 @@ rule all_align_samples:
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sample=config["SAMPLESETS"][ss]))
           for ss in config["samplesets"]
-          if config["samplesets"][ss].get("align", {}) ]
+          if config["samplesets"][ss].get("align", {}) ],
+        [ P(expand("stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html",
+                   ref=config["samplesets"][ss].get("align", {}).get("references", []),
+                   aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
+                   sampleset=ss))
+          for ss in config["samplesets"]
+          if config["samplesets"][ss].get("align", {}) ],
 
 
 rule all_unmapped_reads:
