@@ -26,9 +26,6 @@ data_paths:
 #
 # This section is where we tell snakemake which files to generate for each set of samples.
 # Samplesets are configured as files of sample names (see setfile_glob above). 
-#
-# Tool settings (below) can be overridden per sampleset
-
 
 samplesets:
   all_samples:
@@ -84,10 +81,10 @@ tool_settings:
       minqual: 20
       qualenc: 33
       maxqualval: 45
-    example_qc_type:
-      adapter_file: "rawdata/adapters.txt"
+    nextera:
+      adapter_file: "rawdata/nextera.txt"
       minqual: 30
-      qualenc: 64
+      qualenc: 33
       maxqualval: 45
   kwip:
     kmer_size: 21
