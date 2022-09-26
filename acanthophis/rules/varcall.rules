@@ -17,7 +17,7 @@
 
 rule mpileup_bamlist:
     input:
-        lambda wc: P(expand("alignments/samples/{aligner}/{ref}/{sample}.bam",
+        lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
                             aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
     output:
         temp(T("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}-{region}.bamlist")),

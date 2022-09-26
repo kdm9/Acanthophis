@@ -11,13 +11,13 @@
 
 rule megahit:
     input:
-        r1=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_R1.fastq.gz"),
-        r2=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_R2.fastq.gz"),
-        rs=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_se.fastq.gz"),
+        r1=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R1.fastq.gz"),
+        r2=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R2.fastq.gz"),
+        rs=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_se.fastq.gz"),
     output:
-        contigs=P("metagenome/megahit/{sample}~{aligner}~{ref}/{sample}.contigs.fa"),
+        contigs=P("metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa"),
     log:
-        L("metagenome/megahit/{sample}~{aligner}~{ref}/{sample}.log"),
+        L("metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.log"),
     resources: **rule_resources(config, "megahit", time_min=180, mem_gb=16, disk_gb=16, cores=16)
     conda: "envs/megahit.yml"
     params:
@@ -37,7 +37,7 @@ rule megahit:
 
 rule all_megahit:
     input:
-        [P(f"metagenome/megahit/{sample}~{aligner}~{ref}/{sample}.contigs.fa")
+        [P(f"metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa")
            for sampleset in config["samplesets"]
            for sample in config["SAMPLESETS"][sampleset]
            for aligner in config["samplesets"][sampleset]["megahit"].get("aligners", [])

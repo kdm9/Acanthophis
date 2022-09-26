@@ -107,10 +107,10 @@ rule bam_merge_markdups_sort:
 	                for r, l in config["SAMP2RUNLIB"][wc.sample]]),
         ref=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
     output:
-        bam=P("alignments/samples/{aligner}/{ref}/{sample}.bam"),
-        bai=P("alignments/samples/{aligner}/{ref}/{sample}.bam.bai"),
+        bam=P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
+        bai=P("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
     resources: **rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=8, disk_gb=10, cores=4)
-    log: L("alignments/samples/{aligner}/{ref}/{sample}.bam.log")
+    log: L("alignments/samples/{aligner}~{ref}~{sample}.bam.log")
     conda: "envs/align.yml"
     shell:
         "( samtools merge"
@@ -149,7 +149,7 @@ rule bam_merge_markdups_sort:
 
 rule mergebam_set:
     input:
-        lambda wc: P(expand("alignments/samples/{aligner}/{ref}/{sample}.bam",
+        lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
                           aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
     output:
         bam=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
@@ -174,7 +174,7 @@ rule mergebam_set:
 #######################################################################
 rule bamstat_sample:
     input:
-        P("alignments/samples/{aligner}/{ref}/{sample}.bam"),
+        P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
     output:
         P("alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats"),
     log:
@@ -190,11 +190,11 @@ rule bamstat_sample:
 
 rule extract_unmapped:
     input:
-        P("alignments/samples/{aligner}/{ref}/{sample}.bam"),
+        P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
     output:
-        P("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz"),
+        P("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz"),
     log:
-        L("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz.log"),
+        L("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz.log"),
     resources: **rule_resources(config, "extract_unmapped", time_min=120, mem_gb=1, cores=2)
     conda: "envs/align.yml"
     shell:
@@ -203,14 +203,14 @@ rule extract_unmapped:
 
 rule split_pair_unmapped:
     input:
-        P("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz"),
+        P("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz"),
     output:
-        r1=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_R1.fastq.gz"),
-        r2=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_R2.fastq.gz"),
-        se=T("alignments/unmapped_reads/{sample}~{aligner}~{ref}_se.fastq.gz"),
-        yml=P("alignments/unmapped_reads/{sample}~{aligner}~{ref}_split.stats.yml")
+        r1=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R1.fastq.gz"),
+        r2=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R2.fastq.gz"),
+        se=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_se.fastq.gz"),
+        yml=P("alignments/unmapped_reads/{aligner}~{ref}~{sample}_split.stats.yml")
     log:
-        L("alignments/unmapped_reads/{sample}~{aligner}~{ref}_split.log"),
+        L("alignments/unmapped_reads/{aligner}~{ref}~{sample}_split.log"),
     resources: **rule_resources(config, "split_pair_unmapped", time_min=30, mem_mb=100, disk_gb=1, cores=1)
     conda: "envs/reads.yml"
     shell:
@@ -231,7 +231,7 @@ rule split_pair_unmapped:
 
 rule all_align_samples:
     input:
-        [ P(expand("alignments/samples/{aligner}/{ref}/{sample}.bam",
+        [ P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sample=config["SAMPLESETS"][ss]))
@@ -241,7 +241,7 @@ rule all_align_samples:
 
 rule all_unmapped_reads:
     input:
-        [ P(expand("alignments/unmapped_reads/{sample}~{aligner}~{ref}.fastq.gz",
+        [ P(expand("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sample=config["SAMPLESETS"][ss]))
