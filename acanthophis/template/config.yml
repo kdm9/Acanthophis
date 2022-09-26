@@ -32,10 +32,6 @@ data_paths:
 
 samplesets:
   all_samples:
-    multiqc:
-      - reads
-      - sample_bams
-      - kraken
     megahit:
       aligners:
         - bwa
@@ -48,6 +44,8 @@ samplesets:
       references:
         - lambda
       unmapped_reads: true
+      stats: true
+      qualimap: true
     # Output (un)-classified read fastqs from Kraken?
     kraken_reads: false
     kraken_dbs:

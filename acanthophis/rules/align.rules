@@ -189,9 +189,9 @@ rule multiqc_samstats:
     input:
         stats=lambda wc: P(expand("alignments/bamstats/sample/{{aligner}}~{{ref}}~{sample}.samtools.stats", sample=config["SAMPLESETS"][wc.sampleset])),
     output:
-        html=P("stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html"),
+        html=P("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.html"),
     log:
-        log=L("stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.log"),
+        log=L("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.log"),
     resources: **rule_resources(config, "multiqc_samstats", time_min=30, mem_gb=2)
     conda: "envs/qcstats.yml"
     shell:
@@ -202,6 +202,49 @@ rule multiqc_samstats:
         "   --comment 'Samtools stats for sample set {wildcards.sampleset} against {wildcards.ref} with {wildcards.aligner}'"
         "   --filename {output.html}"
         "   {input.stats}"
+        " >{log} 2>&1"
+
+#######################################################################
+#                              Qualimap                               #
+#######################################################################
+
+rule qualimap_sample:
+    input:
+        bam=P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
+        bai=P("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
+    output:
+        bamqc=directory(P("alignments/qualimap/samples/{aligner}~{ref}~{sample}/")),
+    log:
+        L("log/qualimap_sample/{aligner}~{ref}~{sample}.log")
+    resources: **rule_resources(config, "qualimap_sample", time_min=240, mem_gb=8, cores=8)
+    conda: "envs/qualimap.yml"
+    shell:
+        "( unset DISPLAY; qualimap bamqc"
+        "   --java-mem-size=7G"
+        "   -bam {input.bam}"
+        "   -nt {threads}"
+        "   -nr 10000"
+        "   -outdir {output}"
+        "   {input.bam}"
+        " ) >{log} 2>&1"
+
+rule multiqc_qualimap:
+    input:
+        qm=lambda wc: P(expand("alignments/qualimap/samples/{{aligner}}~{{ref}}~{sample}/", sample=config["SAMPLESETS"][wc.sampleset])),
+    output:
+        html=P("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.html"),
+    log:
+        log=L("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.log"),
+    resources: **rule_resources(config, "multiqc_qualimap", time_min=30, mem_gb=2)
+    conda: "envs/qcstats.yml"
+    shell:
+        "multiqc"
+        "   --no-megaqc-upload"
+        "   --interactive"
+        "   --no-data-dir"
+        "   --comment 'Qualimap summary for sample set {wildcards.sampleset} against {wildcards.ref} with {wildcards.aligner}'"
+        "   --filename {output.html}"
+        "   {input.qm}"
         " >{log} 2>&1"
 
 #######################################################################
@@ -257,12 +300,18 @@ rule all_align_samples:
                  sample=config["SAMPLESETS"][ss]))
           for ss in config["samplesets"]
           if config["samplesets"][ss].get("align", {}) ],
-        [ P(expand("stats/multiqc/bamstats/{aligner}~{ref}~{sampleset}_multiqc_report.html",
+        [ P(expand("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.html",
                    ref=config["samplesets"][ss].get("align", {}).get("references", []),
                    aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                    sampleset=ss))
           for ss in config["samplesets"]
-          if config["samplesets"][ss].get("align", {}) ],
+          if config["samplesets"][ss].get("align", {}).get("stats", False) ],
+        [ P(expand("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.html",
+                   ref=config["samplesets"][ss].get("align", {}).get("references", []),
+                   aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
+                   sampleset=ss))
+          for ss in config["samplesets"]
+          if config["samplesets"][ss].get("align", {}).get("stats", False) ],
 
 
 rule all_unmapped_reads:
