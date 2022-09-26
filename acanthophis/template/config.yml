@@ -40,7 +40,7 @@ samplesets:
     align:
       aligners:
         - bwa
-        #- ngm
+        - ngm
       references:
         - lambda
       unmapped_reads: true
@@ -59,6 +59,7 @@ samplesets:
     mash: true
     kwip: true
     varcall:
+      theta_prior: 0.01
       callers:
         - mpileup
         - freebayes
@@ -110,10 +111,6 @@ tool_settings:
       mpileup:   1000000
       freebayes:  200000
       gatk-hc:   1000000
-
-    # Prior on proportion of variable sites, per sample set
-    theta_prior:
-      all_samples: 0.01
 
     # Stop counting reads after this many. Per variant caller. It depends on the tool as to whether or not this is per-sample or per-file.
     max_depth:

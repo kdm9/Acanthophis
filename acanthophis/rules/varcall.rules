@@ -36,7 +36,7 @@ rule mpileup:
         bcf=P("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf"),
     log: L("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
     params:
-        theta=lambda wc: config["tool_settings"]["varcall"]["theta_prior"].get(wc.sampleset, 0.01),
+        theta=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("theta_prior", 0.01),
         minmq=lambda wc: config["tool_settings"]["varcall"]["minmapq"].get(wc.aligner, 5),
         max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("mpileup", 1000),
         minbq=config["tool_settings"]["varcall"]["minbq"],
@@ -78,7 +78,7 @@ rule freebayes:
     log: L("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
     group: "varcall_oneregion"
     params:
-        theta=lambda wc: config["tool_settings"]["varcall"]["theta_prior"].get(wc.sampleset, 0.01),
+        theta=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("theta_prior", 0.01),
         minmq=lambda wc: config["tool_settings"]["varcall"]["minmapq"].get(wc.aligner, 5),
         max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("freebayes", 1000),
         minbq=config["tool_settings"]["varcall"]["minbq"],
