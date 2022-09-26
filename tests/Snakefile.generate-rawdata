@@ -87,7 +87,7 @@ rule kaijudb:
     shell:
             "mkdir -p {output}"
             " && curl -L https://kaiju.binf.ku.dk/database/kaiju_db_viruses_2020-05-25.tgz"
-            "  | tar xzv -C {output}"
+            "  | tar xzv -C rawdata/kaiju/Viral"
 
 rule krakendb:
     output:
