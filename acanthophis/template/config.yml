@@ -78,12 +78,12 @@ tool_settings:
   adapterremoval:
     __default__:  # global defaults. modify per qc_type
       adapter_file: "rawdata/adapters.txt"
-      minqual: 20
+      minqual: 30
       qualenc: 33
       maxqualval: 45
     nextera:
       adapter_file: "rawdata/nextera.txt"
-      minqual: 30
+      minqual: 20
       qualenc: 33
       maxqualval: 45
   kwip:

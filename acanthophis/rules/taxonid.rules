@@ -160,7 +160,7 @@ rule all_kaiju:
 
 rule all_kraken:
     input:
-        P([f"stats/multiqc/kraken_{db}~{sampleset}_multiqc.html",
+        P([f"stats/multiqc/kraken_{db}~{sampleset}_multiqc.html"
            for sampleset in config["samplesets"]
            for db in config["samplesets"][sampleset].get("kraken_dbs", [])
            if "kraken_dbs" in config["samplesets"][sampleset]

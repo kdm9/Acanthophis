@@ -261,9 +261,9 @@ rule multiqc_fastqc:
                       for samp in config["SAMPLESETS"][wc.sampleset]
                       for run, lib in config["SAMP2RUNLIB"][samp]])
     output:
-        html=P("stats/multiqc/reads-{prepost}_{sampleset}_multiqc.html"),
+        html=P("stats/multiqc/reads-{prepost}~{sampleset}_multiqc.html"),
     log:
-        log=L("stats/multiqc/reads-{prepost}_{sampleset}_multiqc.log"),
+        log=L("stats/multiqc/reads-{prepost}~{sampleset}_multiqc.log"),
     resources: **rule_resources(config, "multiqc_samstats", time_min=30, mem_gb=2)
     conda: "envs/qcstats.yml"
     shell:
@@ -308,7 +308,7 @@ rule all_runlib_fastqc:
           for run, lib in config["SAMP2RUNLIB"][samp]
           if config["samplesets"][sset].get("fastqc", False)
         ]),
-        P([f"stats/multiqc/reads-{prepost}_{sset}_multiqc.html"
+        P([f"stats/multiqc/reads-{prepost}~{sset}_multiqc.html"
           for prepost in ["preqc", "postqc"]
           for sset in config["SAMPLESETS"]
           if config["samplesets"][sset].get("fastqc", False)

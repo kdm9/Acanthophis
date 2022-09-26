@@ -29,7 +29,7 @@ rule ngmap_idx:
 
 rule ngmap:
     input:
-        reads=P("reads/runs/{run}~{lib}.fastq.gz"),
+        reads=T("reads/runs/{run}~{lib}.fastq.gz"),
         ref=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
         idx=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"] + "-enc.2.ngm"),
     output:
