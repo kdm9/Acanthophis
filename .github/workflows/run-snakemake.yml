@@ -41,3 +41,8 @@ jobs:
           pushd tests
           source test.sh
           popd
+
+      - name: cat all log files on failure
+        if: ${{ failure() }}
+        run: |
+           find tests/ -name '*.log' -exec tail -n 1000 {} \;
