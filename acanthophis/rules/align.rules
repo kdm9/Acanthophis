@@ -109,7 +109,7 @@ rule bam_merge_markdups_sort:
     output:
         bam=P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
         bai=P("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
-    resources: **rule_resources(config, "bam_markdups_sort", time_min=240, mem_gb=8, disk_gb=10, cores=4)
+    resources: **rule_resources(config, "bam_merge_markdups_sort", time_min=240, mem_gb=8, disk_gb=50, cores=4)
     log: L("alignments/samples/{aligner}~{ref}~{sample}.bam.log")
     conda: "envs/align.yml"
     shell:
@@ -330,7 +330,7 @@ rule all_align_samplesets:
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sampleset=ss))
           for ss in config["samplesets"]
-          if config["samplesets"][ss].get("align", {}) ]
+          if config["samplesets"][ss].get("align", {}).get("sampleset_bams", False) ]
 
 rule all_align:
     input:

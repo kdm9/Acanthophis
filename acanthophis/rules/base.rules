@@ -144,6 +144,7 @@ def make_samplesets(config, s2rl_file, setfile_glob):
     # Don't sort these sample lists
     return ssets
 
+
 def unit_normalise(resdict):
     ret = {}
     for res, val in resdict.items():
@@ -156,7 +157,8 @@ def unit_normalise(resdict):
         if res == "time_hour":
             res = "time_min"
             val = int(val) * 60
-        ret[res] = val
+        if res not in ret or val > ret[res]:
+            ret[res] = val
     return ret
 
 
@@ -170,15 +172,17 @@ def rule_resources(config, rule, **defaults):
     
     values = {}
     values.update(global_defaults)
-    values.update(defaults)
+    values.update(unit_normalise(defaults))
     values.update(rule_config)
+    values = unit_normalise(values)
     ret = {}
 
     if C.get("__DEBUG__", False):
         print(f"{rule}:")
     for res, val in values.items():
         maxval = maxes.get(res, inf)
-        if val >= maxval:
+        if val > maxval:
+            print(f"WARNING {rule}: reducing {res} from {val} to {maxval}")
             val = maxval
         # Also broken TODO
         # if isinstance(val, str):
@@ -210,6 +214,7 @@ def postprocess_rules(workflow, config):
         res = deepcopy(D)
         res.update(rule_obj.resources)
         res.update(R.get(n, {}))
+        res = unit_normalise(res)
         for key, val in res.items():
             # Blacklist these
             if key not in ["localrule", "cores"]:
