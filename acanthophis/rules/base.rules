@@ -157,8 +157,7 @@ def unit_normalise(resdict):
         if res == "time_hour":
             res = "time_min"
             val = int(val) * 60
-        if res not in ret or val > ret[res]:
-            ret[res] = val
+        ret[res] = val
     return ret
 
 
