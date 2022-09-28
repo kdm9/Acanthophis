@@ -5,9 +5,4 @@ channels:
   - bioconda
   - kdm801
 dependencies:
-  - python
   - snakemake
-  - acanthophis
-  - ncdu
-  - git-annex
-  - pynvim

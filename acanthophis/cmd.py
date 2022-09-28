@@ -1,3 +1,9 @@
+# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
+
 import acanthophis
 import argparse
 import shutil
@@ -32,6 +38,7 @@ def prompt_yn(message, default=False):
         pass
     return res
 
+
 def init():
     """acanthophis-init command entry point"""
     ap = argparse.ArgumentParser(description="Initialise an Acanthophis analysis directory", epilog=CLIDOC)
@@ -55,10 +62,16 @@ def init():
         exit(0)
 
     template_dir = acanthophis.get_resource("template/")
+    rules_dir = acanthophis.get_resource("rules/")
+    envs_dir = acanthophis.get_resource("rules/envs/")
     if args.dryrun:
         print(f"cp -r {template_dir} {args.destdir}")
-    elif args.force or args.yes or prompt_yn(f"cp -r {template_dir} -> {args.destdir}?"):
+        print(f"cp -r {rules_dir} {args.destdir}/")
+        print(f"cp -r {envs_dir} {args.destdir}/rules")
+    elif args.force or args.yes or prompt_yn(f"cp -r {template_dir} -> {args.destdir}? (WARNING: make sure you have git add'd all files as they will be overwritten) "):
         shutil.copytree(template_dir, args.destdir, dirs_exist_ok=True)
+        shutil.copytree(rules_dir, args.destdir + "/rules", dirs_exist_ok=True)
+        shutil.copytree(envs_dir, args.destdir + "/rules/envs", dirs_exist_ok=True)
 
     for profile in args.cluster_profile:
         if profile not in acanthophis.profiles:

@@ -2,16 +2,16 @@ name: Workflow CI
 
 on:
   push:
-    branches: "**"
+    branches: "main"
   pull_request:
     branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  runsnkmk:
+  run_workflow:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       - name: setup-mamba
         uses: conda-incubator/setup-miniconda@v2
@@ -19,13 +19,30 @@ jobs:
           mamba-version: "*"
           channels: bioconda,kdm801,conda-forge,defaults
           channel-priority: true
+            
+      - name: Cache generated inputs
+        id: cache-inputs
+        uses: actions/cache@v3
+        with:
+          path: tests/rawdata
+          key: rawdata-${{ hashFiles('tests/Snakefile.generate-rawdata') }}
       
-      - name: setup and run Snakemake
+      - name: setup data
         shell: bash -el {0}
         run: |
           mamba info
-          pushd example
+          pushd tests
           source setup.sh
-          snakemake --snakefile Snakefile -j 4 --use-conda --conda-frontend mamba
           popd
 
+      - name: run workflow
+        shell: bash -el {0}
+        run: |
+          pushd tests
+          source test.sh
+          popd
+
+      - name: cat all log files on failure
+        if: ${{ failure() }}
+        run: |
+           find tests/ -name '*.log' -exec tail -n 1000 {} \;

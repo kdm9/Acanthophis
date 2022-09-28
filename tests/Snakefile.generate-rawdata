@@ -8,7 +8,7 @@ RECOMBINATION_RATE = 1e-8
 MU = 1e-6
 SEED = 1337
 READ_ERRRATE = 0.002  # q score of 27
-ANCESTRAL = "./lambda/lambda.fasta"
+ANCESTRAL = "rawdata/lambda/lambda.fasta"
 
 
 import msprime
@@ -55,9 +55,47 @@ rule all:
         expand("rawdata/genomes/{sample}.fa.fai", sample=SAMPLES),
         expand("rawdata/reads/{run}/{lib}_{R}.fastq.gz", run=RUNS, lib=LIBS, R=["R1", "R2"]),
         "rawdata/rl2s.tsv",
-        "rawdata/samples.tsv",
-        "rawdata/setfiles/all.txt",
+        "rawdata/kraken/Viral",
+        "rawdata/kaiju/Viral/kaiju_db_viruses.fmi",
+        "rawdata/kaiju/Viral/nodes.dmp",
+        "rawdata/kaiju/Viral/names.dmp",
+        "rawdata/centrifuge/lambda",
 
+rule centrifuge:
+    input:
+        ref="rawdata/reference/genome.fa",
+        nodes="rawdata/kaiju/Viral/nodes.dmp",
+        names="rawdata/kaiju/Viral/names.dmp",
+        map="rawdata/lambda/centrifuge-map.txt",
+    output:
+        directory("rawdata/centrifuge/lambda")
+    shell:
+        "mkdir -p {output} && "
+        "centrifuge-build"
+        "   --conversion-table {input.map}"
+        "   --taxonomy-tree {input.nodes}"
+        "   --name-table {input.names}"
+        "   {input.ref}"
+        "   {output}/lambda"
+
+
+rule kaijudb:
+    output:
+        "rawdata/kaiju/Viral/kaiju_db_viruses.fmi",
+        "rawdata/kaiju/Viral/nodes.dmp",
+        "rawdata/kaiju/Viral/names.dmp",
+    shell:
+            "mkdir -p {output}"
+            " && curl -L https://kaiju.binf.ku.dk/database/kaiju_db_viruses_2020-05-25.tgz"
+            "  | tar xzv -C rawdata/kaiju/Viral"
+
+rule krakendb:
+    output:
+        directory("rawdata/kraken/Viral"),
+    shell:
+            "mkdir -p {output}"
+            " && curl -L https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20201202.tar.gz"
+            "  | tar xzv -C {output}"
 
 rule faidx:
     input:
@@ -71,27 +109,11 @@ rule faidx:
 rule metadata:
     output:
         rl2s="rawdata/rl2s.tsv",
-        samples="rawdata/samples.tsv",
-        setfile="rawdata/setfiles/all.txt",
     run:
         with open(output.rl2s, "w") as file:
-            print("run", "library", "sample", "include", sep="\t", file=file)
+            print("run", "library", "sample", "include", "read1_uri", "read2_uri", "interleaved_uri", "single_uri", "qc_type", sep="\t", file=file)
             for (R, L), S in RUNLIB2SAMP.items():
-                print(R, L, S, "Y", sep="\t", file=file)
-
-        with open(output.samples, "w") as file:
-            print("sample", "species", "latitude", "longitude", "altitude", "datum", sep="\t", file=file)
-            for sample in SAMPLES:
-                tue = (48.52, 9.055556, 341)
-                lat = np.random.normal(loc=tue[0], scale=0.5, size=1)[0]
-                lon = np.random.normal(loc=tue[1], scale=0.5, size=1)[0]
-                alt = np.random.normal(loc=tue[2], scale=100, size=1)[0]
-                sp = "Pseudoplantus harddrivensis"
-                print(sample, sp, lat, lon, alt, "WGS84", sep="\t", file=file)
-
-        with open(output.setfile, "w") as file:
-            for sample in SAMPLES:
-                print(sample, file=file)
+                print(R, L, S, "Y", f"rawdata/reads/{R}/{L}_R1.fastq.gz", f"rawdata/reads/{R}/{L}_R2.fastq.gz", "", "", "nextera", sep="\t", file=file)
 
 
 rule genomes:

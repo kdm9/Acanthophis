@@ -1,20 +1,29 @@
 configfile: "config.yml"
+include: "rules/base.rules"
+populate_metadata(config)
 
-import acanthophis
-acanthophis.populate_metadata(config)
-
-
-include: acanthophis.rules.base
-include: acanthophis.rules.reads
-include: acanthophis.rules.align
-include: acanthophis.rules.varcall
-include: acanthophis.rules.multiqc
-include: acanthophis.rules.kraken
+include: "rules/reads.rules"
+include: "rules/align.rules"
+include: "rules/denovo.rules"
+include: "rules/varcall.rules"
+include: "rules/taxonid.rules"
+include: "rules/metagenome.rules"
 
 rule all:
     input:
-        rules.reads.input,
-        rules.align.input,
-        rules.varcall.input,
-        rules.multiqc.input,
-        rules.all_kraken.input,
+        rules.all_reads.input,
+        rules.all_align.input,
+        rules.all_varcall.input,
+        rules.all_denovo.input,
+        rules.all_taxonid.input,
+        rules.all_megahit.input,
+
+
+# This must always be put at the end. It scans all rules and updates their
+# resource requests per the config file.
+postprocess_rules(workflow, config)
+
+# Unlike other code files in Acathophis, this file is placed in the public
+# domain, so there are no restrictions on its modification. Specifically, these
+# example files are licensed under the Creative Commons Zero licence, as that
+# is a more portable concept of "public domain".

@@ -1,0 +1,200 @@
+# These rules are part of Acanthophis. See https://github.com/kdm9/Acanthophis.
+# This file *could* be modified, but then be careful when you update them. And
+# please, if you find a bug, raise an issue on github so the fix gets shared
+# with everyone.
+#
+# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
+
+#######################################################################
+#                               KRAKEN                                #
+#######################################################################
+
+ruleorder: kraken_noreads > kraken_reads
+rule kraken_noreads:
+    input:
+        reads=P("reads/samples/{sample}.fastq.gz"),
+        hash=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/hash.k2d", keep_local=True),
+        opts=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/opts.k2d", keep_local=True),
+        taxo=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/taxo.k2d", keep_local=True),
+    output:
+        outtxt=P("taxonid/kraken/{db}~{sample}_output.txt.zst"),
+        report=P("taxonid/kraken/{db}~{sample}_report.txt"),
+    log: L("taxonid/kraken/{db}~{sample}.log"),
+    resources: **rule_resources(config, "kraken_noreads", time_min=90, mem_gb=100, disk_gb=24, cores=4)
+    conda: "envs/kraken.yml"
+    shell:
+        "kraken2"
+        "   --db $(dirname {input.hash})"
+        "   --memory-mapping"
+        "   --threads {threads}"
+        "   --use-names"
+        "   --report-minimizer-data"
+        "   --report {output.report}"
+        "   --output >(zstd -8 >{output.outtxt})"
+        "   {input.reads}"
+        "   >{log} 2>&1"
+
+rule kraken_reads:
+    input:
+        reads=P("reads/samples/{sample}.fastq.gz"),
+        hash=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/hash.k2d", keep_local=True),
+        opts=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/opts.k2d", keep_local=True),
+        taxo=lambda wc: R(config["data_paths"]["kraken"][wc.db] + "/taxo.k2d", keep_local=True),
+    output:
+        fastq_un=P("taxonid/kraken/{db}~{sample}_unclassified.fastq.gz"),
+        fastq_cl=P("taxonid/kraken/{db}~{sample}_classified.fastq.gz"),
+        outtxt=P("taxonid/kraken/{db}/{sample}_output.txt.zst"),
+        report=P("taxonid/kraken/{db}~{sample}_report.txt"),
+    log: L("taxonid/kraken/{db}~{sample}.log"),
+    resources: **rule_resources(config, "kraken_reads", time_min=90, mem_gb=100, disk_gb=24, cores=4)
+    conda: "envs/kraken.yml"
+    shell:
+        "kraken2"
+        "   --db $(dirname {input.hash})"
+        "   --memory-mapping"
+        "   --threads {threads}"
+        "   --use-names"
+        "   --report-minimizer-data"
+        "   --report {output.report}"
+        "   --classified-out >(gzip >{output.fastq_cl})"
+        "   --unclassified-out >(gzip >{output.fastq_un})"
+        "   --output >(zstd -8 >{output.outtxt})"
+        "   {input.reads}"
+        "   >{log} 2>&1"
+
+
+rule multiqc_kraken:
+    input:
+        lambda wc: P(expand("taxonid/kraken/{db}~{sample}_report.txt",
+                            sample=config["SAMPLESETS"][wc.sampleset],
+                            db=wc.db,
+                            sampleset=wc.sampleset,
+                   ))
+    output:
+        html=P("stats/multiqc/kraken_{db}~{sampleset}_multiqc.html"),
+    log: L("stats/multiqc/kraken_{db}~{sampleset}_multiqc.log"),
+    conda: "envs/qcstats.yml"
+    resources: **rule_resources(config, "multiqc_kraken", time_min=30, mem_gb=2)
+    shell:
+        "multiqc"
+        "   --no-megaqc-upload"
+        "   --interactive"
+        "   --no-data-dir"
+        "   --comment 'Kraken report for sample set {wildcards.sampleset}'"
+        "   --filename {output.html}"
+        "   {input}"
+        " >{log} 2>&1"
+
+#######################################################################
+#                                KAIJU                                #
+#######################################################################
+
+
+rule kaiju:
+    input:
+        reads=P("reads/samples/{sample}.fastq.gz"),
+        taxon=lambda wc: R(config["data_paths"]["kaiju"][wc.db]["nodes"], keep_local=True),
+        index=lambda wc: R(config["data_paths"]["kaiju"][wc.db]["fmi"], keep_local=True),
+    output:
+        P("taxonid/kaiju/{db}~{sample}.txt.zst"),
+    log: L("taxonid/kaiju/{db}~{sample}.log"),
+    resources: **rule_resources(config, "kaiju", time_min=90, mem_gb=32, disk_gb=24, cores=4)
+    conda: "envs/kaiju.yml"
+    shell:
+        "kaiju"
+        "   -t {input.taxon}"
+        "   -f {input.index}"
+        "   -o >(zstd -8 >{output})"
+        "   -z {threads}"
+        "   -i {input.reads}"
+        "   >{log} 2>&1"
+
+
+#######################################################################
+#                             CENTRIFUGE                              #
+#######################################################################
+
+rule centrifuge:
+    input:
+        reads=P("reads/samples/{sample}.fastq.gz"),
+        db=lambda wc: R(config["data_paths"]["centrifuge"][wc.db], keep_local=True),
+    output:
+        out=P("taxonid/centrifuge/{db}~{sample}.txt.zst"),
+        report=P("taxonid/centrifuge/{db}~{sample}_report.txt"),
+        metrics=P("taxonid/centrifuge/{db}~{sample}_metrics.txt"),
+    log: L("taxonid/centrifuge/{db}~{sample}.log"),
+    resources: **rule_resources(config, "centrifuge", time_min=90, mem_gb=16, disk_gb=8, cores=16)
+    conda: "envs/centrifuge.yml"
+    params:
+        idx_prefix=lambda wc, input: stripext(input.db, [".1.cf", ".2.cf", ".3.cf", ".4.cf"])
+    shell:
+        "centrifuge"
+        "   --met-file {output.metrics}"
+        "   --report-file {output.report}"
+        "   -S >(zstd -8 >{output.out})"
+        "   --threads {threads}"
+        "   -x {params.idx_prefix}"
+        "   -U {input.reads}"  # TODO: make it recognise pairs??
+        "   >{log} 2>&1"
+
+
+
+#######################################################################
+#                               Targets                               #
+#######################################################################
+
+
+rule all_kaiju:
+    input:
+        [P(expand("taxonid/kaiju/{db}~{sample}.txt.zst",
+                  sample=config["SAMPLESETS"][sampleset],
+                  db=config["samplesets"][sampleset]["kaiju_dbs"],
+                  ))
+         for sampleset in config["samplesets"]
+         if "kaiju_dbs" in config["samplesets"][sampleset]
+        ],
+
+rule all_kraken:
+    input:
+        P([f"stats/multiqc/kraken_{db}~{sampleset}_multiqc.html"
+           for sampleset in config["samplesets"]
+           for db in config["samplesets"][sampleset].get("kraken_dbs", [])
+           if "kraken_dbs" in config["samplesets"][sampleset]
+        ]),
+        [P(expand("taxonid/kraken/{db}~{sample}_report.txt",
+                  sample=config["SAMPLESETS"][sampleset],
+                  db=config["samplesets"][sampleset]["kraken_dbs"],
+                  ))
+         for sampleset in config["samplesets"]
+         if "kraken_dbs" in config["samplesets"][sampleset]
+        ],
+        [P(expand("taxonid/kraken/{db}~{sample}_unclassified.fastq.gz",
+                  sample=config["SAMPLESETS"][sampleset],
+                  db=config["samplesets"][sampleset]["kraken_dbs"],
+                  ))
+         for sampleset in config["samplesets"]
+         if config["samplesets"][sampleset].get("kraken_reads", False)
+        ]
+
+
+
+rule all_centrifuge:
+    input:
+        [P(expand("taxonid/centrifuge/{db}~{sample}.txt.zst",
+                  sample=config["SAMPLESETS"][sampleset],
+                  db=config["samplesets"][sampleset]["centrifuge_dbs"],
+                  ))
+         for sampleset in config["samplesets"]
+         if "centrifuge_dbs" in config["samplesets"][sampleset]
+        ],
+
+
+rule all_taxonid:
+    input:
+        rules.all_kraken.input,
+        rules.all_kaiju.input,
+        rules.all_centrifuge.input,

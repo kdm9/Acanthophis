@@ -2,5 +2,5 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - samtools
-  - abra2
+  - centrifuge-core
+  - zstd

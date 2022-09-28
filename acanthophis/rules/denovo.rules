@@ -1,19 +1,27 @@
-
+# These rules are part of Acanthophis. See https://github.com/kdm9/Acanthophis.
+# This file *could* be modified, but then be careful when you update them. And
+# please, if you find a bug, raise an issue on github so the fix gets shared
+# with everyone.
+#
+# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 
 rule countsketch:
     input:
-        "data/reads/samples/{sample}.fastq.gz",
+        P("reads/samples/{sample}.fastq.gz"),
     output:
-        ct=temp("data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz"),
-        info="data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info",
-        tsv="data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info.tsv",
+        ct=temp(T("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz")),
+        info=P("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info"),
+        tsv=P("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info.tsv"),
     log:
-        "data/log/kwip/sketch/k{ksize}-s{sketchsize}-{sample}.log"
-    resources: **acanthophis.rule_resources(config, "countsketch", time_min=60, mem_gb=16)
-    threads:
-        2
+        L("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.log"),
+    resources: **rule_resources(config, "countsketch", time_min=60, mem_mb=16000, cores=1)
+    conda: "envs/kwip.yml"
     shell:
-        "load-into-counting.py"
+        "(load-into-counting.py"
         "   -N 1"
         "   -x {wildcards.sketchsize}"
         "   -k {wildcards.ksize}"
@@ -23,21 +31,22 @@ rule countsketch:
         "   -T {threads}"
         "   {output.ct}"
         "   {input}"
-        " >{log} 2>&1"
+        " && cp {output.ct}.info {output.info}" # need these as the countsketch is T() while these are P()
+        " && cp {output.ct}.info.tsv {output.tsv}"
+        ") >{log} 2>&1"
+
 
 rule kwipdist:
     input:
-        lambda wc: expand("data/kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz",
-                            ksize=wc.ksize, sketchsize=wc.sketchsize,
-                            sample=SAMPLESETS[wc.set]),
+        lambda wc: expand(T("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz"),
+                          ksize=wc.ksize, sketchsize=wc.sketchsize,
+                          sample=config["SAMPLESETS"][wc.set]),
     output:
-        d="data/kwip/k{ksize}-s{sketchsize}/{set}.dist",
-        k="data/kwip/k{ksize}-s{sketchsize}/{set}.kern",
-    log:
-        "data/log/kwip/dist/k{ksize}-s{sketchsize}-{set}.log"
-    threads:
-        4
-    resources: **acanthophis.rule_resources(config, "countsketch", time_min=2880, mem_gb=16)
+        d=P("kwip/{set}~k{ksize}~s{sketchsize}.dist"),
+        k=P("kwip/{set}~k{ksize}~s{sketchsize}.kern"),
+    log: L("kwip/{set}~k{ksize}~s{sketchsize}.dist.log"),
+    resources: **rule_resources(config, "countsketch", time_min=2880, mem_mb=15000, cores=8)
+    conda: "envs/kwip.yml"
     shell:
         "kwip"
         " -d {output.d}"
@@ -46,38 +55,16 @@ rule kwipdist:
         " {input}"
         " >{log} 2>&1"
 
-rule unique_kmers:
+
+rule mash_sketch_set:
     input:
-        lambda wc: expand("data/reads/samples/{sample}.fastq.gz",
-                          sample=SAMPLESETS[wc.set]),
+        lambda wc: P(expand("reads/samples/{sample}.fastq.gz",
+                          sample=config["SAMPLESETS"][wc.set])),
     output:
-        "data/readstats/unique-kmers/{set}.tsv",
-    threads:
-        27
-    params:
-        kmersize=config["denovodist"]["ksize"],
-    resources: **acanthophis.rule_resources(config, "unique_kmers", time_min=2880, mem_gb=1)
-    log:
-        "data/log/readstats/unique-kmers/{set}.log",
-    shell:
-        "( kdm-unique-kmers.py"
-        "    -t {threads}"
-        "    -k {params.kmersize}"
-        "    {input}"
-        "    >{output}"
-        " ) 2>{log}"
-
-
-
-rule everything_mash_sketch:
-    input:
-        ["data/reads/runs/{run}/{lib}.fastq.gz".format(run=run, lib=lib) for run, lib in RUNLIB2SAMP],
-    output:
-        temp("data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.msh"),
-    log:
-        "data/log/mash/everything/k{ksize}-s{sketchsize}.log"
-    resources: **acanthophis.rule_resources(config, "everything_mash_sketch", time_min=2880, mem_gb=16)
-    threads: 48
+        temp(T("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh"))
+    log: L("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh.log")
+    resources: **rule_resources(config, "mash_sketch_set", time_min=2880, mem_gb=16, cores=48)
+    conda: "envs/mash.yml"
     shell:
         " mash sketch"
         "   -k {wildcards.ksize}"
@@ -88,15 +75,15 @@ rule everything_mash_sketch:
         " >{log} 2>&1"
 
 
-rule everything_mash_dist:
+rule mash_dist_set:
     input:
-        "data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.msh",
+        T("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh")
     output:
-        dist="data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.dist",
+        P("mash/{set}~k{ksize}~s{sketchsize}.dist")
     log:
-        "data/log/mash/everything/dist_k{ksize}-s{sketchsize}.log"
-    resources: **acanthophis.rule_resources(config, "everything_mash_dist", time_min=2880, mem_gb=16)
-    threads: 48
+        L("mash/{set}~k{ksize}~s{sketchsize}.dist.log")
+    resources: **rule_resources(config, "mash_dist_set", time_min=2880, mem_gb=16, cores=48)
+    conda: "envs/mash.yml"
     shell:
         "mash dist"
         "   -p {threads}"
@@ -106,26 +93,30 @@ rule everything_mash_dist:
         " 2>{log}"
 
 
-
-        expand("data/mash/everything/k{ksize}-s{sketchsize}_everything_librun.dist", 
-               ksize=config["denovodist"]["ksize"], sketchsize=config["denovodist"]["mash_sketchsize"]),
-rule kwip:
+rule all_kwip:
     input:
-        expand("data/kwip/k{ksize}-s{sketchsize}/{set}.dist",
-               ksize=config["denovodist"]["ksize"],
-               sketchsize=config["denovodist"]["kwip_sketchsize"],
-               set=config["denovodist"]["kwip_sets"]),
+        [ P(expand("kwip/{set}~k{ksize}~s{sketchsize}.dist",
+               ksize=config["tool_settings"]["kwip"]["kmer_size"],
+               sketchsize=config["tool_settings"]["kwip"]["sketch_size"],
+               set=sampleset))
+        for sampleset in config["samplesets"]
+        if config["samplesets"][sampleset].get("kwip", False)
+        ],
 
 
-rule mash:
+rule all_mash:
     input:
-        expand("data/mash/k{ksize}-s{sketchsize}/{set}.dist",
-               ksize=config["denovodist"]["ksize"],
-               sketchsize=config["denovodist"]["mash_sketchsize"],
-               set=config["denovodist"]["mash_sets"]),
+        [ P(expand("mash/{set}~k{ksize}~s{sketchsize}.dist",
+               ksize=config["tool_settings"]["mash"]["kmer_size"],
+               sketchsize=config["tool_settings"]["mash"]["sketch_size"],
+               set=sampleset))
+        for sampleset in config["samplesets"]
+        if config["samplesets"][sampleset].get("mash", False)
+        ],
 
-rule denovo:
+
+rule all_denovo:
     input:
-        rules.kwip.input,
-        rules.mash.input,
+        rules.all_kwip.input,
+        rules.all_mash.input,
 

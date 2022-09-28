@@ -1,0 +1,46 @@
+# These rules are part of Acanthophis. See https://github.com/kdm9/Acanthophis.
+# This file *could* be modified, but then be careful when you update them. And
+# please, if you find a bug, raise an issue on github so the fix gets shared
+# with everyone.
+#
+# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
+
+rule megahit:
+    input:
+        r1=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R1.fastq.gz"),
+        r2=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R2.fastq.gz"),
+        rs=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_se.fastq.gz"),
+    output:
+        contigs=P("metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa"),
+    log:
+        L("metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.log"),
+    resources: **rule_resources(config, "megahit", time_min=180, mem_gb=16, disk_gb=16, cores=16)
+    conda: "envs/megahit.yml"
+    params:
+        mem_bytes = lambda wc, resources: resources.mem_mb * 1024,
+    shell:
+        "( megahit"
+        "   --out-dir $(dirname {output.contigs})/workdir"
+        "   --out-prefix {wildcards.sample}"
+        "   --memory {params.mem_bytes}"
+        "   -1 {input.r1}"
+        "   -2 {input.r2}"
+        "   -r {input.rs}"
+        "   --num-cpu-threads {threads}"
+        "; cp $(dirname {output.contigs})/workdir/*.contigs.fa {output.contigs}"
+        ") &>{log}"
+
+
+rule all_megahit:
+    input:
+        [P(f"metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa")
+           for sampleset in config["samplesets"]
+           for sample in config["SAMPLESETS"][sampleset]
+           for aligner in config["samplesets"][sampleset]["megahit"].get("aligners", [])
+           for ref in config["samplesets"][sampleset]["megahit"].get("references", [])
+           if "megahit" in config["samplesets"][sampleset]
+           ],
