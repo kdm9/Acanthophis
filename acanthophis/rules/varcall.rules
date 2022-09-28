@@ -15,23 +15,95 @@
 #
 # For mpileup, we don't merge the bams but make a list of bam files and use that. 
 
-rule mpileup_bamlist:
+rule idxcov:
     input:
         lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
                             aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
     output:
-        temp(T("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}-{region}.bamlist")),
-    group: "varcall_oneregion"
+        cov=T("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/cov/cov-indexcov.bed.gz"),
+    log:
+        L("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/cov/cov-indexcov.log"),
+    conda: "envs/idxcov.yml"
+    params:
+        dir=lambda wc, output: dirname(output.cov)
+    shell:
+        "goleft indexcov --excludepatt '^$' --directory {params.dir} {input} &>{log}"
+
+
+checkpoint idxcov_regions:
+    input:
+        cov=T("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/cov/cov-indexcov.bed.gz"),
+    output:
+        regions=directory(T("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/regions")),
+        regionsbed=P("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/regions.bed"),
+    params:
+        cov_threshold=lambda wc: config["tool_settings"]["varcall"].get("reads_per_region", {}).get(wc.caller, 10000)
     run:
-        with open(output[0], "w") as fh:
-            for s in input.bam:
-                print(s, file=fh)
+        try:
+            import os
+            import gzip
+            os.makedirs(output.regions, exist_ok=True)
+            with gzip.open(input.cov, "rt") as fh, \
+                    open(output.regionsbed, "w") as bedfh:
+                hdr = None
+                region_chr = None
+                region_start = None
+                region_stop = None
+                region_total_cov = 0
+                for line in fh:
+                    if line.startswith("#"):
+                        continue
+                    fields = line.rstrip("\n").split("\t")
+                    chr, start, stop = fields[0:3]
+                    start = int(start) + 1
+                    stop = int(stop)
+                    total_cov = sum(float(x) for x in fields[3:])
+                    if chr != region_chr or region_total_cov >= int(params.cov_threshold):
+                        # over coverage threshold or chrom changed, new region please
+                        if region_chr is not None:
+                            region_str = f"{region_chr}:{region_start}-{region_stop}"
+                            with open(f"{output.regions}/{region_str}.reg", "w") as ofh:
+                                print(region_str, file=ofh)
+                            print(region_chr, region_start - 1, region_stop, region_total_cov, file=bedfh, sep="\t")
+                        region_chr = chr
+                        region_start = start
+                        region_stop = stop
+                        region_total_cov = total_cov
+                    else:
+                        # within threshold, so extend region to encompass this one and add to coverage
+                        region_total_cov += total_cov
+                        region_stop = stop
+                if region_chr is not None:
+                    # output last region
+                    region_str = f"{region_chr}:{region_start}-{region_stop}"
+                    with open(f"{output.regions}/{region_str}.reg", "w") as ofh:
+                        print(region_str, file=ofh)
+                    print(region_chr, region_start - 1, region_stop, region_total_cov, file=bedfh, sep="\t")
+        except Exception as exc:
+            print(exc)
+
+
+rule bamlist:
+    input:
+        lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
+    output:
+        temp(T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist")),
+    run:
+        try:
+            with open(output[0], "w") as fh:
+                for s in input:
+                    print(s, file=fh)
+        except Exception as exc:
+            print(exc)
 
 rule mpileup:
     input:
         bam=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
         bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
+        region=T("variants/regions/{aligner}~{ref}~{sampleset}~mpileup/regions/{region}.reg"),
+        bamlist=T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
     output:
         bcf=P("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf"),
     log: L("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
@@ -53,7 +125,7 @@ rule mpileup:
         "   --annotate FORMAT/DP,FORMAT/AD,FORMAT/SP,INFO/AD" #output extra tags
         "   --region '{wildcards.region}'"
         "   --output-type u" # uncompressed bam
-        "   {input.bam}"
+        "   --bam-list {input.bamlist}"
         " | bcftools call"
         "   --threads {threads}"
         "   --targets '{wildcards.region}'" # might not be needed
@@ -73,6 +145,8 @@ rule freebayes:
         bam=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
         bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
+        region=T("variants/regions/{aligner}~{ref}~{sampleset}~freebayes/regions/{region}.reg"),
+        bamlist=T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
     output:
         bcf=P("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf"),
     log: L("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
@@ -97,7 +171,7 @@ rule freebayes:
         "   --strict-vcf"
         "   --region '{wildcards.region}'"
         "   --fasta-reference {input.ref}"
-        "   {input.bam}"
+        "   --bam-list {input.bamlist}"
         " | bcftools view"
         "   -O b"
         "   -o {output.bcf}"
@@ -164,11 +238,15 @@ rule bcffilter:
 #######################################################################
 #                              Bcf Merge                              #
 #######################################################################
+def get_regions(wc):
+    dir = checkpoints.idxcov_regions.get(aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, caller=wc.caller).output.regions
+    return glob_wildcards(f"{dir}/{{region}}.reg").region
+
 rule bcfmerge_fofn:
     input:
         bcf=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf"),
-                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
-                              region=sorted(config["VARCALL_REGIONS"][wc.caller][wc.ref])),
+                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                    region=get_regions(wc)),
     output:
         fofn=temp(T("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN")),
     group: "bcfmerge"
@@ -193,12 +271,12 @@ rule premergevariantidx:
 
 rule bcfmerge:
     input:
-        bcf=lambda wc: T(expand("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf",
-                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
-                              region=sorted(config["VARCALL_REGIONS"][wc.caller][wc.ref]))),
-        bcfi=lambda wc: T(expand("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf.csi",
-                              caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
-                              region=sorted(config["VARCALL_REGIONS"][wc.caller][wc.ref]))),
+        bcf=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf"),
+                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                    region=get_regions(wc)),
+        bcfi=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf.csi"),
+                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                    region=get_regions(wc)),
         fofn=T("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN"),
     output:
         bcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf"),

@@ -29,7 +29,7 @@ import csv
 from collections import defaultdict
 from copy import deepcopy
 from glob import glob
-from os.path import basename, splitext
+from os.path import basename, splitext, dirname
 import os
 from sys import stderr
 from math import log, inf
@@ -90,48 +90,6 @@ def populate_metadata(config, runlib2samp=None, sample_meta=None, setfile_glob=N
         rl: kv.get("qc_type", "__default__")
         for rl, kv in meta_by_rl.items()
     }
-    if config["data_paths"].get("references"):
-        config["CHROMS"] = make_chroms(config["data_paths"]["references"])
-        config["VARCALL_REGIONS"] = {
-            vc: make_regions(config["data_paths"]["references"], window=chunks)
-            for vc, chunks in config["tool_settings"].get("varcall", {}).get("chunksize", {}).items()
-        } 
-
-
-def parsefai(fai):
-    with open(fai) as fh:
-        for l in fh:
-            cname, clen, _, _, _ = l.split()
-            clen = int(clen)
-            yield cname, clen
-
-
-def make_regions(rdict, window=1e6, base=1):
-    window = int(window)
-    ret = {}
-    for refname, refbits in rdict.items():
-        fai = refbits['fasta']+".fai"
-        windows = []
-        curwin = []
-        curwinlen = 0
-        for cname, clen in parsefai(fai):
-            for start in range(0, clen, window):
-                wlen = min(clen - start, window)
-                windows.append("{}:{:09d}-{:09d}".format(cname, start + base, start+wlen))
-        ret[refname] = windows
-    return ret
-
-
-def make_chroms(rdict):
-    ret = {}
-    for refname, refbits in rdict.items():
-        fai = refbits['fasta']+".fai"
-        ref = dict()
-        for cname, clen in parsefai(fai):
-            ref[cname] = clen
-        ret[refname] = ref
-    return ret
-
 
 def parse_metadata(s2rl_file):
     meta = []
@@ -279,6 +237,8 @@ def T(paths):
     opaths = []
     for path in paths:
         opaths.append(config["data_paths"].get("temp_prefix", "") + path)
+    if len(opaths) == 1:
+        return opaths[0]
     return opaths
 
 def L(path):
@@ -346,4 +306,7 @@ def R(paths, keep_local=False):
 def P(paths, keep_local=False):
     if isinstance(paths, str) or isinstance(paths, pathlib.Path):
         paths = [paths, ]
-    return [R(config["data_paths"].get("persistent_prefix", "") + p, keep_local=keep_local) for p in paths]
+    opaths = [R(config["data_paths"].get("persistent_prefix", "") + p, keep_local=keep_local) for p in paths]
+    if len(opaths) == 1:
+        return opaths[0]
+    return opaths

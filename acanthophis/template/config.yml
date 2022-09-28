@@ -101,13 +101,13 @@ tool_settings:
     # Minimum base quality to count *base* in pileup
     minbq: 15 
     
-    # Chunk size for parallisation across genome. Per variant caller as they take
-    # have different runtime and memory requirements, and all need to fit in
-    # ~12hours on a single job.
-    chunksize:
-      mpileup:   1000000
-      freebayes:  200000
-      gatk-hc:   1000000
+    # Coverage per region across all samples. This is used to partition the
+    # genome in a coverage-aware manner with goleft indexcov.
+    # The values below are stupidly low for testing purposes, you should
+    # increase the to at least the numbers in the comments.
+    cov_threshold:
+      mpileup:    5  # 10000
+      freebayes:  5  #  1000
 
     # Stop counting reads after this many. Per variant caller. It depends on the tool as to whether or not this is per-sample or per-file.
     max_depth:
