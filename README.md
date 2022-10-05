@@ -2,7 +2,7 @@
 
 A reusable, comprehensive, opinionated plant hologenomics and variant calling pipeline in Snakemake
 
-![Acanthophis, the most beautiful and badass of snakes](.github/logo.jpg)
+<img src=".github/logo.jpg" width="320">
 
 ## Installation & Use
 
