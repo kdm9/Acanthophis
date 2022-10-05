@@ -1,6 +1,6 @@
 # Acanthophis
 
-A reusable, comprehensive, opinionated plant variant calling pipeline in Snakemake
+A reusable, comprehensive, opinionated plant hologenomics and variant calling pipeline in Snakemake
 
 ![Acanthophis, the most beautiful and badass of snakes](.github/logo.jpg)
 
