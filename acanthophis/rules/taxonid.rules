@@ -120,8 +120,10 @@ rule kaiju:
 
 rule centrifuge:
     input:
-        reads=P("reads/samples/{sample}.fastq.gz"),
         db=lambda wc: R(config["data_paths"]["centrifuge"][wc.db], keep_local=True),
+        r1=T("reads/samples/{sample}_R1.fastq.gz"),
+        r2=T("reads/samples/{sample}_R2.fastq.gz"),
+        se=T("reads/samples/{sample}_se.fastq.gz"),
     output:
         out=P("taxonid/centrifuge/{db}~{sample}.txt.zst"),
         report=P("taxonid/centrifuge/{db}~{sample}_report.txt"),
@@ -133,12 +135,15 @@ rule centrifuge:
         idx_prefix=lambda wc, input: stripext(input.db, [".1.cf", ".2.cf", ".3.cf", ".4.cf"])
     shell:
         "centrifuge"
+        "   --shmem"
         "   --met-file {output.metrics}"
         "   --report-file {output.report}"
         "   -S >(zstd -8 >{output.out})"
         "   --threads {threads}"
         "   -x {params.idx_prefix}"
-        "   -U {input.reads}"  # TODO: make it recognise pairs??
+        "   -1 {input.r1}"
+        "   -2 {input.r2}"
+        "   -U {input.se}"
         "   >{log} 2>&1"
 
 

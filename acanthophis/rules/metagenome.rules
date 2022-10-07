@@ -23,15 +23,17 @@ rule megahit:
     params:
         mem_bytes = lambda wc, resources: resources.mem_mb * 1024,
     shell:
-        "( megahit"
-        "   --out-dir $(dirname {output.contigs})/workdir"
+        "( O=$(dirname {output.contigs})/workdir;"
+        " rm -rf $O;"
+        " megahit"
+        "   --out-dir $O"
         "   --out-prefix {wildcards.sample}"
         "   --memory {params.mem_bytes}"
         "   -1 {input.r1}"
         "   -2 {input.r2}"
         "   -r {input.rs}"
         "   --num-cpu-threads {threads}"
-        "; cp $(dirname {output.contigs})/workdir/*.contigs.fa {output.contigs}"
+        "; cp $O/*.contigs.fa {output.contigs}"
         ") &>{log}"
 
 

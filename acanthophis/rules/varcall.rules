@@ -9,12 +9,8 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-#######################################################################
-#                               Mpileup                               #
-#######################################################################
-#
-# For mpileup, we don't merge the bams but make a list of bam files and use that. 
 
+# TODO: maybe goleft indexcov needs a FOFN?
 rule idxcov:
     input:
         lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
@@ -37,7 +33,7 @@ checkpoint idxcov_regions:
         regions=directory(T("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/regions")),
         regionsbed=P("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/regions.bed"),
     params:
-        cov_threshold=lambda wc: config["tool_settings"]["varcall"].get("reads_per_region", {}).get(wc.caller, 10000)
+        cov_threshold=lambda wc: config["tool_settings"]["varcall"].get("region_coverage_threshold", {}).get(wc.caller, 10000)
     run:
         try:
             import os
@@ -97,10 +93,17 @@ rule bamlist:
         except Exception as exc:
             print(exc)
 
+#######################################################################
+#                         Varcall one region                          #
+#######################################################################
+# mpileup or freebayes -> norm -> filter -> premergevariantidx all in one big group
+
 rule mpileup:
     input:
-        bam=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
-        bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
+        bam=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
+        bai=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
+                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
         region=T("variants/regions/{aligner}~{ref}~{sampleset}~mpileup/regions/{region}.reg"),
         bamlist=T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
@@ -142,8 +145,10 @@ rule mpileup:
 #######################################################################
 rule freebayes:
     input:
-        bam=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
-        bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
+        bam=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
+        bai=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
+                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
         region=T("variants/regions/{aligner}~{ref}~{sampleset}~freebayes/regions/{region}.reg"),
         bamlist=T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
@@ -178,9 +183,6 @@ rule freebayes:
         " ) >{log} 2>&1"
 
 
-#######################################################################
-#                            Bcftools Norm                            #
-#######################################################################
 rule bcfnorm:
     input:
         bcf=P("variants/raw_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
@@ -202,9 +204,6 @@ rule bcfnorm:
         " ) >{log} 2>&1"
 
 
-#######################################################################
-#                           Bcftools filter                           #
-#######################################################################
 rule bcffilter:
     input:
         bcf=T("variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
@@ -233,12 +232,24 @@ rule bcffilter:
         " ) >{log} 2>&1"
 
 
-
+rule premergevariantidx:
+    input:
+        T("variants/filter_split/{path}")
+    output:
+        T("variants/filter_split/{path}.csi")
+    log:
+        T("variants/filter_split/{path}.csi.log")
+    resources: **rule_resources(config, "variantidx", time_min=720, mem_gb=8, cores=1)
+    conda: "envs/varcall.yml"
+    group: "varcall_oneregion"
+    shell:
+        "bcftools index -f {input}"
 
 #######################################################################
 #                              Bcf Merge                              #
 #######################################################################
 def get_regions(wc):
+    """Scan the region directory from the checkpoint, and work out what regions we have"""
     dir = checkpoints.idxcov_regions.get(aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, caller=wc.caller).output.regions
     return glob_wildcards(f"{dir}/{{region}}.reg").region
 
@@ -251,22 +262,10 @@ rule bcfmerge_fofn:
         fofn=temp(T("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN")),
     group: "bcfmerge"
     run:
+        from natsort import natsorted
         with open(output[0], "w") as fh:
-            for s in sorted(input):
+            for s in natsorted(input):
                 print(s, file=fh)
-
-
-rule premergevariantidx:
-    input:
-        T("variants/filter_split/{path}")
-    output:
-        T("variants/filter_split/{path}.csi")
-    log:
-        T("variants/filter_split/{path}.csi.log")
-    resources: **rule_resources(config, "variantidx", time_min=720, mem_gb=8, cores=1)
-    conda: "envs/varcall.yml"
-    shell:
-        "bcftools index -f {input}"
 
 
 rule bcfmerge:
@@ -282,16 +281,14 @@ rule bcfmerge:
         bcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf"),
     log:
         L("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.log"),
-    params:
-        allow_overlaps=lambda wc: "--allow-overlaps" if config["tool_settings"]["varcall"]["merge_allow_overlaps"].get(wc.caller, False) else ""
     group: "bcfmerge"
-    resources: **rule_resources(config, "bcfstats", time_min=1440, mem_gb=12, cores=64)
+    resources: **rule_resources(config, "bcfmerge", time_min=1440, mem_gb=12, cores=64)
     conda: "envs/varcall.yml"
     shell:
         "( bcftools concat"
         "   --threads {threads}"
         "   --file-list {input.fofn}"
-        "   {params.allow_overlaps}"
+        "   --allow-overlaps"
         "   -o {output.bcf}"
         "   -O b"
         " ) >{log} 2>&1"

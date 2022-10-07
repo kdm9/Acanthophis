@@ -203,6 +203,7 @@ rule split_pair_sample:
         "   -1 >(gzip >{output.r1})"
         "   -2 >(gzip >{output.r2})"
         "   -u >(gzip >{output.se})"
+        "   -l 30"
         "   -y {output.yml}"
         "   {input}"
         " ) &>{log}"

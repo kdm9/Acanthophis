@@ -45,7 +45,7 @@ rule kwipdist:
         d=P("kwip/{set}~k{ksize}~s{sketchsize}.dist"),
         k=P("kwip/{set}~k{ksize}~s{sketchsize}.kern"),
     log: L("kwip/{set}~k{ksize}~s{sketchsize}.dist.log"),
-    resources: **rule_resources(config, "countsketch", time_min=2880, mem_mb=15000, cores=8)
+    resources: **rule_resources(config, "kwipdist", time_min=2880, mem_mb=15000, cores=8)
     conda: "envs/kwip.yml"
     shell:
         "kwip"
