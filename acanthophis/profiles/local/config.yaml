@@ -1,0 +1,10 @@
+jobs: 96
+verbose: false
+use-conda: true
+conda-frontend: mamba
+rerun-incomplete: true
+keep-going: true
+latency-wait: 60
+restart-times: 2
+printshellcmds: true
+configfiles: "profiles/local/resources.yml"

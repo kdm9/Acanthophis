@@ -7,9 +7,9 @@ resources:
   __default__:
     # A default set of resources. Jobs not configured individually will inherit these values.
     cores: 1
-    disk_gb: 1
+    disk_gb: 32
     mem_gb: 1
-    time_min: 28
+    time_min: 120
     localrule: 0  # this must be an integer, so 0 = false & 1 = true
   __max__:
     # A maximum of each resource permitted by your execution environment. Each job's
@@ -18,53 +18,27 @@ resources:
     # On cloud environments, use the maximum available resources of your machine type. On
     # HPC clusters, use the size of an individual node. On a local machine, use the size
     # of the machine you run snakemake on.
-    cores: 128
+    cores: 80
     disk_gb: 300
-    mem_gb:  1024
+    mem_gb:  190
     time_min: 2880
   # What follows overrides both the defaults above and any per-job specification in the 
   # snakemake rules files. The keys of this should be individual rule names as passed to
   # configure_resources() in the snakemake rules files. Run snakemake -np with the
   # __DEBUG__ variable above set to true to see a full list of the defaults.
-  qcreads_paired_il:
-    time_min: 15
-  qcreads_paired_r12:
-    time_min: 15
-  qcreads_se:
-    time_min: 15
-  merge_qcd_reads:
-    time_min: 15
-  extract_unmapped:
-    time_min: 28
-  freebayes:
-    mem_gb: 16
-    time_min: 2880
-    cores: 1
-  fastqc_preqc:
-    # Not sure why it needs so much RAM, but it does.
-    mem_gb: 4
-    time_min: 28
-  fastqc_postqc:
-    mem_gb: 4
-    time_min: 28
   kraken_noreads:
-    # these jobs are sized to fit the nt/nr databases
-    cores: 24
-    mem_gb: 240
-    time_min: 60
-  centrifuge:
-    cores: 24
-    mem_gb: 320
-    time_min: 60
-  kaiju:
-    cores: 24
-    mem_gb: 250
-    time_min: 60
+    cores: 8
+    mem_gb: 120
+    time_min: 120
   megahit:
     cores: 16
     mem_gb: 16
-    time_min: 60
-  qualimap_sample:
-    mem_gb: 32
-    cores: 8
-    time_min: 60
+    time_min: 120
+  centrifuge:
+    cores: 16
+    mem_gb: 325
+    time_min: 120
+  kaiju:
+    cores: 48
+    mem_gb: 256
+    time_min: 120

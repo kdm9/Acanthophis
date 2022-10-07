@@ -26,7 +26,7 @@ then
 		run.job)
 fi
 
-mkdir -p data/log
+mkdir -p .snakemake/log
 
 snakemake                    \
     --nolock                 \
@@ -37,7 +37,7 @@ snakemake                    \
     --keep-going             \
     --use-conda              \
     ${TARGET}                \
-    >log/$(date +%Y-%m-%d)_${JOB_ID:-nopbs}_snakemake.log 2>&1
+    >.snakemake/log/$(date +%Y-%m-%d)_${JOB_ID:-nopbs}_snakemake.log 2>&1
 
 if [ -n "${NEXT:-}" ]
 then
