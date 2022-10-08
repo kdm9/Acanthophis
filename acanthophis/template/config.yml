@@ -52,8 +52,13 @@ samplesets:
       dbs:
         - Viral
     centrifuge:
-      dbs:
-        - lambda
+      dbs: []
+        # Centrifuge is disabled in this example as we use this in CI testing
+        # and centrifuge uses too much RAM, causing our tests to fail. To run
+        # centrifuge, supply an array/list of databases here as one does above
+        # for Kraken & Kaiju, for exampe:
+        #
+        # - lambda
     persample_reads: false # don't specifically make sample.fastq.gz
     fastqc: true
     mash: true
