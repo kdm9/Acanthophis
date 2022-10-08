@@ -1,4 +1,4 @@
-name: acanthophis-example
+name: acanthophis-tests
 channels:
   - defaults
   - conda-forge
@@ -13,6 +13,5 @@ dependencies:
   - wgsim
   - centrifuge-core
   - samtools
-  - natsort
   - pip:
     - msprime

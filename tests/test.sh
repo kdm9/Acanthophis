@@ -1,7 +1,8 @@
 #!/bin/bash
-mamba env update -f environment.yml
-conda activate acanthophis-example
+conda activate acanthophis-tests
 set -xeuo pipefail
 acanthophis-init --yes
+mamba env update -f environment.yml
+conda activate acanthophis
 rm -fr output tmp
 snakemake -j 8 --use-conda --ri "${@}"
