@@ -13,5 +13,6 @@ dependencies:
   - wgsim
   - centrifuge-core
   - samtools
+  - natsort
   - pip:
     - msprime
