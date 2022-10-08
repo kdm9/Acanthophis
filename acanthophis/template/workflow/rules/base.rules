@@ -36,6 +36,7 @@ from math import log, inf
 from functools import partial
 import pathlib
 
+
 try:
     from ._version import version
     __version__ = version
@@ -90,6 +91,7 @@ def populate_metadata(config, runlib2samp=None, sample_meta=None, setfile_glob=N
         rl: kv.get("qc_type", "__default__")
         for rl, kv in meta_by_rl.items()
     }
+
 
 def parse_metadata(s2rl_file):
     meta = []

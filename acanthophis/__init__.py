@@ -23,7 +23,7 @@ except ImportError:
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 profiles = {}
-for profiledir in glob(f"{HERE}/profiles/*"):
+for profiledir in glob(f"{HERE}/template/workflow/profiles/*"):
     profile = basename(profiledir)
     profiles[profile] = profiledir
 

@@ -3,7 +3,6 @@ rawdata
 .snakemake
 tmp/
 output/
-Snakefile
-rules
-environment.yml
+workflow
 config.yml
+environment.yml

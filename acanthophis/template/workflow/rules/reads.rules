@@ -306,14 +306,14 @@ rule all_runlib_fastqc:
     input:
         P([f"stats/fastqc/{prepost}/{run}~{lib}_fastqc.zip"
           for prepost in ["preqc", "postqc"]
-          for sset in config["SAMPLESETS"]
+          for sset in config["samplesets"]
           for samp in config["SAMPLESETS"][sset]
           for run, lib in config["SAMP2RUNLIB"][samp]
           if config["samplesets"][sset].get("fastqc", False)
         ]),
         P([f"stats/multiqc/reads-{prepost}~{sset}_multiqc.html"
           for prepost in ["preqc", "postqc"]
-          for sset in config["SAMPLESETS"]
+          for sset in config["samplesets"]
           if config["samplesets"][sset].get("fastqc", False)
         ]),
 

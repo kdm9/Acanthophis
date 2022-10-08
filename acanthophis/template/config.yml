@@ -43,14 +43,17 @@ samplesets:
       unmapped_reads: true
       stats: true
       qualimap: true
-    # Output (un)-classified read fastqs from Kraken?
-    kraken_reads: false
-    kraken_dbs:
-      - Viral
-    kaiju_dbs:
-      - Viral
-    centrifuge_dbs:
-      - lambda
+    kraken:
+     # Output (un)-classified read fastqs from Kraken?
+      reads: false
+      dbs:
+        - Viral
+    kaiju:
+      dbs:
+        - Viral
+    centrifuge:
+      dbs:
+        - lambda
     persample_reads: false # don't specifically make sample.fastq.gz
     fastqc: true
     mash: true
@@ -69,9 +72,6 @@ samplesets:
       snpeff: false
 
 
-#######################################################################
-#                       Alignment to Reference                        #
-#######################################################################
 tool_settings:
   ngm:
     sensitivity: 0.5
@@ -105,21 +105,14 @@ tool_settings:
     # genome in a coverage-aware manner with goleft indexcov.
     # The values below are stupidly low for testing purposes, you should
     # increase the to at least the numbers in the comments.
-    cov_threshold:
+    region_coverage_threshold:
       mpileup:    5  # 10000
       freebayes:  5  #  1000
 
     # Stop counting reads after this many. Per variant caller. It depends on the tool as to whether or not this is per-sample or per-file.
     max_depth:
-      mpileup:   10000    # Per file
-      freebayes: 10000    # Per file
-
-    # Can the coordinates of each variant caller overlap between regions?
-    # Setting to false will greatly accelerate BCF merging, but can crash with
-    # some Freebayes runs.
-    merge_allow_overlaps:
-      mpileup: false
-      freebayes: true
+      mpileup:   12000    # Per file
+      freebayes: 12000    # Per file
 
     # Filters. These are series of command line arguments to pass to bcftools
     # view. These filters apply while multiallelic variants have been decomposed

@@ -62,16 +62,10 @@ def init():
         exit(0)
 
     template_dir = acanthophis.get_resource("template/")
-    rules_dir = acanthophis.get_resource("rules/")
-    envs_dir = acanthophis.get_resource("rules/envs/")
     if args.dryrun:
         print(f"cp -r {template_dir} {args.destdir}")
-        print(f"cp -r {rules_dir} {args.destdir}/")
-        print(f"cp -r {envs_dir} {args.destdir}/rules")
     elif args.force or args.yes or prompt_yn(f"cp -r {template_dir} -> {args.destdir}? (WARNING: make sure you have git add'd all files as they will be overwritten) "):
         shutil.copytree(template_dir, args.destdir, dirs_exist_ok=True)
-        shutil.copytree(rules_dir, args.destdir + "/rules", dirs_exist_ok=True)
-        shutil.copytree(envs_dir, args.destdir + "/rules/envs", dirs_exist_ok=True)
 
     for profile in args.cluster_profile:
         if profile not in acanthophis.profiles:

@@ -119,4 +119,3 @@ rule all_denovo:
     input:
         rules.all_kwip.input,
         rules.all_mash.input,
-
