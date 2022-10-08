@@ -6,3 +6,4 @@ channels:
   - kdm801
 dependencies:
   - snakemake
+  - natsort
