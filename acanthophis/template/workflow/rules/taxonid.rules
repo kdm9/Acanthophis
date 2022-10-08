@@ -157,32 +157,32 @@ rule all_kaiju:
     input:
         [P(expand("taxonid/kaiju/{db}~{sample}.txt.zst",
                   sample=config["SAMPLESETS"][sampleset],
-                  db=config["samplesets"][sampleset]["kaiju_dbs"],
+                  db=config["samplesets"][sampleset].get("kaiju", {}).get("dbs", []),
                   ))
          for sampleset in config["samplesets"]
-         if "kaiju_dbs" in config["samplesets"][sampleset]
+         if "kaiju" in config["samplesets"][sampleset]
         ],
 
 rule all_kraken:
     input:
         P([f"stats/multiqc/kraken_{db}~{sampleset}_multiqc.html"
            for sampleset in config["samplesets"]
-           for db in config["samplesets"][sampleset].get("kraken_dbs", [])
-           if "kraken_dbs" in config["samplesets"][sampleset]
+           for db in config["samplesets"][sampleset].get("kraken", {}).get("dbs", [])
+           if "kraken" in config["samplesets"][sampleset]
         ]),
         [P(expand("taxonid/kraken/{db}~{sample}_report.txt",
                   sample=config["SAMPLESETS"][sampleset],
-                  db=config["samplesets"][sampleset]["kraken_dbs"],
+                  db=config["samplesets"][sampleset].get("kraken", {}).get("dbs", []),
                   ))
          for sampleset in config["samplesets"]
-         if "kraken_dbs" in config["samplesets"][sampleset]
+         if "kraken" in config["samplesets"][sampleset]
         ],
         [P(expand("taxonid/kraken/{db}~{sample}_unclassified.fastq.gz",
                   sample=config["SAMPLESETS"][sampleset],
-                  db=config["samplesets"][sampleset]["kraken_dbs"],
+                  db=config["samplesets"][sampleset].get("kraken", {}).get("dbs", []),
                   ))
          for sampleset in config["samplesets"]
-         if config["samplesets"][sampleset].get("kraken_reads", False)
+         if config["samplesets"][sampleset].get("kraken", {}).get("reads", False)
         ]
 
 
@@ -191,10 +191,10 @@ rule all_centrifuge:
     input:
         [P(expand("taxonid/centrifuge/{db}~{sample}.txt.zst",
                   sample=config["SAMPLESETS"][sampleset],
-                  db=config["samplesets"][sampleset]["centrifuge_dbs"],
+                  db=config["samplesets"][sampleset].get("centrifuge", {}).get("dbs", []),
                   ))
          for sampleset in config["samplesets"]
-         if "centrifuge_dbs" in config["samplesets"][sampleset]
+         if "centrifuge" in config["samplesets"][sampleset]
         ],
 
 

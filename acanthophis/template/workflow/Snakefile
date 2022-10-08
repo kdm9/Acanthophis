@@ -1,6 +1,9 @@
 configfile: "config.yml"
 include: "rules/base.rules"
 populate_metadata(config)
+from snakemake.utils import validate
+validate(config, "config.schema.yml")
+
 
 include: "rules/reads.rules"
 include: "rules/align.rules"

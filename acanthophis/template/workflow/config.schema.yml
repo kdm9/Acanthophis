@@ -1,0 +1,261 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+
+description: Acanthophis config file
+
+type: object
+properties:
+  data_paths:
+    type: object
+    properties:
+      metadata:
+        type: object
+        properties:
+          runlib2samp_file:
+            type: string
+          setfile_glob:
+            type: string
+        required:
+          - runlib2samp_file
+          - setfile_glob
+      references:
+        type: object
+        minProperties: 1
+        additionalProperties:
+          type: object
+          properties:
+            fasta:
+              type: string
+            required:
+              - fasta
+      kraken:
+        type: object
+        additionalProperties:
+          type: string
+      kaiju:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            nodes:
+              type: string
+            fmi:
+              type: string
+            required:
+              - nodes
+              - fmi
+      centrifuge:
+        type: object
+        additionalProperties:
+          type: string
+    temp_prefix:
+      type: string
+      default: "tmp/"
+    log_prefix:
+      type: string
+      default: "output/"
+    persistent_prefix:
+      type: string
+      default: "output/"
+    required:
+      - metadata
+      - references
+      - temp_prefix
+
+  samplesets:
+    type: object
+    minProperties: 1
+    additionalProperties:
+      type: object
+      properties:
+        megahit:
+          type: object
+          properties:
+            aligners:
+              type: array
+              items:
+                type: string
+                enum:
+                  - bwa
+                  - ngm
+            references:
+              type: array
+              items:
+                type: string
+        align:
+          type: object
+          properties:
+            aligners:
+              type: array
+              items:
+                type: string
+                enum:
+                  - bwa
+                  - ngm
+            references:
+              type: array
+              items:
+                type: string
+            unmapped_reads:
+              type: boolean
+              default: false
+            stats:
+              type: boolean
+              default: true
+            qualimap:
+              type: boolean
+              default: true
+        kraken:
+          type: object
+          properties:
+            reads:
+              type: boolean
+              default: false
+            dbs:
+              type: array
+              items:
+                type: string
+        kaiju:
+          type: object
+          properties:
+            dbs:
+              type: array
+              items:
+                type: string
+        centrifuge:
+          type: object
+          properties:
+            dbs:
+              type: array
+              items:
+                type: string
+        persample_reads:
+          type: boolean
+          default: false
+        fastqc:
+          type: boolean
+          default: false
+        mash:
+          type: boolean
+          default: true
+        kwip:
+          type: boolean
+          default: false
+        varcall:
+          type: object
+          properties:
+            theta_prior:
+              type: number
+              minimum: 0
+              maximum: 1
+            callers:
+              type: array
+              items:
+                type: string
+                enum:
+                  - mpileup
+                  - freebayes
+            aligners:
+              type: array
+              items:
+                type: string
+                enum:
+                  - bwa
+                  - ngm
+            refs:
+              type: array
+              items:
+                type: string
+            filters:
+              type: array
+              items:
+                type: string
+            snpeff:
+              type: boolean
+              default: false
+  tool_settings:
+    type: object
+    properties:
+      ngm:
+        type: object
+        properties:
+          sensitivity:
+            type: number
+      adapterremoval:
+        type: object
+        patternProperties:
+          ".*":
+            type: object
+            properties:
+              adapter_file:
+                type: string
+              minqual:
+                type: number
+              qualenc:
+                type: number
+                default: 33
+              maxqualval:
+                type: number
+                default: 45
+                minimum: 40
+            required:
+              - adapter_file
+              - minqual
+              - maxqualval
+        kwip:
+          type: object
+          properties:
+            kmer_size:
+              type: number
+            sketch_size:
+              type: number
+        mash:
+          type: object
+          properties:
+            kmer_size:
+              type: number
+            sketch_size:
+              type: number
+        varcall:
+          type: object
+          properties:
+            minmapq:
+              type: object
+              properties:
+                bwa:
+                  type: number
+                  default: 30
+                ngm:
+                  type: number
+                  default: 10
+            minbq:
+              type: number
+              default: 15
+            region_coverage_threshold:
+              type: object
+              properties:
+                mpileup:
+                  type: number
+                  default: 100000
+                freebayes:
+                  type: number
+                  default: 10000
+            max_depth:
+              type: object
+              properties:
+                mpileup:
+                  type: number
+                  default: 12000
+                freebayes:
+                  type: number
+                  default: 12000
+            filters:
+              type: objects
+              patternProperties:
+                ".*":
+                  type: string
+              minProperties: 1
+
+required:
+  - data_paths
+  - samplesets
+  - tool_settings
