@@ -1,0 +1,46 @@
+#!/bin/bash -l
+#$ -pe parallel 128
+#$ -l h_vmem=500G
+#$ -l h_rt=48:0:0
+#$ -j y
+#$ -S /bin/bash
+#$ -cwd 
+#$ -m beas
+
+if [ -n "${GLOBAL_CONDA_ENV_NAME}" ]
+then
+    conda activate ${GLOBAL_CONDA_ENV_NAME}
+fi
+
+set -xeuo pipefail
+
+TARGET=${TARGET:-all}
+SNAKEFILE=${SNAKEFILE:-Snakefile}
+SELFSUB=${SELFSUB:-yes}
+echo TARGET=${TARGET} SNAKEFILE=${SNAKEFILE} SELFSUB=${SELFSUB}
+
+if [ "$SELFSUB" == "yes" ]
+then
+    NEXT=$(qsub -v "TARGET=${TARGET},SNAKEFILE=${SNAKEFILE},GLOBAL_CONDA_ENV_NAME=${GLOBAL_CONDA_ENV_NAME}" \
+                -hold_jid $JOB_ID -N ${JOB_NAME:-OMNI}             \
+		run.job)
+fi
+
+mkdir -p .snakemake/log
+
+snakemake                    \
+    --nolock                 \
+    --snakefile ${SNAKEFILE} \
+    $temp                    \
+    -j ${NSLOTS:-2}          \
+    --rerun-incomplete       \
+    --keep-going             \
+    --use-conda              \
+    ${TARGET}                \
+    >.snakemake/log/$(date +%Y-%m-%d)_${JOB_ID:-nopbs}_snakemake.log 2>&1
+
+if [ -n "${NEXT:-}" ]
+then
+    qdel "$NEXT"
+fi
+

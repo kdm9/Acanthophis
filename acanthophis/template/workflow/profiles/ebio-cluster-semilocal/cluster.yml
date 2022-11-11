@@ -1,0 +1,3 @@
+__default__:
+  output: ".snakemake/log/cluster/"
+  DEBUG: True

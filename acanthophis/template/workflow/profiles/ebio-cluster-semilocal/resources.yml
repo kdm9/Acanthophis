@@ -1,0 +1,75 @@
+#######################################################################
+#                           Resource Config                           #
+#######################################################################
+resources:
+  # set to true to see all the resources for each rule
+  __DEBUG__: true
+  __default__:
+    # A default set of resources. Jobs not configured individually will inherit these values.
+    cores: 1
+    disk_gb: 1
+    mem_gb: 1
+    time_min: 28
+    localrule: 1  # this must be an integer, so 0 = false & 1 = true
+  __max__:
+    # A maximum of each resource permitted by your execution environment. Each job's
+    # request will be capped at these values.
+    # 
+    # On cloud environments, use the maximum available resources of your machine type. On
+    # HPC clusters, use the size of an individual node. On a local machine, use the size
+    # of the machine you run snakemake on.
+    cores: 128
+    disk_gb: 300
+    mem_gb:  1024
+    time_min: 10080
+  # What follows overrides both the defaults above and any per-job specification in the 
+  # snakemake rules files. The keys of this should be individual rule names as passed to
+  # configure_resources() in the snakemake rules files. Run snakemake -np with the
+  # __DEBUG__ variable above set to true to see a full list of the defaults.
+  bwamem:
+    localrule: 0
+    mem_gb: 24
+  ngmap:
+    localrule: 0
+    mem_gb: 16
+  bam_merge_markdups_sort:
+    localrule: 0
+  mergebam_set:
+    localrule: 0
+  qualimap_sample:
+    localrule: 0
+    mem_gb: 24
+  kwipdist: 
+    localrule: 0
+  mash_dist_set:
+    localrule: 0
+  mash_sketch_set:
+    localrule: 0
+  kraken_noreads:
+    # these jobs are sized to fit the nt/nr databases
+    cores: 24
+    mem_gb: 240
+    time_min: 60
+    localrule: 0
+  centrifuge:
+    cores: 24
+    mem_gb: 320
+    time_min: 60
+    localrule: 0
+  kaiju:
+    cores: 24
+    mem_gb: 250
+    time_min: 60
+    localrule: 0
+  megahit:
+    cores: 32
+    mem_gb: 90
+    time_min: 60
+    localrule: 0
+  bcfmerge:
+    localrule: 0
+    cores: 8
+    mem_gb: 64
+    time_min: 10080
+  bcf2vcf:
+    localrule: 0

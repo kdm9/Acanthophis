@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+import argparse
+import subprocess
+import os
+import os.path
+from shlex import quote
+from sys import stdin, stdout, stderr
+from snakemake.utils import read_job_properties
+
+parser=argparse.ArgumentParser(add_help=False)
+
+parser.add_argument("--depend", help="Space separated list of ids for jobs this job should depend on.", default="", type=str)
+parser.add_argument("--extra", help="Any additional qsub args", default="", type=str)
+parser.add_argument("jobscript")
+
+args = parser.parse_args()
+
+cmd = ["qsub", "-terse -cwd -j y"]  # always start in wd, always join out/err logs
+
+job_properties = read_job_properties(args.jobscript)
+resources = job_properties.get("resources", {})
+cluster = job_properties.get("cluster", {})
+
+# dependencies
+if args.depend:
+    depstr = ":".join(args.depend.split(" "))
+    cmd.append("-W")
+    cmd.append(quote(f"depend=afterok:{depstr}"))
+
+# threads
+threads = job_properties.get("threads", 1)
+cmd.append(f"-pe parallel {threads}")
+
+# memory
+mem = int(resources.get("mem_mb", 2000))
+mem_percpu = int(max(mem / threads, 1000))
+cmd.append(f"-l 'h_vmem={mem_percpu}M'")
+
+# walltime
+time_sec = int(resources.get("time_min", 60)) * 60
+cmd.append(f"-l 'h_rt={time_sec}'")
+# soft timeout 1 minute before
+time_sec = max(60, time_sec - 60)
+cmd.append(f"-l 's_rt={time_sec}'")
+
+# jobfs
+disk_mb = resources.get("disk_mb", 10)
+cmd.append(f"-l 'tmpfs={disk_mb}M'")
+
+# queue
+# defaults: normal, unless internet=true
+# queue = "normal"
+# if resources.get("internet", False):
+#     queue="copyq"
+# # override with queue from resources
+# queue = resources.get("queue", queue)
+# cmd.append(f"-q '{queue}'")
+
+# logs
+out = None
+if "output" in cluster:
+    out = cluster["output"]
+if "output" in resources:
+    out = resources["output"]
+if out:
+    os.makedirs(out, exist_ok=True, mode=0o775)
+    cmd.append(f"-o {out}")
+
+if cluster.get('extra_qsub_args'):
+    cmd.append(cluster['extra_qsub_args'])
+cmd.append(args.extra)
+cmd.append(args.jobscript)
+cmd = " ".join(cmd)
+
+if cluster.get("DEBUG", False):
+    print(cmd, file=stderr)
+res = subprocess.check_output(cmd, shell=True).decode()
+print(res.strip())
