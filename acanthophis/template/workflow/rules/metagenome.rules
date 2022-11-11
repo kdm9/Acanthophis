@@ -42,7 +42,6 @@ rule all_megahit:
         [P(f"metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa")
            for sampleset in config["samplesets"]
            for sample in config["SAMPLESETS"][sampleset]
-           for aligner in config["samplesets"][sampleset]["megahit"].get("aligners", [])
-           for ref in config["samplesets"][sampleset]["megahit"].get("references", [])
-           if "megahit" in config["samplesets"][sampleset]
+           for aligner in config["samplesets"][sampleset].get("megahit", {}).get("aligners", [])
+           for ref in config["samplesets"][sampleset].get("megahit", {}).get("references", [])
            ],

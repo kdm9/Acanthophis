@@ -112,6 +112,8 @@ rule bam_merge_markdups_sort:
     resources: **rule_resources(config, "bam_merge_markdups_sort", time_min=240, mem_gb=8, disk_gb=50, cores=4)
     log: L("alignments/samples/{aligner}~{ref}~{sample}.bam.log")
     conda: "envs/align.yml"
+    params:
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
         "( samtools merge"
         "   -@ {threads}"
@@ -134,7 +136,7 @@ rule bam_merge_markdups_sort:
         "   -T ${{TMPDIR:-/tmp}}/{wildcards.sample}_markdup_$RANDOM"
         "   -s" # report stats
         "   -@ {threads}"
-        "   --output-fmt bam,level=4"
+        "   --output-fmt bam,level={params.ziplevel}"
         "   /dev/stdin"
         "   /dev/stdout"
         " | tee {output.bam}"
@@ -158,9 +160,11 @@ rule mergebam_set:
         L("alignments/sets/{aligner}~{ref}~{sampleset}.bam.log"),
     resources: **rule_resources(config, "mergebam_set", time_min=2880, mem_gb=16, disk_gb=1000, cores=64)
     conda: "envs/align.yml"
+    params:
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
         "( samtools merge"
-        "   --output-fmt bam,level=6"
+        "   --output-fmt bam,level={params.ziplevel}"
         "   -@ {threads}"
         "   -"
         "   {input}"
@@ -260,8 +264,10 @@ rule extract_unmapped:
         L("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz.log"),
     resources: **rule_resources(config, "extract_unmapped", time_min=120, mem_gb=1, cores=2)
     conda: "envs/align.yml"
+    params:
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
-        "(samtools fastq -t -f4 -c8 -@ {threads} -o {output} {input} ) >{log} 2>&1"
+        "(samtools fastq -t -f4 -c{params.ziplevel} -@ {threads} -o {output} {input} ) >{log} 2>&1"
 
 
 rule split_pair_unmapped:
@@ -276,11 +282,13 @@ rule split_pair_unmapped:
         L("alignments/unmapped_reads/{aligner}~{ref}~{sample}_split.log"),
     resources: **rule_resources(config, "split_pair_unmapped", time_min=30, mem_mb=100, disk_gb=1, cores=1)
     conda: "envs/reads.yml"
+    params:
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
         "(seqhax pairs"
-        "   -1 >(gzip >{output.r1})"
-        "   -2 >(gzip >{output.r2})"
-        "   -u >(gzip >{output.se})"
+        "   -1 >(gzip -{params.ziplevel} >{output.r1})"
+        "   -2 >(gzip -{params.ziplevel} >{output.r2})"
+        "   -u >(gzip -{params.ziplevel} >{output.se})"
         "   -l 30"
         "   -y {output.yml}"
         "   {input}"

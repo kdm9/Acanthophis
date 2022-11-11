@@ -17,7 +17,6 @@ data_paths:
   centrifuge:
     lambda: "rawdata/centrifuge/lambda/lambda.1.cf"
   temp_prefix: "tmp/"
-  log_prefix: "output/"  # TODO ideally this would be the same as the persitent prefix but log: does't support remotes.
   persistent_prefix: "output/"
 
 #######################################################################

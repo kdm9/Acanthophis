@@ -228,16 +228,6 @@ def postprocess_rules(workflow, config):
             workflow._localrules.add(n)
 
 
-shell.prefix = "set -euo pipefail; "
-
-wildcard_constraints:
-    run="[^/]+",
-    lib="[^/]+",
-    aligner="[^/]+",
-    sample="[^/]+",
-    ref="[^/]+",
-    type="[^/]+",
-
 def T(paths):
     if isinstance(paths, str):
         paths = [paths, ]
@@ -249,7 +239,6 @@ def T(paths):
     return opaths
 
 def L(path):
-    #return config["data_paths"].get("log_prefix", "") + path
     return P(path)
 
 
@@ -257,6 +246,15 @@ def R(paths, keep_local=False):
     from snakemake.common import parse_uri
     if isinstance(paths, str):
         paths = [paths, ]
+    paths2 = []
+    for path in paths:
+        if isinstance(path, list):
+            for p in path:
+                paths2.apply(p)
+        else:
+            paths2.append(path)
+    paths = paths2
+
     opaths = []
     if "REMOTE_PROVIDERS" not in config:
         config["REMOTE_PROVIDERS"] = {}
@@ -291,7 +289,7 @@ def R(paths, keep_local=False):
             if "HTTP" not in config["REMOTE_PROVIDERS"]:
                 config["REMOTE_PROVIDERS"]["HTTP"] = RemoteProvider()
             HTTP = config["REMOTE_PROVIDERS"]["HTTP"]
-            opaths.append(HTTP.remote(path, keep_local=keep_local))
+            opaths.extend(HTTP.remote(path, keep_local=keep_local))
         elif uri.scheme.lower() in ["az", "azblob"]:
             from snakemake.remote.AzBlob import RemoteProvider
             if "AzBlob" not in config["REMOTE_PROVIDERS"]:
@@ -317,3 +315,15 @@ def P(paths, keep_local=False):
     if len(opaths) == 1:
         return opaths[0]
     return opaths
+
+
+
+shell.prefix = "set -euo pipefail; ulimit -n $(ulimit -n -H) ; "
+
+wildcard_constraints:
+    run="[^/]+",
+    lib="[^/]+",
+    aligner="[^/]+",
+    sample="[^/]+",
+    ref="[^/]+",
+    type="[^/]+",

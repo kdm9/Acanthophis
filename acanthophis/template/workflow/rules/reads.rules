@@ -11,7 +11,7 @@
 
 rule qcreads_paired_il:
     input:
-        reads=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["il"]),
+        reads=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["il"], keep_local=True),
     output:
         reads=temp(T("reads/qc/{run}~{lib}_il.fastq")),
         settings=P("stats/adapterremoval/{run}~{lib}_il.settings"),
@@ -45,8 +45,8 @@ rule qcreads_paired_il:
 
 rule qcreads_paired_r12:
     input:
-        r1=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["r12"]["r1"]),
-        r2=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["r12"]["r2"]),
+        r1=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["r12"]["r1"], keep_local=True),
+        r2=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["r12"]["r2"], keep_local=True),
     output:
         reads=temp(T("reads/qc/{run}~{lib}_r12.fastq")),
         settings=P("stats/adapterremoval/{run}~{lib}_r12.settings"),
@@ -81,7 +81,7 @@ rule qcreads_paired_r12:
 
 rule qcreads_se:
     input:
-        se=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["se"]),
+        se=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["se"], keep_local=True),
     output:
         reads=temp(T("reads/qc/{run}~{lib}_se.fastq")),
         settings=P("stats/adapterremoval/{run}~{lib}_se.settings"),
@@ -125,8 +125,10 @@ rule merge_qcd_reads:
         L("reads/runs/{run}~{lib}.fastq.gz.log"),
     resources: **rule_resources(config, "merge_qcd_reads", time_min=30, mem_mb=100, disk_gb=1, cores=1)
     conda: "envs/reads.yml"
+    params:
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
-        "(cat {input} | gzip -1 >{output} ) >{log} 2>&1"
+        "(cat {input} | gzip -{params.ziplevel} >{output} ) >{log} 2>&1"
 
 
 rule read_count_librun_indiv:
@@ -198,11 +200,13 @@ rule split_pair_sample:
         L("reads/samples/{sample}_split.log"),
     resources: **rule_resources(config, "split_pair_sample", time_min=30, mem_gb=1, disk_gb=1, cores=1)
     conda: "envs/reads.yml"
+    params:
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
         "(seqhax pairs"
-        "   -1 >(gzip >{output.r1})"
-        "   -2 >(gzip >{output.r2})"
-        "   -u >(gzip >{output.se})"
+        "   -1 >(gzip -{params.ziplevel} >{output.r1})"
+        "   -2 >(gzip -{params.ziplevel} >{output.r2})"
+        "   -u >(gzip -{params.ziplevel} >{output.se})"
         "   -l 30"
         "   -y {output.yml}"
         "   {input}"
@@ -214,9 +218,9 @@ def all_raw_fastqs(wc):
     for file in config["RAWDATA_PATHS"][(wc.run, wc.lib)].values():
         if isinstance(file, dict):
             for file2 in file.values():
-                files.append(R(file2))
+                files.append(R(file2, keep_local=True))
         else:
-            files.append(R(file))
+            files.append(R(file, keep_local=True))
     return files
 
 rule fastqc_preqc:
@@ -282,10 +286,11 @@ rule multiqc_fastqc:
 
 rule all_sample_fastqs:
     input:
-        P([expand("reads/samples/{sample}.fastq.gz", sample=config["SAMPLESETS"][sset])
-            for sset in config["samplesets"]
-            if config["samplesets"][sset].get("persample_reads", False)
-            ])
+        P(["reads/samples/{sample}.fastq.gz".format(sample=sample)
+          for sset in config["samplesets"]
+          for sample in config["SAMPLESETS"][sset]
+          if config["samplesets"][sset].get("persample_reads", False)
+        ]),
 
 
 rule all_runlib_qc:
@@ -322,7 +327,6 @@ rule all_runlib_fastqc:
 rule all_reads:
     input:
         rules.all_runlib_qc.input,
-        rules.all_runlib_readstats.input,
         rules.all_runlib_fastqc.input,
         rules.all_sample_fastqs.input,
 

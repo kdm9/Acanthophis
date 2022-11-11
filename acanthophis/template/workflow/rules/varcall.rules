@@ -13,8 +13,12 @@
 # TODO: maybe goleft indexcov needs a FOFN?
 rule idxcov:
     input:
-        lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
-                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
+        bam=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+                                aligner=wc.aligner, ref=wc.ref,
+                                sample=config["SAMPLESETS"][wc.sampleset])),
+        bai=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
+                                aligner=wc.aligner, ref=wc.ref,
+                                sample=config["SAMPLESETS"][wc.sampleset])),
     output:
         cov=T("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/cov/cov-indexcov.bed.gz"),
     log:
@@ -23,14 +27,13 @@ rule idxcov:
     params:
         dir=lambda wc, output: dirname(output.cov)
     shell:
-        "goleft indexcov --excludepatt '^$' --directory {params.dir} {input} &>{log}"
+        "goleft indexcov --excludepatt '^$' --directory {params.dir} {input.bam} &>{log}"
 
 
 checkpoint idxcov_regions:
     input:
         cov=T("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/cov/cov-indexcov.bed.gz"),
     output:
-        regions=directory(T("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/regions")),
         regionsbed=P("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/regions.bed"),
     params:
         cov_threshold=lambda wc: config["tool_settings"]["varcall"].get("region_coverage_threshold", {}).get(wc.caller, 10000)
@@ -38,7 +41,6 @@ checkpoint idxcov_regions:
         try:
             import os
             import gzip
-            os.makedirs(output.regions, exist_ok=True)
             with gzip.open(input.cov, "rt") as fh, \
                     open(output.regionsbed, "w") as bedfh:
                 hdr = None
@@ -58,8 +60,6 @@ checkpoint idxcov_regions:
                         # over coverage threshold or chrom changed, new region please
                         if region_chr is not None:
                             region_str = f"{region_chr}:{region_start}-{region_stop}"
-                            with open(f"{output.regions}/{region_str}.reg", "w") as ofh:
-                                print(region_str, file=ofh)
                             print(region_chr, region_start - 1, region_stop, region_total_cov, file=bedfh, sep="\t")
                         region_chr = chr
                         region_start = start
@@ -70,10 +70,6 @@ checkpoint idxcov_regions:
                         region_total_cov += total_cov
                         region_stop = stop
                 if region_chr is not None:
-                    # output last region
-                    region_str = f"{region_chr}:{region_start}-{region_stop}"
-                    with open(f"{output.regions}/{region_str}.reg", "w") as ofh:
-                        print(region_str, file=ofh)
                     print(region_chr, region_start - 1, region_stop, region_total_cov, file=bedfh, sep="\t")
         except Exception as exc:
             print(exc)
@@ -115,6 +111,7 @@ rule mpileup:
         minmq=lambda wc: config["tool_settings"]["varcall"]["minmapq"].get(wc.aligner, 5),
         max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("mpileup", 1000),
         minbq=config["tool_settings"]["varcall"]["minbq"],
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     group: "varcall_oneregion"
     resources: **rule_resources(config, "mpileup", time_min=120, mem_gb=4, cores=1)
     conda: "envs/varcall.yml"
@@ -134,7 +131,7 @@ rule mpileup:
         "   --targets '{wildcards.region}'" # might not be needed
         "   --multiallelic-caller"
         "   --prior {params.theta}"
-        "   -O b" # compressed bam
+        "   -O b{params.ziplevel}" # compressed bam
         "   -o {output.bcf}"
         " ) >{log} 2>&1"
 
@@ -161,6 +158,7 @@ rule freebayes:
         minmq=lambda wc: config["tool_settings"]["varcall"]["minmapq"].get(wc.aligner, 5),
         max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("freebayes", 1000),
         minbq=config["tool_settings"]["varcall"]["minbq"],
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     resources: **rule_resources(config, "freebayes", time_min=240, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
     shell:
@@ -178,7 +176,7 @@ rule freebayes:
         "   --fasta-reference {input.ref}"
         "   --bam-list {input.bamlist}"
         " | bcftools view"
-        "   -O b"
+        "   -O b{params.ziplevel}"
         "   -o {output.bcf}"
         " ) >{log} 2>&1"
 
@@ -236,7 +234,7 @@ rule premergevariantidx:
     input:
         T("variants/filter_split/{path}")
     output:
-        T("variants/filter_split/{path}.csi")
+        temp(T("variants/filter_split/{path}.csi"))
     log:
         T("variants/filter_split/{path}.csi.log")
     resources: **rule_resources(config, "variantidx", time_min=720, mem_gb=8, cores=1)
@@ -250,8 +248,14 @@ rule premergevariantidx:
 #######################################################################
 def get_regions(wc):
     """Scan the region directory from the checkpoint, and work out what regions we have"""
-    dir = checkpoints.idxcov_regions.get(aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, caller=wc.caller).output.regions
-    return glob_wildcards(f"{dir}/{{region}}.reg").region
+    bedfile = checkpoints.idxcov_regions.get(aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, caller=wc.caller).output.regionsbed
+    regions = []
+    with open(bedfile) as fh:
+        for line in fh:
+            region_chr, region_start, region_stop, _ = line.rstrip("\n").split("\t")
+            region_start = int(region_start) + 1
+            regions.append(f"{region_chr}:{region_start}-{region_stop}")
+    return regions
 
 rule bcfmerge_fofn:
     input:
@@ -284,13 +288,15 @@ rule bcfmerge:
     group: "bcfmerge"
     resources: **rule_resources(config, "bcfmerge", time_min=1440, mem_gb=12, cores=64)
     conda: "envs/varcall.yml"
+    params:
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
         "( bcftools concat"
         "   --threads {threads}"
         "   --file-list {input.fofn}"
         "   --allow-overlaps"
         "   -o {output.bcf}"
-        "   -O b"
+        "   -O b{params.ziplevel}"
         " ) >{log} 2>&1"
 
 
@@ -322,10 +328,12 @@ rule bcf2vcf:
     log: L("{path}.vcf.gz.log"),
     resources: **rule_resources(config, "bcf2vcf", time_min=720, mem_gb=8, cores=8)
     conda: "envs/varcall.yml"
+    params:
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
         "( bcftools view"
         "   {input.bcf}"
-        "   -O z"
+        "   -O z{params.ziplevel}"
         "   --threads {threads}"
         "   -o {output.vcf}"
         " ) >{log} 2>&1"
