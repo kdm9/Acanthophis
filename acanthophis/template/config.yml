@@ -63,6 +63,7 @@ samplesets:
     mash: true
     kwip: true
     varcall:
+      ploidy: 2
       theta_prior: 0.01
       callers:
         - mpileup
@@ -77,16 +78,14 @@ samplesets:
 
 
 tool_settings:
+  # sets a trade-off between compression time and disk usage. If disk is
+  # limiting, increase, if CPUS expensive, decrease. Default should be 6.
+  ziplevel: 6
   ngm:
     sensitivity: 0.5
   adapterremoval:
     __default__:  # global defaults. modify per qc_type
       adapter_file: "rawdata/adapters.txt"
-      minqual: 30
-      qualenc: 33
-      maxqualval: 45
-    nextera:
-      adapter_file: "rawdata/nextera.txt"
       minqual: 20
       qualenc: 33
       maxqualval: 45

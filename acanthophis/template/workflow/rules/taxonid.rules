@@ -36,7 +36,7 @@ rule kraken_noreads:
         "   --use-names"
         "   --report-minimizer-data"
         "   --report {output.report}"
-        "   --output >(zstd -{params.ziplevel} >{output.outtxt})"
+        "   --output >(zstd -T{threads} -{params.ziplevel} >{output.outtxt})"
         "   {input.reads}"
         "   >{log} 2>&1"
 
@@ -55,7 +55,7 @@ rule kraken_reads:
     resources: **rule_resources(config, "kraken_reads", time_min=90, mem_gb=100, disk_gb=24, cores=4)
     conda: "envs/kraken.yml"
     params:
-        ziplevel=int(config.get("tool_settings", {}).get('ziplevel', 6)) + 2,
+        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
         "kraken2"
         "   --db $(dirname {input.hash})"
@@ -64,9 +64,9 @@ rule kraken_reads:
         "   --use-names"
         "   --report-minimizer-data"
         "   --report {output.report}"
-        "   --classified-out >(gzip >{output.fastq_cl})"
-        "   --unclassified-out >(gzip >{output.fastq_un})"
-        "   --output >(zstd -{params.ziplevel} >{output.outtxt})"
+        "   --classified-out >(gzip -{params.ziplevel} >{output.fastq_cl})"
+        "   --unclassified-out >(gzip -{params.ziplevel} >{output.fastq_un})"
+        "   --output >(zstd -T{threads} -{params.ziplevel} >{output.outtxt})"
         "   {input.reads}"
         "   >{log} 2>&1"
 
@@ -114,10 +114,34 @@ rule kaiju:
         "kaiju"
         "   -t {input.taxon}"
         "   -f {input.index}"
-        "   -o >(zstd -{params.ziplevel} >{output})"
+        "   -o >(zstd -T{threads} -{params.ziplevel} >{output})"
         "   -z {threads}"
         "   -i {input.reads}"
         "   >{log} 2>&1"
+
+
+#######################################################################
+#                               GraftM                                #
+#######################################################################
+
+rule graftm:
+    input:
+        reads=P("reads/samples/{sample}.fastq.gz"),
+        package=lambda wc: R(config["data_paths"]["graftm"][wc.db], keep_local=True),
+    output:
+        directory(P("taxonid/graftm/{db}/{db}~{sample}/")),
+    log: L("taxonid/graftm/{db}/{db}~{sample}.log"),
+    resources: **rule_resources(config, "graftm", time_min=90, mem_gb=32, disk_gb=24, cores=4)
+    conda: "envs/graftm.yml"
+    shell:
+        "graftM graft"
+        "   --interleaved {input.reads}"
+        "   --graftm_package {input.package}"
+        "   --threads {threads}"
+        "   --output_directory {output}"
+        "   --force"
+        "   --no_merge_reads"
+        "   --log {log}"
 
 
 #######################################################################
@@ -145,7 +169,7 @@ rule centrifuge:
         "   --shmem"
         "   --met-file {output.metrics}"
         "   --report-file {output.report}"
-        "   -S >(zstd -{params.ziplevel} >{output.out})"
+        "   -S >(zstd -T{threads} -{params.ziplevel} >{output.out})"
         "   --threads {threads}"
         "   -x {params.idx_prefix}"
         "   -1 {input.r1}"
@@ -159,6 +183,16 @@ rule centrifuge:
 #                               Targets                               #
 #######################################################################
 
+
+rule all_graftm:
+    input:
+        [P(expand("taxonid/graftm/{db}/{db}~{sample}/",
+                  sample=config["SAMPLESETS"][sampleset],
+                  db=config["samplesets"][sampleset].get("graftm", {}).get("packages", []),
+                  ))
+         for sampleset in config["samplesets"]
+         if "graftm" in config["samplesets"][sampleset]
+        ],
 
 rule all_kaiju:
     input:

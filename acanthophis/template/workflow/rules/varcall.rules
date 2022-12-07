@@ -80,11 +80,15 @@ rule bamlist:
         lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
                             aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
     output:
-        temp(T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist")),
+        bamlist=temp(T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist")),
+        fosn=temp(T("variants/raw_split/{aligner}~{ref}~{sampleset}.fosn")),
     run:
         try:
-            with open(output[0], "w") as fh:
+            with open(output.bamlist, "w") as fh:
                 for s in input:
+                    print(s, file=fh)
+            with open(output.fosn, "w") as fh:
+                for s in config["SAMPLESETS"][wildcards.sampleset]:
                     print(s, file=fh)
         except Exception as exc:
             print(exc)
@@ -101,7 +105,6 @@ rule mpileup:
         bai=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
                             aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
-        region=T("variants/regions/{aligner}~{ref}~{sampleset}~mpileup/regions/{region}.reg"),
         bamlist=T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
     output:
         bcf=P("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf"),
@@ -147,14 +150,15 @@ rule freebayes:
         bai=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
                             aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
-        region=T("variants/regions/{aligner}~{ref}~{sampleset}~freebayes/regions/{region}.reg"),
         bamlist=T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
+        fosn=T("variants/raw_split/{aligner}~{ref}~{sampleset}.fosn"),
     output:
         bcf=P("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf"),
     log: L("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
     group: "varcall_oneregion"
     params:
         theta=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("theta_prior", 0.01),
+        ploidy=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("ploidy", 2),
         minmq=lambda wc: config["tool_settings"]["varcall"]["minmapq"].get(wc.aligner, 5),
         max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("freebayes", 1000),
         minbq=config["tool_settings"]["varcall"]["minbq"],
@@ -164,7 +168,8 @@ rule freebayes:
     shell:
         "( freebayes"
         "   --theta {params.theta}"
-        "   --ploidy 2"
+        "   --ploidy {params.ploidy}"
+        "   --genotype-qualities"
         "   --use-best-n-alleles 4"
         "   --min-mapping-quality {params.minmq}"
         "   --min-base-quality {params.minbq}"
@@ -175,6 +180,7 @@ rule freebayes:
         "   --region '{wildcards.region}'"
         "   --fasta-reference {input.ref}"
         "   --bam-list {input.bamlist}"
+        "   --samples {input.fosn}"
         " | bcftools view"
         "   -O b{params.ziplevel}"
         "   -o {output.bcf}"
@@ -208,9 +214,9 @@ rule bcffilter:
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
     output:
         # Not a pipe! can't run all regions separately if this is a pipe into merge
-        bcf=temp(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf")),
+        bcf=temp(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf")),
     log:
-        L("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf.log"),
+        L("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf.log"),
     params:
         filtarg=lambda wc: config["tool_settings"]["varcall"]["filters"][wc.filter].replace('\n', ' ')
     group: "varcall_oneregion"
@@ -243,10 +249,24 @@ rule premergevariantidx:
     shell:
         "bcftools index -f {input}"
 
+
 #######################################################################
 #                              Bcf Merge                              #
 #######################################################################
-def get_regions(wc):
+def batched(iterable, n):
+    """Batch data into lists of length n. The last batch may be shorter.
+    
+    From the itertools docs
+    """
+    from itertools import islice
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError('n must be at least one')
+    it = iter(iterable)
+    while (batch := list(islice(it, n))):
+        yield batch
+
+def get_regions(wc, chunked=False):
     """Scan the region directory from the checkpoint, and work out what regions we have"""
     bedfile = checkpoints.idxcov_regions.get(aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, caller=wc.caller).output.regionsbed
     regions = []
@@ -255,36 +275,47 @@ def get_regions(wc):
             region_chr, region_start, region_stop, _ = line.rstrip("\n").split("\t")
             region_start = int(region_start) + 1
             regions.append(f"{region_chr}:{region_start}-{region_stop}")
+    if chunked:
+        return {f"group{i}": list(group) for i, group in enumerate(batched(regions, 999))}
     return regions
 
-rule bcfmerge_fofn:
+
+rule bcfmerge2group:
     input:
-        bcf=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf"),
+        bcf=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf"),
                     caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
-                    region=get_regions(wc)),
+                    region=get_regions(wc, chunked=True)[wc.group]),
+        bcfi=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf.csi"),
+                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+                    region=get_regions(wc, chunked=True)[wc.group]),
     output:
-        fofn=temp(T("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN")),
+        bcf=T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf"),
+    log:
+        T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf.log"),
     group: "bcfmerge"
-    run:
-        from natsort import natsorted
-        with open(output[0], "w") as fh:
-            for s in natsorted(input):
-                print(s, file=fh)
+    resources: **rule_resources(config, "bcfmerge2group", time_min=1440, mem_gb=12, cores=4)
+    conda: "envs/varcall.yml"
+    params:
+    shell:
+        "( bcftools concat"
+        "   --threads {threads}"
+        "   --allow-overlaps"
+        "   -o {output.bcf}"
+        "   -O b0"
+        "   {input.bcf}"
+        " ) >{log} 2>&1"
+
 
 
 rule bcfmerge:
     input:
-        bcf=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf"),
+        bcf=lambda wc: expand(T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf"),
                     caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
-                    region=get_regions(wc)),
-        bcfi=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}_filtered~{filter}/{region}.bcf.csi"),
-                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
-                    region=get_regions(wc)),
-        fofn=T("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.INPUT_FOFN"),
+                    group=get_regions(wc, chunked=True)),
     output:
-        bcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf"),
+        vcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz"),
     log:
-        L("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.bcf.log"),
+        L("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz.log"),
     group: "bcfmerge"
     resources: **rule_resources(config, "bcfmerge", time_min=1440, mem_gb=12, cores=64)
     conda: "envs/varcall.yml"
@@ -293,57 +324,67 @@ rule bcfmerge:
     shell:
         "( bcftools concat"
         "   --threads {threads}"
-        "   --file-list {input.fofn}"
         "   --allow-overlaps"
-        "   -o {output.bcf}"
-        "   -O b{params.ziplevel}"
+        "   -o {output.vcf}"
+        "   -O z{params.ziplevel}"
+        "   {input.bcf}"
         " ) >{log} 2>&1"
 
 
 #######################################################################
 #                              BCF stats                              #
 #######################################################################
-rule bcfstats:
+rule vcfstats:
     input:
-        P("variants/{path}.bcf")
+        P("variants/{path}.vcf.gz")
     output:
-        P("variants/{path}.bcf.stats")
-    log: L("variants/{path}.bcf.stats.log")
+        P("variants/{path}.vcf.gz.stats")
+    log: L("variants/{path}.vcf.gz.stats.log")
     conda: "envs/varcall.yml"
-    resources: **rule_resources(config, "bcfstats", time_min=120, mem_gb=4, cores=4)
+    resources: **rule_resources(config, "vcfstats", time_min=120, mem_gb=4, cores=4)
     shell:
         "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
-
-
 
 
 #######################################################################
 #                       Misc variant processing                       #
 #######################################################################
-rule bcf2vcf:
+rule vcf2bcf:
     input:
-        bcf=P("{path}.bcf"),
-    output:
         vcf=P("{path}.vcf.gz"),
+    output:
+        bcf=P("{path}.bcf"),
     log: L("{path}.vcf.gz.log"),
-    resources: **rule_resources(config, "bcf2vcf", time_min=720, mem_gb=8, cores=8)
+    resources: **rule_resources(config, "vcf2bcf", time_min=720, mem_gb=8, cores=8)
     conda: "envs/varcall.yml"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
         "( bcftools view"
-        "   {input.bcf}"
-        "   -O z{params.ziplevel}"
+        "   {input.vcf}"
+        "   -O b{params.ziplevel}"
         "   --threads {threads}"
-        "   -o {output.vcf}"
+        "   -o {output.bcf}"
         " ) >{log} 2>&1"
+
+
+rule finalvarianttbi:
+    input:
+        P("variants/final/{path}.vcf.gz")
+    output:
+        P("variants/final/{path}.vcf.gz.tbi"),
+    resources: **rule_resources(config, "finalvarianttbi", time_min=720, mem_gb=8, cores=1)
+    conda: "envs/varcall.yml"
+    shell:
+        "bcftools index -t -f {input}"
+
 
 rule finalvariantidx:
     input:
         P("variants/final/{path}")
     output:
         P("variants/final/{path}.csi")
-    resources: **rule_resources(config, "variantidx", time_min=720, mem_gb=8, cores=1)
+    resources: **rule_resources(config, "finalvariantidx", time_min=720, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
     shell:
         "bcftools index -f {input}"
@@ -355,7 +396,8 @@ rule finalvariantidx:
 rule all_filtered_variants:
     input:
         [P(expand("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
-               ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "bcf.stats"],
+               ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "vcf.gz.stats"] if config["tool_settings"].get("varcall", {}).get("make_bcfs", False)
+                else ["vcf.gz", "vcf.gz.csi", "vcf.gz.stats"],
                caller=config["samplesets"][sampleset]["varcall"]["callers"],
                aligner=config["samplesets"][sampleset]["varcall"]["aligners"],
                ref=config["samplesets"][sampleset]["varcall"]["refs"],
