@@ -29,7 +29,7 @@ snakemake -j 16 -p --use-conda --conda-frontend mamba --ri
 snakemake --profile ./ebio-cluster/
 ```
 
-Until I write the documentation, please see [the example workflow](example/).
+Until I write the documentation, please see [the example workflow](acanthophis/template/).
 It should contain a fully working example workflow.
 
 
