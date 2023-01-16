@@ -7,4 +7,4 @@ keep-going: true
 latency-wait: 60
 restart-times: 2
 printshellcmds: true
-configfiles: "profiles/local/resources.yml"
+configfiles: "workflow/profiles/local/resources.yml"

@@ -3,7 +3,7 @@
 #######################################################################
 resources:
   # set to true to see all the resources for each rule
-  __DEBUG__: true
+  __DEBUG__: false
   __default__:
     # A default set of resources. Jobs not configured individually will inherit these values.
     cores: 1
@@ -26,14 +26,40 @@ resources:
   # snakemake rules files. The keys of this should be individual rule names as passed to
   # configure_resources() in the snakemake rules files. Run snakemake -np with the
   # __DEBUG__ variable above set to true to see a full list of the defaults.
+  qcreads_paired_il:
+    time_min: 30
+    localrule: 0
+    mem_gb: 2
+  qcreads_paired_r12:
+    time_min: 30
+    localrule: 0
+    mem_gb: 2
+  qcreads_se:
+    time_min: 30
+    localrule: 0
+    mem_gb: 2
+  merge_qcd_reads:
+    time_min: 90
+    localrule: 0
+  fastqc_preqc:
+    localrule: 0
+    time_min: 30
+    mem_gb: 8
+  fastqc_postqc:
+    localrule: 0
+    time_min: 30
+    mem_gb: 8
   bwamem:
     localrule: 0
-    mem_gb: 24
+    mem_gb: 48
+    cores: 16
   ngmap:
     localrule: 0
     mem_gb: 16
   bam_merge_markdups_sort:
     localrule: 0
+    cores: 8
+    mem_gb: 16
   mergebam_set:
     localrule: 0
   qualimap_sample:
@@ -47,17 +73,17 @@ resources:
     localrule: 0
   kraken_noreads:
     # these jobs are sized to fit the nt/nr databases
-    cores: 24
-    mem_gb: 240
-    time_min: 60
+    cores: 16
+    mem_gb: 100
+    time_min: 300
     localrule: 0
   centrifuge:
-    cores: 24
+    cores: 16
     mem_gb: 320
     time_min: 60
     localrule: 0
   kaiju:
-    cores: 24
+    cores: 16
     mem_gb: 250
     time_min: 60
     localrule: 0
@@ -68,8 +94,19 @@ resources:
     localrule: 0
   bcfmerge:
     localrule: 0
-    cores: 8
+    cores: 48
+    mem_gb: 64
+    time_min: 10080
+  bcfmerge2group:
+    localrule: 0
+    cores: 48
     mem_gb: 64
     time_min: 10080
   bcf2vcf:
     localrule: 0
+    cores: 24
+    time_min: 60
+  vcfstats:
+    localrule: 0
+    cores: 4
+    time_min: 120

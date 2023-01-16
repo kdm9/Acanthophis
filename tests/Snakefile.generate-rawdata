@@ -55,11 +55,11 @@ rule all:
         expand("rawdata/genomes/{sample}.fa.fai", sample=SAMPLES),
         expand("rawdata/reads/{run}/{lib}_{R}.fastq.gz", run=RUNS, lib=LIBS, R=["R1", "R2"]),
         "rawdata/rl2s.tsv",
-        "rawdata/kraken/Viral",
-        "rawdata/kaiju/Viral/kaiju_db_viruses.fmi",
-        "rawdata/kaiju/Viral/nodes.dmp",
-        "rawdata/kaiju/Viral/names.dmp",
-        "rawdata/centrifuge/lambda",
+        #"rawdata/kraken/Viral",
+        #"rawdata/kaiju/Viral/kaiju_db_viruses.fmi",
+        #"rawdata/kaiju/Viral/nodes.dmp",
+        #"rawdata/kaiju/Viral/names.dmp",
+        #"rawdata/centrifuge/lambda",
 
 rule centrifuge:
     input:
@@ -110,6 +110,8 @@ rule metadata:
     output:
         rl2s="rawdata/rl2s.tsv",
     run:
+        with open("rawdata/nobackup", "w") as f:
+            print("don't back this up", file=f)
         with open(output.rl2s, "w") as file:
             print("run", "library", "sample", "include", "read1_uri", "read2_uri", "interleaved_uri", "single_uri", "qc_type", sep="\t", file=file)
             for (R, L), S in RUNLIB2SAMP.items():

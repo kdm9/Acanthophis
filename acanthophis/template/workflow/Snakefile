@@ -11,6 +11,7 @@ include: "rules/denovo.rules"
 include: "rules/varcall.rules"
 include: "rules/taxonid.rules"
 include: "rules/metagenome.rules"
+include: "rules/sampleset.rules"
 
 rule all:
     input:
