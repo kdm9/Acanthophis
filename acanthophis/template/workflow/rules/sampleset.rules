@@ -1,11 +1,22 @@
 
+def PL(fns):
+    ret = P(fns)
+    if isinstance(ret, str):
+        ret = [ret, ]
+    return ret
+def TL(fns):
+    ret = T(fns)
+    if isinstance(ret, str):
+        ret = [ret, ]
+    return ret
+
 def all_sampleset_files(wc):
     everything = set()
     print(f"{wc.sampleset}:")
     if config["samplesets"][wc.sampleset].get("varcall", {}).get("snpeff", False):
         print("  - snpeff")
         everything.update(
-                P(expand("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz",
+                PL(expand("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz",
                  caller=config["samplesets"][wc.sampleset]["varcall"]["callers"],
                  aligner=config["samplesets"][wc.sampleset]["varcall"]["aligners"],
                  ref=config["samplesets"][wc.sampleset]["varcall"]["refs"],
@@ -16,7 +27,7 @@ def all_sampleset_files(wc):
     if "varcall" in config["samplesets"][wc.sampleset]:
         print("  - varcall")
         everything.update(
-               P(expand("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
+               PL(expand("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
                       ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "vcf.gz.stats"] if config["tool_settings"].get("varcall", {}).get("make_bcfs", False)
                        else ["vcf.gz", "vcf.gz.csi", "vcf.gz.stats"],
                       caller=config["samplesets"][wc.sampleset]["varcall"]["callers"],
@@ -29,7 +40,7 @@ def all_sampleset_files(wc):
     if "graftm" in config["samplesets"][wc.sampleset]:
         print("  - graftm")
         everything.update(
-            P(expand("taxonid/graftm/{db}/{db}~{sample}/",
+            PL(expand("taxonid/graftm/{db}/{db}~{sample}/",
                      sample=config["SAMPLESETS"][wc.sampleset],
                      db=config["samplesets"][wc.sampleset].get("graftm", {}).get("packages", []),
                      ))
@@ -38,7 +49,7 @@ def all_sampleset_files(wc):
     if "kaiju" in config["samplesets"][wc.sampleset]:
         print("  - kaiju")
         everything.update(
-            P(expand("taxonid/kaiju/{db}~{sample}.txt.zst",
+            PL(expand("taxonid/kaiju/{db}~{sample}.txt.zst",
                      sample=config["SAMPLESETS"][wc.sampleset],
                      db=config["samplesets"][wc.sampleset].get("kaiju", {}).get("dbs", []),
                      ))
@@ -47,15 +58,15 @@ def all_sampleset_files(wc):
     if "kraken" in config["samplesets"][wc.sampleset]:
         print("  - kraken_multiqc")
         everything.update(
-            [P(f"stats/multiqc/kraken_{db}~{wc.sampleset}_multiqc.html")
+            PL([f"stats/multiqc/kraken_{db}~{wc.sampleset}_multiqc.html"
                for db in config["samplesets"][wc.sampleset].get("kraken", {}).get("dbs", [])
-            ],
+            ])
         )
 
     if "kraken" in config["samplesets"][wc.sampleset]:
         print("  - kraken")
         everything.update(
-            P(expand("taxonid/kraken/{db}~{sample}_report.txt",
+            PL(expand("taxonid/kraken/{db}~{sample}_report.txt",
                      sample=config["SAMPLESETS"][wc.sampleset],
                      db=config["samplesets"][wc.sampleset].get("kraken", {}).get("dbs", []),
                      ))
@@ -64,7 +75,7 @@ def all_sampleset_files(wc):
     if config["samplesets"][wc.sampleset].get("kraken", {}).get("reads", False):
         print("  - kraken_reads")
         everything.update(
-            P(expand("taxonid/kraken/{db}~{sample}_unclassified.fastq.gz",
+            PL(expand("taxonid/kraken/{db}~{sample}_unclassified.fastq.gz",
                      sample=config["SAMPLESETS"][wc.sampleset],
                      db=config["samplesets"][wc.sampleset].get("kraken", {}).get("dbs", []),
                      ))
@@ -73,7 +84,7 @@ def all_sampleset_files(wc):
     if "centrifuge" in config["samplesets"][wc.sampleset]:
         print("  - centrifuge")
         everything.update(
-            P(expand("taxonid/centrifuge/{db}~{sample}.txt.zst",
+            PL(expand("taxonid/centrifuge/{db}~{sample}.txt.zst",
                      sample=config["SAMPLESETS"][wc.sampleset],
                      db=config["samplesets"][wc.sampleset].get("centrifuge", {}).get("dbs", []),
                      ))
@@ -82,28 +93,48 @@ def all_sampleset_files(wc):
     if config["samplesets"][wc.sampleset].get("persample_reads", False):
         print("  - sample_reads")
         everything.update(
-            P(["reads/samples/{sample}.fastq.gz".format(sample=sample)
-              for sample in config["SAMPLESETS"][wc.sampleset]
+            PL([f"reads/samples/{sample}_{r}.fastq.gz"
+                for r in ["R1", "R2", "se"]
+                for sample in config["SAMPLESETS"][wc.sampleset]
             ])
         )
     
     if config["samplesets"][wc.sampleset].get("fastqc", False):
         print("  - fastqc")
         everything.update(
-            P([f"stats/fastqc/{prepost}/{run}~{lib}_fastqc.zip"
+            PL([f"stats/fastqc/{prepost}/{run}~{lib}_fastqc.zip"
               for prepost in ["preqc", "postqc"]
               for samp in config["SAMPLESETS"][wc.sampleset]
               for run, lib in config["SAMP2RUNLIB"][samp]])
         )
         everything.update(
-            P([f"stats/multiqc/reads-{prepost}~{wc.sampleset}_multiqc.html"
+            PL([f"stats/multiqc/reads-{prepost}~{wc.sampleset}_multiqc.html"
               for prepost in ["preqc", "postqc"]])
         )
+
+    if "diamondx" in config["samplesets"][wc.sampleset]:
+        print("  - diamondx")
+        everything.update(
+            PL([f"metagenome/diamondx/{type}/{sample}~{db}.tsv.xz"
+               for sample in config["SAMPLESETS"][wc.sampleset]
+               for type in config["samplesets"][wc.sampleset].get("diamondx", {}).get("types", [])
+               for db in config["samplesets"][wc.sampleset].get("diamondx", {}).get("dbs", [])
+               ]),
+        )
+
+    if "humann" in config["samplesets"][wc.sampleset]:
+        print("  - humann")
+        everything.update(PL([
+           f"metagenome/humann/{type}/{sample}/{sample}_{outtype}.tsv"
+           for outtype in ["genefamilies", "pathabundance", "pathcoverage"]
+           for sample in config["SAMPLESETS"][wc.sampleset]
+           for type in config["samplesets"][wc.sampleset].get("humann", {}).get("types", [])
+           ]))
 
     if "megahit" in config["samplesets"][wc.sampleset]:
         print("  - megahit")
         everything.update(
-            P([f"metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa"
+            PL([f"metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa"
                for sample in config["SAMPLESETS"][wc.sampleset]
                for aligner in config["samplesets"][wc.sampleset].get("megahit", {}).get("aligners", [])
                for ref in config["samplesets"][wc.sampleset].get("megahit", {}).get("references", [])
@@ -113,61 +144,61 @@ def all_sampleset_files(wc):
     if config["samplesets"][wc.sampleset].get("kwip", False):
         print("  - kwip")
         everything.update(
-            [P(expand("kwip/{set}~k{ksize}~s{sketchsize}.dist",
+            PL(expand("kwip/{set}~k{ksize}~s{sketchsize}.dist",
                    ksize=config["tool_settings"]["kwip"]["kmer_size"],
                    sketchsize=config["tool_settings"]["kwip"]["sketch_size"],
-                   set=wc.sampleset))]
+                   set=wc.sampleset))
         )
 
     if config["samplesets"][wc.sampleset].get("mash", False):
         print("  - mash")
         everything.update(
-            [P(expand("mash/{set}~k{ksize}~s{sketchsize}.dist",
+            PL(expand("mash/{set}~k{ksize}~s{sketchsize}.dist",
                    ksize=config["tool_settings"]["mash"]["kmer_size"],
                    sketchsize=config["tool_settings"]["mash"]["sketch_size"],
-                   set=wc.sampleset))]
+                   set=wc.sampleset))
         )
 
     if config["samplesets"][wc.sampleset].get("align", {}):
         print("  - align")
         everything.update(
-            [P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+            TL(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
                      ref=config["samplesets"][wc.sampleset].get("align", {}).get("references", []),
                      aligner=config["samplesets"][wc.sampleset].get("align", {}).get("aligners", []),
-                     sample=config["SAMPLESETS"][wc.sampleset]))]
+                     sample=config["SAMPLESETS"][wc.sampleset]))
         )
 
     if config["samplesets"][wc.sampleset].get("align", {}).get("stats", False):
         print("  - bamstats")
         everything.update(
-            [P(expand("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.html",
+            PL(expand("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.html",
                       ref=config["samplesets"][wc.sampleset].get("align", {}).get("references", []),
                       aligner=config["samplesets"][wc.sampleset].get("align", {}).get("aligners", []),
-                      sampleset=wc.sampleset))]
+                      sampleset=wc.sampleset))
         )
         everything.update(
-            [P(expand("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.html",
+            PL(expand("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.html",
                        ref=config["samplesets"][wc.sampleset].get("align", {}).get("references", []),
                        aligner=config["samplesets"][wc.sampleset].get("align", {}).get("aligners", []),
-                       sampleset=wc.sampleset))]
+                       sampleset=wc.sampleset))
         )
 
     if config["samplesets"][wc.sampleset].get("align", {}).get("unmapped_reads", False):
         print("  - unmapped_reads")
         everything.update(
-            [P(expand("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz",
+            PL(expand("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz",
                      ref=config["samplesets"][wc.sampleset].get("align", {}).get("references", []),
                      aligner=config["samplesets"][wc.sampleset].get("align", {}).get("aligners", []),
-                     sample=config["SAMPLESETS"][wc.sampleset]))]
+                     sample=config["SAMPLESETS"][wc.sampleset]))
         )
 
     if config["samplesets"][wc.sampleset].get("align", {}).get("sampleset_bams", False):
         print("  - sampleset_bams")
         everything.update(
-            [P(expand("alignments/sets/{aligner}~{ref}~{sampleset}.bam",
+            PL(expand("alignments/sets/{aligner}~{ref}~{sampleset}.bam",
                      ref=config["samplesets"][wc.sampleset].get("align", {}).get("references", []),
                      aligner=config["samplesets"][wc.sampleset].get("align", {}).get("aligners", []),
-                     sampleset=wc.sampleset))]
+                     sampleset=wc.sampleset))
         )
     return everything
 

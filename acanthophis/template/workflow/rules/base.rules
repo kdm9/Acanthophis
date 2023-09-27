@@ -157,8 +157,8 @@ def unit_normalise(resdict):
         if res == "disk_gb":
             res = "disk_mb"
             val = int(val) * 1024
-        if res == "time_hour":
-            res = "time_min"
+        if res == "runtime_hour":
+            res = "runtime"
             val = int(val) * 60
         ret[res] = val
     return ret
@@ -184,7 +184,6 @@ def rule_resources(config, rule, **defaults):
     for res, val in values.items():
         maxval = maxes.get(res, inf)
         if val > maxval:
-            print(f"WARNING {rule}: reducing {res} from {val} to {maxval}")
             val = maxval
         # Also broken TODO
         # if isinstance(val, str):
@@ -208,7 +207,7 @@ def postprocess_rules(workflow, config):
         "cores": 1,
         "disk_mb": 1000,
         "mem_mb": 1000,
-        "time_min": 120,
+        "runtime": 120,
         "localrule": 0,
     })
     for rule_obj in workflow.rules:
@@ -318,12 +317,15 @@ def P(paths, keep_local=False):
 
 
 
-shell.prefix = "set -euo pipefail; ulimit -n $(ulimit -n -H) ; "
+shell.prefix = "set -exuo pipefail; ulimit -s $(ulimit -s -H); ulimit -n $(ulimit -n -H) ; "
 
 wildcard_constraints:
-    run="[^/]+",
-    lib="[^/]+",
-    aligner="[^/]+",
-    sample="[^/]+",
-    ref="[^/]+",
-    type="[^/]+",
+    run="[^/~]+",
+    lib="[^/~]+",
+    aligner="[^/~]+",
+    sample="[^/~]+",
+    ref="[^/~]+",
+    type="[^/~]+",
+
+resource_scopes:
+    runtime="local",

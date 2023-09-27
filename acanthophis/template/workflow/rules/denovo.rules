@@ -11,14 +11,14 @@
 
 rule countsketch:
     input:
-        P("reads/samples/{sample}.fastq.gz"),
+        T("reads/samples/{sample}.fastq.gz"),
     output:
         ct=temp(T("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz")),
         info=P("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info"),
         tsv=P("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.info.tsv"),
     log:
         L("kwip/sketch/k{ksize}-s{sketchsize}/{sample}.ct.gz.log"),
-    resources: **rule_resources(config, "countsketch", time_min=60, mem_mb=16000, cores=1)
+    resources: **rule_resources(config, "countsketch", runtime=60, mem_gb=16, cores=1)
     conda: "envs/kwip.yml"
     shell:
         "(load-into-counting.py"
@@ -45,7 +45,7 @@ rule kwipdist:
         d=P("kwip/{set}~k{ksize}~s{sketchsize}.dist"),
         k=P("kwip/{set}~k{ksize}~s{sketchsize}.kern"),
     log: L("kwip/{set}~k{ksize}~s{sketchsize}.dist.log"),
-    resources: **rule_resources(config, "kwipdist", time_min=2880, mem_mb=15000, cores=8)
+    resources: **rule_resources(config, "kwipdist", runtime=2880, mem_gb=16, cores=8)
     conda: "envs/kwip.yml"
     shell:
         "kwip"
@@ -58,12 +58,12 @@ rule kwipdist:
 
 rule mash_sketch_set:
     input:
-        lambda wc: P(expand("reads/samples/{sample}.fastq.gz",
+        lambda wc: T(expand("reads/samples/{sample}.fastq.gz",
                           sample=config["SAMPLESETS"][wc.set])),
     output:
         temp(T("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh"))
     log: L("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh.log")
-    resources: **rule_resources(config, "mash_sketch_set", time_min=2880, mem_gb=16, cores=48)
+    resources: **rule_resources(config, "mash_sketch_set", runtime=2880, mem_gb=16, cores=48)
     conda: "envs/mash.yml"
     shell:
         " mash sketch"
@@ -82,7 +82,7 @@ rule mash_dist_set:
         P("mash/{set}~k{ksize}~s{sketchsize}.dist")
     log:
         L("mash/{set}~k{ksize}~s{sketchsize}.dist.log")
-    resources: **rule_resources(config, "mash_dist_set", time_min=2880, mem_gb=16, cores=48)
+    resources: **rule_resources(config, "mash_dist_set", runtime=2880, mem_gb=16, cores=48)
     conda: "envs/mash.yml"
     shell:
         "mash dist"

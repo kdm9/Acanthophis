@@ -20,7 +20,7 @@ rule snpeff:
         html=P("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.html"),
     log:
         L("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.log"),
-    resources: **rule_resources(config, "snpeff", time_min=1440, mem_gb=1, cores=1)
+    resources: **rule_resources(config, "snpeff", runtime=1440, mem_gb=1, cores=1)
     conda: "envs/snpeff.yml"
     shell:
         "( snpEff ann"

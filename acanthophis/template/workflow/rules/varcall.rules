@@ -13,16 +13,17 @@
 # TODO: maybe goleft indexcov needs a FOFN?
 rule idxcov:
     input:
-        bam=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+        bam=lambda wc: T(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
                                 aligner=wc.aligner, ref=wc.ref,
                                 sample=config["SAMPLESETS"][wc.sampleset])),
-        bai=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
+        bai=lambda wc: T(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
                                 aligner=wc.aligner, ref=wc.ref,
                                 sample=config["SAMPLESETS"][wc.sampleset])),
     output:
         cov=T("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/cov/cov-indexcov.bed.gz"),
     log:
         L("variants/regions/{aligner}~{ref}~{sampleset}~{caller}/cov/cov-indexcov.log"),
+    resources: **rule_resources(config, "idxcov", runtime=60, mem_gb=16, cores=2)
     conda: "envs/idxcov.yml"
     params:
         dir=lambda wc, output: dirname(output.cov)
@@ -70,22 +71,26 @@ checkpoint idxcov_regions:
                         region_total_cov += total_cov
                         region_stop = stop
                 if region_chr is not None:
+                    # output last region
                     print(region_chr, region_start - 1, region_stop, region_total_cov, file=bedfh, sep="\t")
         except Exception as exc:
             print(exc)
 
 
+localrules: bamlist
 rule bamlist:
     input:
-        lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+        bam=lambda wc: T(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
+        bai=lambda wc: T(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
                             aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
     output:
-        bamlist=temp(T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist")),
-        fosn=temp(T("variants/raw_split/{aligner}~{ref}~{sampleset}.fosn")),
+        bamlist=P("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
+        fosn=P("variants/raw_split/{aligner}~{ref}~{sampleset}.fosn"),
     run:
         try:
             with open(output.bamlist, "w") as fh:
-                for s in input:
+                for s in input.bam:
                     print(s, file=fh)
             with open(output.fosn, "w") as fh:
                 for s in config["SAMPLESETS"][wildcards.sampleset]:
@@ -100,14 +105,10 @@ rule bamlist:
 
 rule mpileup:
     input:
-        bam=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
-                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
-        bai=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
-                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
-        bamlist=T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
+        bamlist=P("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
     output:
-        bcf=P("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf"),
+        bcf=T("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf"),
     log: L("variants/raw_split/mpileup~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
     params:
         theta=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("theta_prior", 0.01),
@@ -115,9 +116,9 @@ rule mpileup:
         max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("mpileup", 1000),
         minbq=config["tool_settings"]["varcall"]["minbq"],
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
-    group: "varcall_oneregion"
-    resources: **rule_resources(config, "mpileup", time_min=120, mem_gb=4, cores=1)
+    resources: **rule_resources(config, "mpileup", runtime=120, mem_gb=4, cores=1)
     conda: "envs/varcall.yml"
+    group: "varcall_oneregion"
     shell:
         "( bcftools mpileup"
         "   --redo-BAQ"
@@ -134,7 +135,7 @@ rule mpileup:
         "   --targets '{wildcards.region}'" # might not be needed
         "   --multiallelic-caller"
         "   --prior {params.theta}"
-        "   -O b{params.ziplevel}" # compressed bam
+        "   -O b{params.ziplevel}" # compressed bcf
         "   -o {output.bcf}"
         " ) >{log} 2>&1"
 
@@ -145,15 +146,11 @@ rule mpileup:
 #######################################################################
 rule freebayes:
     input:
-        bam=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
-                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
-        bai=lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam.bai",
-                            aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
-        bamlist=T("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
-        fosn=T("variants/raw_split/{aligner}~{ref}~{sampleset}.fosn"),
+        bamlist=P("variants/raw_split/{aligner}~{ref}~{sampleset}.bamlist"),
+        fosn=P("variants/raw_split/{aligner}~{ref}~{sampleset}.fosn"),
     output:
-        bcf=P("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf"),
+        bcf=T("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf"),
     log: L("variants/raw_split/freebayes~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
     group: "varcall_oneregion"
     params:
@@ -163,7 +160,7 @@ rule freebayes:
         max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("freebayes", 1000),
         minbq=config["tool_settings"]["varcall"]["minbq"],
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
-    resources: **rule_resources(config, "freebayes", time_min=240, mem_gb=8, cores=1)
+    resources: **rule_resources(config, "freebayes", runtime=240, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
     shell:
         "( freebayes"
@@ -187,30 +184,12 @@ rule freebayes:
         " ) >{log} 2>&1"
 
 
-rule bcfnorm:
-    input:
-        bcf=P("variants/raw_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
-        ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"]),
-    output:
-        # Not a pipe! can't run multiple filters if a pipe
-        bcf=temp(T("variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf")),
-    log: L("variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf.log"),
-    group: "varcall_oneregion"
-    resources: **rule_resources(config, "bcfnorm", time_min=120, mem_gb=4, cores=1)
-    conda: "envs/varcall.yml"
-    shell:
-        "( bcftools norm"
-        "   --fasta-ref {input.ref}"
-        "   --multiallelics -snps"  # Split multi-alleics to filter each allele separately
-        "   -O u"
-        "   -o {output.bcf}"
-        "   {input.bcf}"
-        " ) >{log} 2>&1"
-
-
+#######################################################################
+#                           Bcftools filter                           #
+#######################################################################
 rule bcffilter:
     input:
-        bcf=T("variants/norm_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
+        bcf=T("variants/raw_split/{caller}~{aligner}~{ref}~{sampleset}/{region}.bcf"),
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
     output:
         # Not a pipe! can't run all regions separately if this is a pipe into merge
@@ -220,13 +199,18 @@ rule bcffilter:
     params:
         filtarg=lambda wc: config["tool_settings"]["varcall"]["filters"][wc.filter].replace('\n', ' ')
     group: "varcall_oneregion"
-    resources: **rule_resources(config, "bcffilter", time_min=120, mem_gb=4, cores=1)
+    resources: **rule_resources(config, "bcffilter", runtime=120, mem_gb=4, cores=1)
     conda: "envs/varcall.yml"
     shell:
-        "( bcftools view"
-        "   {params.filtarg}"
+        "( bcftools norm"
+        "   --fasta-ref {input.ref}"
+        "   --multiallelics -snps"  # Split multi-alleics to filter each allele separately
         "   -O u"
         "   {input.bcf}"
+        " |  bcftools view"
+        "   {params.filtarg}"
+        "   -O u"
+        "   /dev/stdin"
         " | bcftools norm" # We normalise here to re-join multi-allelic sites, after filtering with multi-allelics split
         "   --fasta-ref {input.ref}"
         "   --do-not-normalize"
@@ -243,7 +227,7 @@ rule premergevariantidx:
         temp(T("variants/filter_split/{path}.csi"))
     log:
         T("variants/filter_split/{path}.csi.log")
-    resources: **rule_resources(config, "variantidx", time_min=720, mem_gb=8, cores=1)
+    resources: **rule_resources(config, "variantidx", runtime=720, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
     group: "varcall_oneregion"
     shell:
@@ -266,17 +250,20 @@ def batched(iterable, n):
     while (batch := list(islice(it, n))):
         yield batch
 
+
 def get_regions(wc, chunked=False):
     """Scan the region directory from the checkpoint, and work out what regions we have"""
-    bedfile = checkpoints.idxcov_regions.get(aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, caller=wc.caller).output.regionsbed
+    regbed = config["data_paths"]["references"][wc.ref].get("region_beds", {}).get(wc.caller)
+    if regbed is None:
+        regbed = checkpoints.idxcov_regions.get(aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, caller=wc.caller).output.regionsbed
     regions = []
-    with open(bedfile) as fh:
+    with open(regbed) as fh:
         for line in fh:
             region_chr, region_start, region_stop, _ = line.rstrip("\n").split("\t")
             region_start = int(region_start) + 1
             regions.append(f"{region_chr}:{region_start}-{region_stop}")
     if chunked:
-        return {f"group{i}": list(group) for i, group in enumerate(batched(regions, 999))}
+        return {f"group{i}": list(group) for i, group in enumerate(batched(regions, 100))}
     return regions
 
 
@@ -288,23 +275,25 @@ rule bcfmerge2group:
         bcfi=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf.csi"),
                     caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
                     region=get_regions(wc, chunked=True)[wc.group]),
+        regbed=lambda wc: config["samplesets"][wc.sampleset].get("varcall", {}).get("region_beds", {}).get(wc.ref, {}).get(wc.caller, [])
     output:
         bcf=T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf"),
+        bcfi=T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf.csi"),
     log:
         T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf.log"),
-    group: "bcfmerge"
-    resources: **rule_resources(config, "bcfmerge2group", time_min=1440, mem_gb=12, cores=4)
+    resources: **rule_resources(config, "bcfmerge2group", runtime=1440, mem_gb=12, cores=4)
     conda: "envs/varcall.yml"
     params:
     shell:
         "( bcftools concat"
         "   --threads {threads}"
         "   --allow-overlaps"
+        "   --rm-dups all"
         "   -o {output.bcf}"
-        "   -O b0"
         "   {input.bcf}"
+        " && bcftools index "
+        "   {output.bcf}"
         " ) >{log} 2>&1"
-
 
 
 rule bcfmerge:
@@ -312,12 +301,12 @@ rule bcfmerge:
         bcf=lambda wc: expand(T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf"),
                     caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
                     group=get_regions(wc, chunked=True)),
+        regbed=lambda wc: config["samplesets"][wc.sampleset].get("varcall", {}).get("region_beds", {}).get(wc.ref, {}).get(wc.caller, [])
     output:
         vcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz"),
     log:
         L("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz.log"),
-    group: "bcfmerge"
-    resources: **rule_resources(config, "bcfmerge", time_min=1440, mem_gb=12, cores=64)
+    resources: **rule_resources(config, "bcfmerge", runtime=1440, mem_gb=12, cores=64)
     conda: "envs/varcall.yml"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
@@ -341,7 +330,7 @@ rule vcfstats:
         P("variants/{path}.vcf.gz.stats")
     log: L("variants/{path}.vcf.gz.stats.log")
     conda: "envs/varcall.yml"
-    resources: **rule_resources(config, "vcfstats", time_min=120, mem_gb=4, cores=4)
+    resources: **rule_resources(config, "vcfstats", runtime=720, mem_gb=4, cores=4)
     shell:
         "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
 
@@ -351,11 +340,11 @@ rule vcfstats:
 #######################################################################
 rule vcf2bcf:
     input:
-        vcf=P("{path}.vcf.gz"),
+        vcf=P("variants/final/{path}.vcf.gz"),
     output:
-        bcf=P("{path}.bcf"),
+        bcf=P("variants/final/{path}.bcf"),
     log: L("{path}.vcf.gz.log"),
-    resources: **rule_resources(config, "vcf2bcf", time_min=720, mem_gb=8, cores=8)
+    resources: **rule_resources(config, "vcf2bcf", runtime=720, mem_gb=8, cores=8)
     conda: "envs/varcall.yml"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
@@ -373,7 +362,7 @@ rule finalvarianttbi:
         P("variants/final/{path}.vcf.gz")
     output:
         P("variants/final/{path}.vcf.gz.tbi"),
-    resources: **rule_resources(config, "finalvarianttbi", time_min=720, mem_gb=8, cores=1)
+    resources: **rule_resources(config, "finalvarianttbi", runtime=720, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
     shell:
         "bcftools index -t -f {input}"
@@ -384,7 +373,7 @@ rule finalvariantidx:
         P("variants/final/{path}")
     output:
         P("variants/final/{path}.csi")
-    resources: **rule_resources(config, "finalvariantidx", time_min=720, mem_gb=8, cores=1)
+    resources: **rule_resources(config, "finalvariantidx", runtime=720, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
     shell:
         "bcftools index -f {input}"

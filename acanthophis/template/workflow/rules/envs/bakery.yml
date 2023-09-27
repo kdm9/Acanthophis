@@ -2,6 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - kraken2
-  - bracken
-  - zstd
+  - humann=3

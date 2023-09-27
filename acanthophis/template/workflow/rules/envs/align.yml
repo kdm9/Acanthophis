@@ -5,4 +5,4 @@ channels:
 dependencies:
   - bwa
   - nextgenmap
-  - samtools
+  - samtools>=1.14

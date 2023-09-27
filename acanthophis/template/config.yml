@@ -2,12 +2,19 @@
 #                             Data Paths                              #
 #######################################################################
 data_paths:
+  # Metadata locations.
   metadata:
+    # This file maps the FASTQ files associated with a run of a library to a
+    # samplename, and to any other relevant metadata.
     runlib2samp_file: "rawdata/rl2s.tsv"
+    # This is a shell glob pattern defining the text files containing lists of
+    # samplenames per sample set.
     setfile_glob: "rawdata/samplesets/*.txt"
   references:
     lambda:
       fasta: "rawdata/reference/genome.fa"
+
+  # Taxon profiling databases
   kraken:
     Viral: "rawdata/kraken/Viral"
   kaiju:
@@ -27,26 +34,35 @@ data_paths:
 # Samplesets are configured as files of sample names (see setfile_glob above). 
 
 samplesets:
+
   all_samples:
-    megahit:
-      aligners:
-        - bwa
-      references:
-        - lambda
+    
+    # Alignment of reads to a reference
     align:
+      
+      # Which aligners should be used to map reads?
       aligners:
         - bwa
         - ngm
+      
+      # Against which references should we align?
       references:
+        # Remember, each reference here must be defined in data_paths/references above.
         - lambda
+
+      # Should we extract unmapped reads from each BAM?
       unmapped_reads: true
+      # Should BAMs be kept longer than needed?
+      keep_bams: false 
       stats: true
       qualimap: true
+
+    # Taxonomic classification
     kraken:
-     # Output (un)-classified read fastqs from Kraken?
-      reads: false
       dbs:
         - Viral
+      # Output (un)-classified read fastqs from Kraken?
+      reads: false
     kaiju:
       dbs:
         - Viral
@@ -58,22 +74,46 @@ samplesets:
         # for Kraken & Kaiju, for exampe:
         #
         # - lambda
-    persample_reads: false # don't specifically make sample.fastq.gz
+    
+    # Make a sample_R1/R2.fastq.gz file per sample?
+    persample_reads: false
+
+    # Run FastQC per input run/library?
     fastqc: true
+
+    # Calculate distances with Mash/KWIP?
     mash: true
     kwip: true
+
+    # Variant calling
     varcall:
+      # Organism's ploidy?
       ploidy: 2
+      # Prior on the proportion of variable sites (Θ)
       theta_prior: 0.01
+
+      # Which variant callers to use?
       callers:
         - mpileup
         - freebayes
+      # Which short read aligners to use for variant calling? (can be
+      # more/less/different to the align section above)
       aligners:
         - bwa
+
+      # Which references to use for variant calling? (again can be
+      # more/less/different to the references used for read alignment based
+      # analyses above).
       refs:
         - lambda
+
+      # Which set of filter expressions to use? (see tool_settings section below)
       filters:
         - default
+
+      # Use SNPEff to annotate variant effects? Requires a rather specific set
+      # of precomputed references, refer to the SNPeff docs. Personally I've
+      # had better luck with bcftools csq, which will be supported here soon.
       snpeff: false
 
 
@@ -114,13 +154,16 @@ tool_settings:
 
     # Stop counting reads after this many. Per variant caller. It depends on the tool as to whether or not this is per-sample or per-file.
     max_depth:
-      mpileup:   12000    # Per file
-      freebayes: 12000    # Per file
+      mpileup:   12000000    # Per file
+      freebayes: 12000000    # In total
 
     # Filters. These are series of command line arguments to pass to bcftools
-    # view. These filters apply while multiallelic variants have been decomposed
-    # into multiple overlapping variant calls. This allows e.g. allele frequency
-    # filters to be performed on a per-allele basis.
+    # view. These filters apply while multiallelic variants have been
+    # decomposed into multiple overlapping variant calls. This allows e.g.
+    # allele frequency filters to be performed on a per-allele basis. Please
+    # only very lighly filter variants, as variant filtering is a highly task-
+    # and question-specific decision, and these variant files should be good
+    # for use in any downstream application.
     filters:
       default: >
         -i 'QUAL >= 10 &&
@@ -131,7 +174,6 @@ tool_settings:
 #######################################################################
 #                           Resource Config                           #
 #######################################################################
-# TODO split this to a separate file, and make a snakemake rule to generate the defaults.
 resources:
   # set to true to see all the resources for each rule
   __DEBUG__: false

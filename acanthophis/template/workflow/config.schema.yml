@@ -30,7 +30,15 @@ properties:
       kraken:
         type: object
         additionalProperties:
-          type: string
+          type: object
+          properties:
+            nodes:
+              type: string
+            fmi:
+              type: string
+            required:
+              - dir
+              - bracken
       kaiju:
         type: object
         additionalProperties:

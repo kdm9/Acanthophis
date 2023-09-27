@@ -20,7 +20,7 @@ rule ngmap_idx:
         R("{path}-ht-13-2.3.ngm"),
     log:
         L("{path}-index.log"),
-    resources: **rule_resources(config, "ngmap_idx", time_min=40, mem_gb=2, cores=1)
+    resources: **rule_resources(config, "ngmap_idx", runtime=40, mem_gb=2, cores=1)
     conda: "envs/align.yml"
     shell:
         "( ngm"
@@ -36,7 +36,7 @@ rule ngmap:
         bam=temp(T("alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam")),
     log:
         L("alignments/byrun.raw/ngm/{ref}/{run}~{lib}~{sample}.bam.log"),
-    resources: **rule_resources(config, "ngmap", time_min=240, mem_mb=16000, cores=8)
+    resources: **rule_resources(config, "ngmap", runtime=240, mem_gb=16, cores=8)
     params:
         sensitivity=config["tool_settings"]["ngm"]["sensitivity"],
     conda: "envs/align.yml"
@@ -67,7 +67,7 @@ rule bwaidx:
         R("{path}.sa"),
     conda: "envs/align.yml"
     log: L("{path}_index.log"),
-    resources: **rule_resources(config, "bwaidx", time_min=20, mem_mb=8000)
+    resources: **rule_resources(config, "bwaidx", runtime=20, mem_gb=8)
     shell:
         "bwa index {input} >{log} 2>&1"
 
@@ -84,7 +84,7 @@ rule bwamem:
     output:
         bam=temp(T("alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam")),
     log: L("alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam.log")
-    resources: **rule_resources(config, "bwamem", time_min=240, mem_gb=10, cores=8)
+    resources: **rule_resources(config, "bwamem", runtime=240, mem_gb=10, cores=8)
     conda: "envs/align.yml"
     shell:
         "( bwa mem"
@@ -107,11 +107,12 @@ rule bam_merge_markdups_sort:
 	                for r, l in config["SAMP2RUNLIB"][wc.sample]]),
         ref=lambda wc: R(config["data_paths"]['references'][wc.ref]["fasta"], keep_local=True),
     output:
-        bam=P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
-        bai=P("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
-    resources: **rule_resources(config, "bam_merge_markdups_sort", time_min=240, mem_gb=8, disk_gb=50, cores=4)
+        bam=T("alignments/samples/{aligner}~{ref}~{sample}.bam"),
+        bai=T("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
+    resources: **rule_resources(config, "bam_merge_markdups_sort", runtime=240, mem_gb=16, disk_gb=50, cores=8)
     log: L("alignments/samples/{aligner}~{ref}~{sample}.bam.log")
     conda: "envs/align.yml"
+    priority: 2
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
@@ -130,7 +131,7 @@ rule bam_merge_markdups_sort:
         "   -T ${{TMPDIR:-/tmp}}/{wildcards.sample}_sort_$RANDOM"
         "   --output-fmt bam,level=0"
         "   -@ {threads}"
-        "   -m 1g" # multiplied by {threads} i.e. 4gb
+        "   -m 1600m" # multiplied by {threads}
         "   /dev/stdin"
         " | samtools markdup"
         "   -T ${{TMPDIR:-/tmp}}/{wildcards.sample}_markdup_$RANDOM"
@@ -143,6 +144,14 @@ rule bam_merge_markdups_sort:
         " | samtools index - {output.bai}"  # indexing takes bloody ages, we may as well do this on the fly
         " ) > {log} 2>&1"
 
+localrules: sample_bam_persist
+rule sample_bam_persist:
+    input:
+        bam=T("alignments/samples/{aligner}~{ref}~{sample}.bam"),
+        bai=T("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
+    output:
+        bam=P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
+        bai=P("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
 
 
 #######################################################################
@@ -151,14 +160,14 @@ rule bam_merge_markdups_sort:
 
 rule mergebam_set:
     input:
-        lambda wc: P(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
+        lambda wc: T(expand("alignments/samples/{aligner}~{ref}~{sample}.bam",
                           aligner=wc.aligner, ref=wc.ref, sample=config["SAMPLESETS"][wc.sampleset])),
     output:
-        bam=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
-        bai=P("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
+        bam=T("alignments/sets/{aligner}~{ref}~{sampleset}.bam"),
+        bai=T("alignments/sets/{aligner}~{ref}~{sampleset}.bam.bai"),
     log:
         L("alignments/sets/{aligner}~{ref}~{sampleset}.bam.log"),
-    resources: **rule_resources(config, "mergebam_set", time_min=2880, mem_gb=16, disk_gb=1000, cores=64)
+    resources: **rule_resources(config, "mergebam_set", runtime=2880, mem_gb=16, disk_gb=1000, cores=64)
     conda: "envs/align.yml"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
@@ -178,12 +187,12 @@ rule mergebam_set:
 #######################################################################
 rule bamstat_sample:
     input:
-        P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
+        T("alignments/samples/{aligner}~{ref}~{sample}.bam"),
     output:
         P("alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats"),
     log:
         L("alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats.log")
-    resources: **rule_resources(config, "bamstat_sample", time_min=120, mem_gb=4)
+    resources: **rule_resources(config, "bamstat_sample", runtime=120, mem_gb=4, cores=1)
     conda: "envs/align.yml"
     shell:
         "(samtools stats -i 5000 -x {input} >{output}) >{log} 2>&1"
@@ -196,7 +205,7 @@ rule multiqc_samstats:
         html=P("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.html"),
     log:
         log=L("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.log"),
-    resources: **rule_resources(config, "multiqc_samstats", time_min=30, mem_gb=2)
+    resources: **rule_resources(config, "multiqc_samstats", runtime=30, mem_gb=2, cores=1)
     conda: "envs/qcstats.yml"
     shell:
         "multiqc"
@@ -214,13 +223,13 @@ rule multiqc_samstats:
 
 rule qualimap_sample:
     input:
-        bam=P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
-        bai=P("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
+        bam=T("alignments/samples/{aligner}~{ref}~{sample}.bam"),
+        bai=T("alignments/samples/{aligner}~{ref}~{sample}.bam.bai"),
     output:
         bamqc=directory(P("alignments/qualimap/samples/{aligner}~{ref}~{sample}/")),
     log:
         L("log/qualimap_sample/{aligner}~{ref}~{sample}.log")
-    resources: **rule_resources(config, "qualimap_sample", time_min=240, mem_gb=8, cores=8)
+    resources: **rule_resources(config, "qualimap_sample", runtime=240, mem_gb=8, cores=8)
     conda: "envs/qualimap.yml"
     shell:
         "( unset DISPLAY; qualimap bamqc"
@@ -239,7 +248,7 @@ rule multiqc_qualimap:
         html=P("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.html"),
     log:
         log=L("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.log"),
-    resources: **rule_resources(config, "multiqc_qualimap", time_min=30, mem_gb=2)
+    resources: **rule_resources(config, "multiqc_qualimap", runtime=30, mem_gb=2, cores=1)
     conda: "envs/qcstats.yml"
     shell:
         "multiqc"
@@ -257,42 +266,30 @@ rule multiqc_qualimap:
 
 rule extract_unmapped:
     input:
-        P("alignments/samples/{aligner}~{ref}~{sample}.bam"),
-    output:
-        P("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz"),
-    log:
-        L("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz.log"),
-    resources: **rule_resources(config, "extract_unmapped", time_min=120, mem_gb=1, cores=2)
-    conda: "envs/align.yml"
-    params:
-        ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
-    shell:
-        "(samtools fastq -t -f4 -c{params.ziplevel} -@ {threads} -o {output} {input} ) >{log} 2>&1"
-
-
-rule split_pair_unmapped:
-    input:
-        P("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz"),
+        T("alignments/samples/{aligner}~{ref}~{sample}.bam"),
     output:
         r1=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R1.fastq.gz"),
         r2=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R2.fastq.gz"),
         se=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_se.fastq.gz"),
-        yml=P("alignments/unmapped_reads/{aligner}~{ref}~{sample}_split.stats.yml")
     log:
-        L("alignments/unmapped_reads/{aligner}~{ref}~{sample}_split.log"),
-    resources: **rule_resources(config, "split_pair_unmapped", time_min=30, mem_mb=100, disk_gb=1, cores=1)
-    conda: "envs/reads.yml"
+        L("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz.log"),
+    resources: **rule_resources(config, "extract_unmapped", runtime=120, mem_gb=1, cores=8)
+    conda: "envs/align.yml"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
-        "(seqhax pairs"
-        "   -1 >(gzip -{params.ziplevel} >{output.r1})"
-        "   -2 >(gzip -{params.ziplevel} >{output.r2})"
-        "   -u >(gzip -{params.ziplevel} >{output.se})"
-        "   -l 30"
-        "   -y {output.yml}"
+        "(samtools fastq "
+        "   -t"
+        "   -f4"
+        "   -N"
+        "   -c {params.ziplevel}"
+        "   -@ {threads}"
+        "   -1 {output.r1}"
+        "   -2 {output.r2}"
+        "   -s {output.rs}"
+        "   -0 {output.rs}"  # 0 is "other", i.e. singles
         "   {input}"
-        " ) &>{log}"
+        ") >{log} 2>&1"
 
 
 
@@ -308,7 +305,7 @@ rule all_align_samples:
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sample=config["SAMPLESETS"][ss]))
           for ss in config["samplesets"]
-          if config["samplesets"][ss].get("align", {}) ],
+          if config["samplesets"][ss].get("align", {}).get("keep_bams", False) ],
         [ P(expand("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.html",
                    ref=config["samplesets"][ss].get("align", {}).get("references", []),
                    aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
@@ -320,12 +317,13 @@ rule all_align_samples:
                    aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                    sampleset=ss))
           for ss in config["samplesets"]
-          if config["samplesets"][ss].get("align", {}).get("stats", False) ],
+          if config["samplesets"][ss].get("align", {}).get("qualimap", False) ],
 
 
 rule all_unmapped_reads:
     input:
-        [ P(expand("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz",
+        [ T(expand("alignments/unmapped_reads/{aligner}~{ref}~{sample}_{r}.fastq.gz",
+                 r=["R1", "R2", "se"],
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sample=config["SAMPLESETS"][ss]))
@@ -334,7 +332,7 @@ rule all_unmapped_reads:
 
 rule all_align_samplesets:
     input:
-        [ P(expand("alignments/sets/{aligner}~{ref}~{sampleset}.bam",
+        [ T(expand("alignments/sets/{aligner}~{ref}~{sampleset}.bam",
                  ref=config["samplesets"][ss].get("align", {}).get("references", []),
                  aligner=config["samplesets"][ss].get("align", {}).get("aligners", []),
                  sampleset=ss))

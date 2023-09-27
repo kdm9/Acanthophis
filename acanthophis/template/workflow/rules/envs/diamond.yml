@@ -1,7 +1,8 @@
 channels:
   - conda-forge
   - bioconda
+  - kdm801
 dependencies:
-  - kraken2
-  - bracken
-  - zstd
+  - diamond
+  - taxonkit
+
