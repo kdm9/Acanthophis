@@ -286,8 +286,8 @@ rule extract_unmapped:
         "   -@ {threads}"
         "   -1 {output.r1}"
         "   -2 {output.r2}"
-        "   -s {output.rs}"
-        "   -0 {output.rs}"  # 0 is "other", i.e. singles
+        "   -s {output.se}"
+        "   -0 {output.se}"  # 0 is "other", i.e. singles
         "   {input}"
         ") >{log} 2>&1"
 

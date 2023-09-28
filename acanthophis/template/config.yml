@@ -16,13 +16,18 @@ data_paths:
 
   # Taxon profiling databases
   kraken:
-    Viral: "rawdata/kraken/Viral"
+    Viral:
+      dir: "rawdata/kraken/Viral"
+      # If the database contains Bracken dbs, please uncomment the below and
+      # specify the bracken db sequence/kmer length to use
+      #bracken: 150
   kaiju:
     Viral:
       nodes: "rawdata/kaiju/Viral/nodes.dmp"
       fmi: "rawdata/kaiju/Viral/kaiju_db_viruses.fmi"
   centrifuge:
     lambda: "rawdata/centrifuge/lambda/lambda.1.cf"
+  ncbi_taxonomy: "rawdata/ncbitax/"
   temp_prefix: "tmp/"
   persistent_prefix: "output/"
 
@@ -207,5 +212,6 @@ resources:
 
 # Unlike other code files in Acathophis, this file is placed in the public
 # domain, so there are no restrictions on its modification. Specifically, these
+
 # example files are licensed under the Creative Commons Zero licence, as that
 # is a more portable concept of "public domain".

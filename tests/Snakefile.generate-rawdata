@@ -57,9 +57,17 @@ rule all:
         "rawdata/rl2s.tsv",
         "rawdata/kraken/Viral",
         "rawdata/kaiju/Viral/kaiju_db_viruses.fmi",
+        "rawdata/ncbitax/",
         "rawdata/kaiju/Viral/nodes.dmp",
         "rawdata/kaiju/Viral/names.dmp",
         "rawdata/centrifuge/lambda",
+
+rule ncbitax:
+    output:
+        directory("rawdata/ncbitax/")
+    shell:
+        "mkdir -p {output} && cd {output} && wget -c ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz && tar -zxvf taxdump.tar.gz"
+
 
 rule centrifuge:
     input:

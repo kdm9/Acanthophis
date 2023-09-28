@@ -9,6 +9,15 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+def _qcparam(wc, param):
+    D = config["tool_settings"]["adapterremoval"]
+    type = config["RL_QCTYPE"][(wc.run, wc.lib)]
+    if type in D:
+        return D[type][param]
+    else:
+        return D["__default__"][param]
+
+
 rule qcreads_paired_il:
     input:
         reads=lambda wc: R(config["RAWDATA_PATHS"][(wc.run, wc.lib)]["il"], keep_local=True),
@@ -18,10 +27,10 @@ rule qcreads_paired_il:
     resources: **rule_resources(config, "qcreads_paired_il", runtime=60, mem_gb=1, disk_gb=2, cores=4)
     log: L("reads/qc/{run}~{lib}_il.fastq.log"),
     params:
-        adpfile=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["adapter_file"],
-        minqual=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["minqual"],
-        qualenc=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["qualenc"],
-        maxqualval=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["maxqualval"],
+        adpfile=lambda wc: _qcparam(wc, "adapter_file"),
+        minqual=lambda wc: _qcparam(wc, "minqual"),
+        qualenc=lambda wc: _qcparam(wc, "qualenc"),
+        maxqualval=lambda wc: _qcparam(wc, "maxqualval"),
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     conda: "envs/reads.yml"
     shell:
@@ -53,10 +62,10 @@ rule qcreads_paired_r12:
     resources: **rule_resources(config, "qcreads_paired_r12", runtime=60, mem_gb=1, disk_gb=2, cores=4)
     log: L("reads/qc/{run}~{lib}_r12.fastq.log"),
     params:
-        adpfile=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["adapter_file"],
-        minqual=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["minqual"],
-        qualenc=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["qualenc"],
-        maxqualval=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["maxqualval"],
+        adpfile=lambda wc: _qcparam(wc, "adapter_file"),
+        minqual=lambda wc: _qcparam(wc, "minqual"),
+        qualenc=lambda wc: _qcparam(wc, "qualenc"),
+        maxqualval=lambda wc: _qcparam(wc, "maxqualval"),
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     conda: "envs/reads.yml"
     shell:
@@ -89,10 +98,10 @@ rule qcreads_se:
         L("reads/qc/{run}~{lib}_se.fastq.log"),
     resources: **rule_resources(config, "qcreads_se", runtime=60, mem_gb=1, disk_gb=2, cores=4)
     params:
-        adpfile=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["adapter_file"],
-        minqual=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["minqual"],
-        qualenc=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["qualenc"],
-        maxqualval=lambda wc: config["tool_settings"]["adapterremoval"][config["RL_QCTYPE"][(wc.run, wc.lib)]]["maxqualval"],
+        adpfile=lambda wc: _qcparam(wc, "adapter_file"),
+        minqual=lambda wc: _qcparam(wc, "minqual"),
+        qualenc=lambda wc: _qcparam(wc, "qualenc"),
+        maxqualval=lambda wc: _qcparam(wc, "maxqualval"),
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     conda: "envs/reads.yml"
     shell:
