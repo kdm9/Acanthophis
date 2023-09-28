@@ -9,7 +9,7 @@ resources:
     cores: 1
     disk_gb: 1
     mem_gb: 1
-    time_min: 28
+    time_min: 2880
     localrule: 1  # this must be an integer, so 0 = false & 1 = true
   __max__:
     # A maximum of each resource permitted by your execution environment. Each job's
@@ -29,68 +29,79 @@ resources:
   qcreads_paired_il:
     time_min: 30
     localrule: 0
+    cores: 8
     mem_gb: 2
   qcreads_paired_r12:
     time_min: 30
     localrule: 0
+    cores: 8
     mem_gb: 2
   qcreads_se:
     time_min: 30
     localrule: 0
+    cores: 8
     mem_gb: 2
   merge_qcd_reads:
     time_min: 90
     localrule: 0
   fastqc_preqc:
     localrule: 0
-    time_min: 30
+    time_min: 300
     mem_gb: 8
   fastqc_postqc:
     localrule: 0
-    time_min: 30
+    time_min: 300
     mem_gb: 8
   bwamem:
     localrule: 0
     mem_gb: 48
     cores: 16
+    time_min: 1440
   ngmap:
     localrule: 0
-    mem_gb: 16
+    mem_gb: 48
+    cores: 16
+    time_min: 1440
   bam_merge_markdups_sort:
     localrule: 0
     cores: 8
     mem_gb: 16
+    time_min: 1440
   mergebam_set:
     localrule: 0
   qualimap_sample:
     localrule: 0
-    mem_gb: 24
+    cores: 8
+    mem_gb: 48
+    time_min: 300
   kwipdist: 
     localrule: 0
   mash_dist_set:
     localrule: 0
+    time_min: 300
   mash_sketch_set:
     localrule: 0
+    time_min: 300
   kraken_noreads:
     # these jobs are sized to fit the nt/nr databases
-    cores: 16
+    cores: 8
     mem_gb: 100
-    time_min: 300
+    time_min: 600
     localrule: 0
   centrifuge:
     cores: 16
     mem_gb: 320
-    time_min: 60
+    time_min: 600
     localrule: 0
   kaiju:
     cores: 16
     mem_gb: 250
-    time_min: 60
+    time_min: 600
     localrule: 0
   megahit:
     cores: 32
     mem_gb: 90
-    time_min: 60
+    time_min: 600
     localrule: 0
   bcfmerge:
     localrule: 0
@@ -102,11 +113,14 @@ resources:
     cores: 48
     mem_gb: 64
     time_min: 10080
-  bcf2vcf:
+  bamstat_sample:
+    localrule: 0
+    time_min: 120
+  vcf2bcf:
     localrule: 0
     cores: 24
-    time_min: 60
+    time_min: 1440
   vcfstats:
     localrule: 0
     cores: 4
-    time_min: 120
+    time_min: 1440
