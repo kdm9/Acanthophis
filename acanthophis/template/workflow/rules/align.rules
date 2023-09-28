@@ -115,6 +115,7 @@ rule bam_merge_markdups_sort:
     priority: 2
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
+        sortmem=config.get("tool_settings", {}).get("samtools", {}).get("sortmem_mb", 100),
     shell:
         "( samtools merge"
         "   -@ {threads}"
@@ -131,7 +132,7 @@ rule bam_merge_markdups_sort:
         "   -T ${{TMPDIR:-/tmp}}/{wildcards.sample}_sort_$RANDOM"
         "   --output-fmt bam,level=0"
         "   -@ {threads}"
-        "   -m 1600m" # multiplied by {threads}
+        "   -m {params.sortmem}m" # multiplied by {threads}
         "   /dev/stdin"
         " | samtools markdup"
         "   -T ${{TMPDIR:-/tmp}}/{wildcards.sample}_markdup_$RANDOM"

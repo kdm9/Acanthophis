@@ -10,6 +10,8 @@ data_paths:
     # This is a shell glob pattern defining the text files containing lists of
     # samplenames per sample set.
     setfile_glob: "rawdata/samplesets/*.txt"
+
+  # Reference Genomes
   references:
     lambda:
       fasta: "rawdata/reference/genome.fa"
@@ -27,7 +29,10 @@ data_paths:
       fmi: "rawdata/kaiju/Viral/kaiju_db_viruses.fmi"
   centrifuge:
     lambda: "rawdata/centrifuge/lambda/lambda.1.cf"
+  # This directory should contain nodes.dmp and names.dmp from NCBI's taxdump.tar.gz
   ncbi_taxonomy: "rawdata/ncbitax/"
+
+  # These are prefixes for output files, either temporary or persistent.
   temp_prefix: "tmp/"
   persistent_prefix: "output/"
 
@@ -35,8 +40,9 @@ data_paths:
 #                      Sample Set Configuration                       #
 #######################################################################
 #
-# This section is where we tell snakemake which files to generate for each set of samples.
-# Samplesets are configured as files of sample names (see setfile_glob above). 
+# This section is where we tell snakemake which files to generate for each set
+# of samples.  Samplesets are configured as files of sample names (see
+# setfile_glob above). 
 
 samplesets:
 
@@ -52,7 +58,8 @@ samplesets:
       
       # Against which references should we align?
       references:
-        # Remember, each reference here must be defined in data_paths/references above.
+        # Remember, each reference here must be defined in
+        # data_paths/references above.
         - lambda
 
       # Should we extract unmapped reads from each BAM?
@@ -126,6 +133,9 @@ tool_settings:
   # sets a trade-off between compression time and disk usage. If disk is
   # limiting, increase, if CPUS expensive, decrease. Default should be 6.
   ziplevel: 6
+  samtools:
+    # Sort memory per 
+    sortmem_mb: 100
   ngm:
     sensitivity: 0.5
   adapterremoval:
@@ -143,8 +153,11 @@ tool_settings:
   varcall:
     # Per-aligner minimum MAPQ thresholds for using a read.
     minmapq:
-      bwa: 30  # bwa scores approximately follow a PHRED scale (-10*log10(p))
-      ngm: 10  # NGM scores are bonkers, and don't follow a particularly clear scale. In practice ~10 seems appropriate
+      # bwa scores approximately follow a PHRED scale (-10*log10(p))
+      bwa: 30
+      # NGM scores are bonkers, and don't follow a particularly clear scale. In
+      # practice ~10 seems appropriate
+      ngm: 10
 
     # Minimum base quality to count *base* in pileup
     minbq: 15 
@@ -157,7 +170,8 @@ tool_settings:
       mpileup:    5  # 10000
       freebayes:  5  #  1000
 
-    # Stop counting reads after this many. Per variant caller. It depends on the tool as to whether or not this is per-sample or per-file.
+    # Stop counting reads after this many. Per variant caller. It depends on
+    # the tool as to whether or not this is per-sample or per-file.
     max_depth:
       mpileup:   12000000    # Per file
       freebayes: 12000000    # In total
