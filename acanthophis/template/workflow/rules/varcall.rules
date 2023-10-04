@@ -113,7 +113,7 @@ rule mpileup:
     params:
         theta=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("theta_prior", 0.01),
         minmq=lambda wc: config["tool_settings"]["varcall"]["minmapq"].get(wc.aligner, 5),
-        max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("mpileup", 1000),
+        max_depth=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("max_depth_per_sample", 200), # Per-sample coverage
         minbq=config["tool_settings"]["varcall"]["minbq"],
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     resources: **rule_resources(config, "mpileup", runtime=120, mem_gb=4, cores=1)
@@ -155,9 +155,15 @@ rule freebayes:
     group: "varcall_oneregion"
     params:
         theta=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("theta_prior", 0.01),
+        contamination=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("contamination_rate", 0.05),
         ploidy=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("ploidy", 2),
+        max_mismatch_frac=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("max_mismatch_frac", 0.10),
+        genotype_qualities=lambda wc: "--genotype-qualities" if config["samplesets"][wc.sampleset]["varcall"].get("freebayes_genotype_qualities", False) else "",
         minmq=lambda wc: config["tool_settings"]["varcall"]["minmapq"].get(wc.aligner, 5),
-        max_depth=lambda wc: config["tool_settings"]["varcall"]["max_depth"].get("freebayes", 1000),
+        best_n_alleles=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("best_n_alleles", 4),
+        min_alt_count=lambda wc: config["samplesets"][wc.sampleset]["varcall"].get("min_alt_count", 2),
+        max_depth=lambda wc: (config["samplesets"][wc.sampleset]["varcall"].get("max_depth_per_sample", 200) *
+                              len(config["SAMPLESETS"][wc.sampleset])), # Total coverage, so per samp * n samps
         minbq=config["tool_settings"]["varcall"]["minbq"],
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     resources: **rule_resources(config, "freebayes", runtime=240, mem_gb=8, cores=1)
@@ -166,13 +172,13 @@ rule freebayes:
         "( freebayes"
         "   --theta {params.theta}"
         "   --ploidy {params.ploidy}"
-        "   --genotype-qualities"
-        "   --use-best-n-alleles 4"
+        "   --use-best-n-alleles {params.best_n_alleles}"
+        "   {params.genotype_qualities}"
         "   --min-mapping-quality {params.minmq}"
         "   --min-base-quality {params.minbq}"
-        "   --read-max-mismatch-fraction 0.10"
+        "   --read-max-mismatch-fraction {params.max_mismatch_frac}"
         "   --skip-coverage {params.max_depth}"
-        "   --prob-contamination 1e-3"
+        "   --prob-contamination {params.contamination}"
         "   --strict-vcf"
         "   --region '{wildcards.region}'"
         "   --fasta-reference {input.ref}"

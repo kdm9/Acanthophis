@@ -46,6 +46,11 @@ data_paths:
 
 samplesets:
 
+  # `all_samples` is a inbuilt sample set, corresponding to all samples in the
+  # metadata file. If you only have one logical set of samples, you can use
+  # this as the sampleset name. If you have multiple sample sets, please
+  # duplicate this entire section for each sample set, and modify the settings
+  # accordingly.
   all_samples:
     
     # Alignment of reads to a reference
@@ -66,17 +71,23 @@ samplesets:
       unmapped_reads: true
       # Should BAMs be kept longer than needed?
       keep_bams: false 
+      # Generate samtools statistics?
       stats: true
+      # Use qualimap to generate additional statistics?
       qualimap: true
 
     # Taxonomic classification
     kraken:
       dbs:
+        # Remember, each database here must be defined in data_paths/kraken
+        # above.
         - Viral
       # Output (un)-classified read fastqs from Kraken?
       reads: false
     kaiju:
       dbs:
+        # Remember, each database here must be defined in data_paths/kaiju
+        # above.
         - Viral
     centrifuge:
       dbs: []
@@ -99,11 +110,6 @@ samplesets:
 
     # Variant calling
     varcall:
-      # Organism's ploidy?
-      ploidy: 2
-      # Prior on the proportion of variable sites (Θ)
-      theta_prior: 0.01
-
       # Which variant callers to use?
       callers:
         - mpileup
@@ -112,7 +118,6 @@ samplesets:
       # more/less/different to the align section above)
       aligners:
         - bwa
-
       # Which references to use for variant calling? (again can be
       # more/less/different to the references used for read alignment based
       # analyses above).
@@ -123,6 +128,25 @@ samplesets:
       filters:
         - default
 
+      # Depth per sample before we either discard a site or thin reads. Set
+      # this conservatively high, as the behaviour is different between variant
+      # callers: Freebayes skips sites with more than this many reads per
+      # sample on average, whereas mpileup subsamples to this many reads.
+      max_depth_per_sample: 400
+
+      # Only genotype the N best alleles. A considerable performance tunable,
+      # especially for freebayes.
+      best_n_alleles: 4
+
+      # At least 4 reads in at least one sample to call it a variant
+      min_alt_count: 4
+
+      # Organism's ploidy?
+      ploidy: 2
+
+      # Prior on the proportion of variable sites (Θ)
+      theta_prior: 0.01
+
       # Use SNPEff to annotate variant effects? Requires a rather specific set
       # of precomputed references, refer to the SNPeff docs. Personally I've
       # had better luck with bcftools csq, which will be supported here soon.
@@ -130,26 +154,40 @@ samplesets:
 
 
 tool_settings:
-  # sets a trade-off between compression time and disk usage. If disk is
-  # limiting, increase, if CPUS expensive, decrease. Default should be 6.
+  # Compression level. This sets a trade-off between compression time and disk
+  # usage. If disk is limiting, increase, if CPUS expensive, decrease. Default
+  # should be 6.
   ziplevel: 6
+
   samtools:
-    # Sort memory per 
+    # Sort memory per thread
     sortmem_mb: 100
+
   ngm:
+    # Alignment speed-sensitivity tradeoff, see NGM docs:
+    # https://github.com/Cibiv/NextGenMap/wiki/Documentation#general
     sensitivity: 0.5
+
   adapterremoval:
-    __default__:  # global defaults. modify per qc_type
+    # This mapping is keyed by the qc_type column of the provided metadata,
+    # allowing for differing QC settings per input. If no such column is found,
+    # then we use the __default__ value as below.
+    
+    # global defaults.
+    __default__:
       adapter_file: "rawdata/adapters.txt"
       minqual: 20
       qualenc: 33
       maxqualval: 45
+
+  # Kwip and Mash settings, constant for all samplesets (TODO: move to per sampleset)
   kwip:
     kmer_size: 21
     sketch_size: 300000000
   mash:
     kmer_size: 21
     sketch_size: 100000
+
   varcall:
     # Per-aligner minimum MAPQ thresholds for using a read.
     minmapq:
@@ -170,12 +208,6 @@ tool_settings:
       mpileup:    5  # 10000
       freebayes:  5  #  1000
 
-    # Stop counting reads after this many. Per variant caller. It depends on
-    # the tool as to whether or not this is per-sample or per-file.
-    max_depth:
-      mpileup:   12000000    # Per file
-      freebayes: 12000000    # In total
-
     # Filters. These are series of command line arguments to pass to bcftools
     # view. These filters apply while multiallelic variants have been
     # decomposed into multiple overlapping variant calls. This allows e.g.
@@ -189,6 +221,11 @@ tool_settings:
             INFO/DP >= 5 &&
             INFO/AN >= 3'
 
+  # To avoid errors with overly long command lines, or "too many open files",
+  # we merge region bcfs in two rounds, first to per-group bcfs with each group
+  # containing this number of regions, then we merge the groups to the final
+  # global bcf.
+  bcf_merge_groupsize: 900
 
 #######################################################################
 #                           Resource Config                           #

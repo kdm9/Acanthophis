@@ -58,9 +58,6 @@ properties:
     temp_prefix:
       type: string
       default: "tmp/"
-    log_prefix:
-      type: string
-      default: "output/"
     persistent_prefix:
       type: string
       default: "output/"
@@ -68,6 +65,7 @@ properties:
       - metadata
       - references
       - temp_prefix
+      - persistent_prefix
 
   samplesets:
     type: object
