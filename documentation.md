@@ -1,6 +1,6 @@
 # Acanthophis Tutorial
 
-![](https://lab.gekkonid.com/md/uploads/9c84dccd-2810-4258-af23-6d5613e9c006.png =500x)
+![](.github/logo.jpg)
 
 
 Acanthophis is a flexible and performant analysis pipeline for short read resequencing data. At its core is a reference-based mapping and variant calling pipeline, with optional modules for hologenomics, *de novo* distance estimation, and various additional analyses of population resequencing data.
