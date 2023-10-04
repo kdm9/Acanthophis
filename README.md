@@ -7,7 +7,7 @@ pipeline in Snakemake
 
 # Documentation
 
-For documentation, see [./documentation.md](documentation/). In summary:
+For documentation, see [./documentation.md](documentation.md). In summary:
 
 ```bash
 # create conda env, activate it
