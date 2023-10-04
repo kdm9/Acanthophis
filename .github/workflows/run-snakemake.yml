@@ -19,6 +19,7 @@ jobs:
           mamba-version: "*"
           channels: bioconda,kdm801,conda-forge
           channel-priority: true
+          auto-update-conda: false
             
       - name: Cache generated inputs
         id: cache-inputs
