@@ -1,5 +1,9 @@
 # Acanthophis
 
+
+[![DOI](https://zenodo.org/badge/345496657.svg)](https://zenodo.org/badge/latestdoi/345496657)
+
+
 A reusable, comprehensive, opinionated plant hologenomics and variant calling
 pipeline in Snakemake
 
