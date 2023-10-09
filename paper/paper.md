@@ -9,7 +9,7 @@ tags:
   - population genomics
 authors:
   - name: Kevin D. Murray
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-2466-1917
     email: kdmpapers@gmail.com
     affiliation: 1
     corresponding: true
