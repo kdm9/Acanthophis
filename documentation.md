@@ -3,7 +3,7 @@
 ![](.github/logo.jpg)
 
 
-Acanthophis is a flexible and performant analysis pipeline for short read resequencing data. At its core is a reference-based mapping and variant calling pipeline, with optional modules for hologenomics, *de novo* distance estimation, and various additional analyses of population resequencing data.
+Acanthophis is a flexible and performant analysis pipeline for short read resequencing data. At its core, Acanthophis is a reference-based mapping and variant calling pipeline, with optional modules for hologenomics, *de novo* distance estimation, and various further analyses of population resequencing data.
 
 Acanthophis aims for maximal flexibility and performance, and therefore presents the user with an at first dazzling number of knobs to twiddle. The aim of this tutorial is to show you what the various moving pieces of Acanthophis do, how they interact, and how they are configured.
 
@@ -36,7 +36,7 @@ snakemake --profile ./ebio-cluster/
 
 ## Recap: Snakemake basics
 
-[Snakemake](https://snakemake.rtfd.io) is a python-based workflow manager. Stripped of all its fanciness, at its core it's just a tool that writes and runs shell scripts for you. Of course, it automatically handles a huge number of annoying parts of writing and executing those shell scripts yourself, for example parallelism, cluster interaction, software installation, and clean and reproducible restart behaviour.
+[Snakemake](https://snakemake.rtfd.io) is a python-based workflow manager. Stripped of all its fanciness, Snakemake is just a tool that writes and runs shell scripts for you. However, Snakemake automatically handles a huge number of the more annoying parts of writing and executing those shell scripts yourself, for example parallelism, cluster interaction, software installation, and clean and reproducible restart behaviour.
 
 Instead of rewriting the Snakemake documentation here, I'll point you at the excellent tutorials and reference manual on the [Snakemake docs website](https://snakemake.rtfd.io). As a very brief reminder though, in Snakemake, each job is described as a generic rule, for example mapping some reads:
 
@@ -59,7 +59,7 @@ rule bwamem:
 
 In the above you see the three main blocks of a Snakemake rule: a generic list of inputs, a generic list of outputs, and a generic shell command (including pipes, `&&`, and other shell features).
 
-Note that we never actually tell Snakemake directly which reference or sample to run, instead using [wildcards](https://snakemake.readthedocs.io/en/stable/tutorial/basics.html#step-2-generalizing-the-read-mapping-rule) that denote how **in general** *any given sample* should be mapped to *any given reference*.
+Note that we never actually tell Snakemake directly which reference or sample to run, instead using [wildcards](https://snakemake.readthedocs.io/en/stable/tutorial/basics.html#step-2-generalizing-the-read-mapping-rule) that denote how **in general** *any* given sample should be mapped to *any* given reference.
 
 Obviously the above is insufficient for anything to actually run: we need to add some targets and/or configuration that describes (for our toy example) which samples should be mapped to which references.
 
@@ -77,7 +77,7 @@ rule bwamem:
 
 Now we have a special "target" rule (traditionally named all, but it just has to be the first rule in the file) which has as `input:` everything you'd like Snakemake to make for you. Above, we look up our list of samples and references from the configuration, and use a python [list comprehension](https://www.w3schools.com/python/python_lists_comprehension.asp) to create a list of BAM files of sample X mapped to reference Y, for each X and Y in the configuration.
 
-But, we are still missing the configuration!! For simplicity's sake, let's just manually make dictionary mapping each sample to a list of references it should be aligned to (sample 1 -> refA + refB, sample 2 just to refB). Typically though, this would be in a separate file, as we will see later.
+But, we are still missing the configuration!! For simplicity's sake, let's just manually make dictionary mapping each sample to a list of references it should be aligned to (sample 1 to refA + refB, sample 2 just to refB). Typically though, this would be in a separate file, as we will see later.
 
 ```
 config["samples"] = {
@@ -114,7 +114,7 @@ Now, we have a complete workflow (minus software and input data of course), and 
 Acanthophis is distributed as a python package. I recommend installing it using pip:
 
 ```bash
-python3 -m pip install acanthophis 'snakemake[all]'
+python3 -m pip install acanthophis 'snakemake[all]' natsort
 ```
 
 This should have also installed Snakemake along with the many dependencies of Snakemake.
@@ -138,11 +138,11 @@ If we look what was made, we should see the following files (I've annotated what
 $ tree
 .
 ├── config.yml                        # The main configuration file
-├── profiles                          # Cluster execution profiles
+├── profiles                          # Cluster execution profiles, if any
 ├── environment.yml                   # A global conda environment
 ├── rawdata                           # A directory to store raw input data
-│   ├── runlib2samp.tsv               # A sample manifest file (see below)
-│   └── adapters.txt                  # A sample adaptor sequence file
+│   ├── runlib2samp.tsv               # An example manifest file (see below)
+│   └── adapters.txt                  # An example adaptor sequence file
 └── workflow                          # The core Acanthophis workflow code
     ├── config.schema.yml
     ├── rules                         # Snakemake rule files
@@ -185,7 +185,7 @@ Everything under `workflow/` should be more or less static. You can of course cu
 
 # Configuring Acanthophis
 
-Acanthophis is configured primarily by editing the `config.yml` file. The example file is self-documenting. For completeness, I copy the entire documented contents below.
+Acanthophis is configured primarily by editing the `config.yml` file. The example file is self-documenting. For completeness, I copy the entire documented contents below (but use the automatically-generated one as your template, as the below may drift out of sync with the current state of the code if I forget to update it -- file an issue if so).
 
 ```
 #######################################################################
@@ -231,13 +231,13 @@ data_paths:
 #######################################################################
 #
 # This section is where we tell snakemake which files to generate for each set
-# of samples.  Samplesets are configured as files of sample names (see
+# of samples. Samplesets are configured as files of sample names (see
 # setfile_glob above). 
 
 samplesets:
 
   # `all_samples` is a inbuilt sample set, corresponding to all samples in the
-  # metadata file. If you only have one logical set of samples, you can use
+  # runlib2samp_file from above. If you only have one logical set of samples, you can use
   # this as the sampleset name. If you have multiple sample sets, please
   # duplicate this entire section for each sample set, and modify the settings
   # accordingly.
@@ -450,12 +450,6 @@ resources:
     disk_mb: 300000
     mem_mb: 16000
     time_min: 120
-
-# Unlike other code files in Acathophis, this file is placed in the public
-# domain, so there are no restrictions on its modification. Specifically, these
-
-# example files are licensed under the Creative Commons Zero licence, as that
-# is a more portable concept of "public domain".
 ```
 
 # Running Snakemake
@@ -484,4 +478,3 @@ the config file. The best way to do this is to see one of the preconfigured
 profiles mentioned above, and adjust it to your needs. Note that this is only
 really required for cluster or cloud execution, and the defaults have been set
 conservatively high so this will very rarely be needed.
-

@@ -1,11 +1,12 @@
 ---
 title: 'Acanthophis: a comprehensive plant hologenomics pipeline'
 tags:
-  - Python
-  - snakemake
+  - python
+  - snakemake 
   - plants
   - metagenomics
   - variant calling
+  - population genomics
 authors:
   - name: Kevin D. Murray
     orcid: 0000-0000-0000-0000
@@ -29,21 +30,27 @@ affiliations:
    index: 2
  - name: IAEA/FAO Molecular Plant Genetics and Breeding Lab, Siebersdorf, Austria
    index: 3
-date: 21 October 2023
+date: 10 October 2023
 bibliography: paper.bib
 ---
 
 # Summary
 
-Modern plant pathogen interaction genomics relies on the joint characterisation of the genomes of both plant hosts and their associated microbes.
-Such analyses are often incredibly data intensive, particularly at the scale required for modern quantitative analyses, which often incorporate thousands of host individuals.
 
-Acanthophis is a comprehensive pipeline for the joint analysis of both plant genetic variation and variation in the composition of their associated microbiomes.
+Acanthophis is a comprehensive pipeline for the joint analysis of both plant genetic variation and variation in the composition and abundance of plant-associated microbiomes.
 Implemented in Snakemake[@koster12_snakemakescalable], Acanthophis handles reads from raw FASTQ files through quality control, alignment of reads to a plant reference, variant calling, taxonomic classification and quantification, and metagenome analysis.
-The workflow contains numerous practical optimisation, both to reduce disk space usage and maximise utilisation of computational resources. 
-Acanthophis is available under the Mozilla Public Licence v2, and is available at <https://github.com/kdm9/Acanthophis> and as a python package at PyPI (`pip install acanthophis`).
+The workflow contains numerous practical optimisations, both to reduce disk space usage and maximise utilisation of computational resources. 
+Acanthophis is available under the Mozilla Public Licence v2 at <https://github.com/kdm9/Acanthophis> and as a python package installable from PyPI (`pip install acanthophis`).
 
-# Pipeline components and features
+# Statement of Need
+
+Modern plant-pathogen interaction genomics relies on the joint characterisation of the genomes of both plant hosts and their associated microbes.
+Such analyses are often incredibly data intensive, particularly at the scale required for quantitative analyses, which often incorporate thousands of host individuals[@weigel20_pathocomproposal].
+These analyses demand computationally-efficient pipelines that perform both host genotyping and host-associated microbiome characterisation in a consistent, flexible, and reproducible fashion.
+
+We developed Acanthophis out of a lack of such pipelines, with most previous pipelines performing only a subset of these tasks (e.g. Snakemake's variant calling pipeline [@koster21_snakemakeworkflows]). In addition, most host-aware microbiome analysis pipelines do not allow for host genotyping and/or assume an animal host (e.g. Taxprofiler[@yates23_nfcore]). Acanthophis has attracted many of users, including published papers and preprints (e.g. @murray19_landscape; @ahrens21_genomic).
+
+# Components and Features
 
 Across the entire pipeline, we operate on sample sets. Each sample set consists of one or more samples, and each sample can be in any number of sample sets. For each sample set, we can configure which analyses to run (most can be disabled if not needed), and we can also configure tool-specific or general settings or thresholds. This configuration happens via a global `config.yaml` file, of which we provide an exhaustively documented template.
 
@@ -57,7 +64,7 @@ We use either `BWA MEM`[@li13_aligningsequence], `NGM`[@sedlazeck13_nextgenmapfa
 
 ## Stage 3: Variant Calling
 
-We use either `bcftools mpileup` or `freebayes` to call raw variants, using priors and thresholds configured for each sample set. We then normalise variants with `bcftools norm`, and then split multialleic variants, filter each allele with per-sample set filters, and combine filter-passing alleles back into unique sites. Resulting variants are then indexed, and statistics calculated. To parallelize variant calling, we use one of two approaches: either a static list of non-overlapping genome windows is used (as supplied in a BED file), or a total coverage is used to break the genome into buckets with approximately equal amounts of data.
+We use either `bcftools mpileup` or `freebayes` to call raw variants, using priors and thresholds configured for each sample set. We then normalise variants with `bcftools norm`, and then split multiallelic variants, filter each allele with per-sample set filters, and combine filter-passing alleles back into unique sites. Resulting variants are then indexed, and statistics calculated. To parallelize variant calling, we use one of two approaches: either a static list of non-overlapping genome windows is used (as supplied in a BED file), or a total coverage is used to break the genome into buckets with approximately equal amounts of data.
 
 ## Stage 4: Taxon profiling
 We use any of Kraken 2 (with or without Bracken [@lu17_brackenestimating]), Kaiju[@menzel16_fastsensitive], Centrifuge[@kim16_centrifugerapid], and Diamond[@buchfink15_fastsensitive] to create taxonomic profiles for each sample against any number of supplied databases. We then use taxpasta[@beber23_taxpastataxonomic] to combine multiple profiles into tables for easy downstream use.
@@ -68,6 +75,6 @@ Throughout all pipeline stages, various tools output summaries of their actions 
 
 # Acknowledgements
 
-We thank Luisa Teasdale, Rose Andrew, Johannes Köster, and Scott Ferguson for comments or advice on Acanthophis and/or on this manuscript.
+We thank Luisa Teasdale, Anne-Cecile Colin, Rose Andrew, Johannes Köster, and Scott Ferguson for comments or advice on Acanthophis and/or on this manuscript. KDM is supported by a Marie Skłodowska-Curie Actions fellowship.
 
 # References
