@@ -45,10 +45,10 @@ Acanthophis is available under the Mozilla Public Licence v2 at <https://github.
 # Statement of Need
 
 Modern plant-pathogen interaction genomics relies on the joint characterisation of the genomes of both plant hosts and their associated microbes.
-Such analyses are often incredibly data intensive, particularly at the scale required for quantitative analyses, which often incorporate thousands of host individuals[@weigel20_pathocomproposal].
+Such analyses are often incredibly data intensive, particularly at the scale required for quantitative analyses, which often incorporate thousands of host individuals [@regalado20_combining; @karasov22_drought].
 These analyses demand computationally-efficient pipelines that perform both host genotyping and host-associated microbiome characterisation in a consistent, flexible, and reproducible fashion.
 
-We developed Acanthophis out of a lack of such pipelines, with most previous pipelines performing only a subset of these tasks (e.g. Snakemake's variant calling pipeline [@koster21_snakemakeworkflows]). In addition, most host-aware microbiome analysis pipelines do not allow for host genotyping and/or assume an animal host (e.g. Taxprofiler[@yates23_nfcore]). Acanthophis has attracted many of users, including published papers and preprints (e.g. @murray19_landscape; @ahrens21_genomic).
+We developed Acanthophis out of a lack of such pipelines, with most previous pipelines performing only a subset of these tasks (e.g. Snakemake's variant calling pipeline @koster21_snakemakeworkflows). In addition, most host-aware microbiome analysis pipelines do not allow for host genotyping and/or assume an animal host (e.g. Taxprofiler @yates23_nfcore). Acanthophis has attracted many users, including published papers and preprints (e.g. @murray19_landscape; @ahrens21_genomic).
 
 # Components and Features
 
