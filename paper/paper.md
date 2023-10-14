@@ -60,7 +60,7 @@ Input data consists of a FASTQ file (or pair thereof) per **run** of each **libr
 
 ## Stage 2: Alignment to reference(s)
 
-We use either `BWA MEM`[@li13_aligningsequence], `NGM`[@sedlazeck13_nextgenmapfast], or `minimap2`[@li18_minimap2pairwise;@li21_newstrategies] to align reads to each reference genome. Quality-controlled per-run and -library FASTQ files are aligned with the configured aligners. We then merge per-runlib BAMs to per-sample BAMs, and then use `samtools markdup`[@li09_sequencealignment;@danecek21_twelveyears] to mark duplicated reads. Input reference genomes should be uncompressed, `samtools faidx`ed FASTA files. 
+We use either `BWA MEM`[@li13_aligningsequence], `NGM`[@sedlazeck13_nextgenmapfast], or `minimap2`[@li18_minimap2pairwise; @li21_newstrategies] to align reads to each reference genome. Quality-controlled per-run and -library FASTQ files are aligned with the configured aligners. We then merge per-runlib BAMs to per-sample BAMs, and then use `samtools markdup`[@li09_sequencealignment; @danecek21_twelveyears] to mark duplicated reads. Input reference genomes should be uncompressed, `samtools faidx`ed FASTA files.
 
 ## Stage 3: Variant Calling
 
