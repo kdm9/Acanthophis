@@ -452,6 +452,33 @@ resources:
     time_min: 120
 ```
 
+### Manifest file: `runlib2sample.tsv`
+
+Another critical user-facing configuration file is the manifest, or `runlib2sample` file. This is a csv or tsv table that maps the location of FASTQ files per run and library to a sample, along with other data. An example is copied below.
+
+|run |library|sample|include|read1_uri                          |read2_uri                          |interleaved_uri|single_uri|qc_type|
+|:---|:------|:-----|:------|:----------------------------------|:----------------------------------|:--------------|:---------|:------|
+|Run1|S01a   |S01   |Y      |rawdata/reads/Run1/S01a_R1.fastq.gz|rawdata/reads/Run1/S01a_R2.fastq.gz|               |          |nextera|
+|Run2|S01a   |S01   |Y      |rawdata/reads/Run2/S01a_R1.fastq.gz|rawdata/reads/Run2/S01a_R2.fastq.gz|               |          |nextera|
+|Run1|S01b   |S01   |Y      |rawdata/reads/Run1/S01b_R1.fastq.gz|rawdata/reads/Run1/S01b_R2.fastq.gz|               |          |nextera|
+|Run2|S01b   |S01   |Y      |rawdata/reads/Run2/S01b_R1.fastq.gz|rawdata/reads/Run2/S01b_R2.fastq.gz|               |          |nextera|
+|Run1|S02a   |S02   |Y      |rawdata/reads/Run1/S02a_R1.fastq.gz|rawdata/reads/Run1/S02a_R2.fastq.gz|               |          |nextera|
+|Run2|S02a   |S02   |Y      |rawdata/reads/Run2/S02a_R1.fastq.gz|rawdata/reads/Run2/S02a_R2.fastq.gz|               |          |nextera|
+|Run1|S02b   |S02   |Y      |rawdata/reads/Run1/S02b_R1.fastq.gz|rawdata/reads/Run1/S02b_R2.fastq.gz|               |          |nextera|
+
+These columns denote:
+
+- `run`: A name for the sequencing run. No two independent runs can have the same name, and you can't have a library occur more than once in a run. Can use any valid path characters except `~`.
+- `library`: A name for this sequencing library. No two independent libraries should have the same name, even if they are from the same sample.
+- `sample`: A name for the biological sample that a library is derived from.
+- `include`: A boolean `Y/N` column indicating which samples to include. Can be used to exclude failed runs or other weirdness.
+- `read1_uri`, `read2_uri`, `interleaved_uri`, `single_uri`. URIs to FASTQ files. Can be either an absolute or relative path in the case of local files, or any URL scheme supported by [snakemake's remote file module](https://snakemake.readthedocs.io/en/stable/snakefiles/remote_files.html). One should give either R1+R2, interleaved, or single reads. Combining interleaved and R1+R2 is impossible, and combining either with single end reads may have unexpected consequences and should be avoided -- input data should be raw, so this is a rare case.
+- `qc_type` (**optional**): If your datasets contains multiple QC types (see `tool_settings/adapterremoval` in the config file), one can use this column to indicate which QC settings should be used on each runlib. Useful if e.g. you have two different adaptor preparation methods for two libraries of the same sample, and therefore two sets of adaptor sequences. If you have uniform settings this column can be left blank or removed entirely.
+
+Importantly, any number of additional columns can appear in this file, so you can use this to store additional metadata needed for downstream analyses in one place.
+
+
+
 # Running Snakemake
 
 Once you have configured Acanthophis, it can be run just like any other
