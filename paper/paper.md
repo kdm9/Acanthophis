@@ -22,7 +22,7 @@ authors:
     affiliation: 1
   - name: Norman Warthmann
     orcid: 0000-0002-1178-8409
-    affiliation: 2,3
+    affiliation: "2,3"
     corresponding: true
 affiliations:
  - name: Max Planck Institute for Biology, Tübingen, Deutschland
