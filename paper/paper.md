@@ -59,25 +59,25 @@ Across the entire pipeline, we operate on 'sample sets', named groups of one or 
 
 ## Stage 1: Raw reads to per-sample reads
 
-Input data consists FASTQ files per **run** of each **library** corresponding to a **sample**. For each **run-lib** (one run of one library), we use `AdapterRemoval` [@schubert16_adapterremoval] to remove low quality or adaptor sequences, and to merge overlapping read pairs. We use `FastQC` to summarise sequence QC before and after `AdaptorRemoval`. 
+Input data consists of FASTQ files per **run** of each **library** corresponding to a **sample**. For each **runlib** (one run of one library), Acanthophis uses `AdapterRemoval` [@schubert16_adapterremoval] to remove low quality and adaptor sequences, and optionally to merge overlapping read pairs. It then uses `FastQC` to summarise sequence QC before and after `AdaptorRemoval`. 
 
 ## Stage 2: Alignment to reference(s)
 
-For read alignment to reference genomes we provide several configurable aligners, currently `BWA MEM` [@li13_aligningsequence], `NGM` [@sedlazeck13_nextgenmapfast], and `minimap2` [@li18_minimap2pairwise;@li21_newstrategies]. We then merge per-runlib BAMs to per-sample BAMs, and use `samtools markdup` [@li09_sequencealignment;@danecek21_twelveyears] to mark duplicate reads. Input reference genomes should be uncompressed, `samtools faidx`ed FASTA files. 
+To align reads to reference genomes, Acanthophis can use any of `BWA MEM` [@li13_aligningsequence], `NGM` [@sedlazeck13_nextgenmapfast], and `minimap2` [@li18_minimap2pairwise;@li21_newstrategies]. Then, Acanthophis merges per-runlib BAMs to per-sample BAMs, and uses `samtools markdup` [@li09_sequencealignment;@danecek21_twelveyears] to mark duplicate reads. Input reference genomes should be uncompressed, `samtools faidx`ed FASTA files. 
 
 ## Stage 3: Variant Calling
 
-We provide `bcftools mpileup` or `freebayes` to call raw variants, using priors and thresholds configurable for each sample set. We then normalise variants with `bcftools norm`, split multiallelic variants, filter each allele with per-sample set filters, and combine filter-passing alleles back into unique sites. Resulting variants are indexed and statistics calculated (bcftools stats). To parallelize variant calling: either a static list of non-overlapping genome windows is used (as supplied in a BED file), or mosdepth is used to break the genome into buckets with approximately equal amounts of data.
+Acanthophis uses `bcftools mpileup` and/or `freebayes` to call raw variants, using priors and thresholds configurable for each sample set. It then normalises variants with `bcftools norm`, splits multi-allelic variants, filters each allele with per-sample set filters, and combines filter-passing alleles back into unique sites, merges region-level VCFs, indexes, and calculates statistics on these final VCF files. Acanthophis provides two alternative approaches to parallelize variant calling: either a static list of non-overlapping genome windows (supplied in a BED file), or genome bins with approximately equal amounts of data, which are automatically generated using mosdepth [@pedersen18_mosdepthquick].
 
 ## Stage 4: Taxon profiling
 
-We use any of Kraken 2 [@wood19_improved], Bracken [@lu17_brackenestimating], Kaiju [@menzel16_fastsensitive], Centrifuge [@kim16_centrifugerapid], and Diamond [@buchfink15_fastsensitive] to create taxonomic profiles for each sample against any number of supplied databases. We then use taxpasta [@beber23_taxpastataxonomic] to combine multiple profiles into tables for easy downstream use.
+Acathophis uses any of Kraken 2 [@wood19_improved], Bracken [@lu17_brackenestimating], Kaiju [@menzel16_fastsensitive], Centrifuge [@kim16_centrifugerapid], and Diamond [@buchfink15_fastsensitive] to create taxonomic profiles for each sample against any number of supplied databases. We then use taxpasta [@beber23_taxpastataxonomic] to combine multiple profiles into tables for easy downstream use.
 
 ## Stage 5: *De novo* Estimates of Genetic Dissimilarity
 
-Acanthophis can use either `kWIP` [@murray17_kwipkmer] or Mash [@ondov16_mashfast] to estimate genetic distances between samples without alignment to a reference genome. These features first sketch reads into kmer sketches, and then calculate pairwise distances among samples.
+Acanthophis can use either `kWIP` [@murray17_kwipkmer] or Mash [@ondov16_mashfast] to estimate genetic distances between samples without alignment to a reference genome. These features first sketch reads into k-mer sketches, and then calculate pairwise distances among samples.
 
-## Stage 5: Reporting and Statistics
+## Stage 6: Reporting and Statistics
 
 Throughout all pipeline stages, various tools output summaries of their actions and/or outputs. We optionally combine these into unified reports by pipeline stage and sample set using MultiQC [@ewels16_multiqcsummarize].
 
