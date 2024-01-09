@@ -13,7 +13,7 @@ pipelines from Acanthophis to call variants in this simulated dataset (see
 To run this pipeline, one must:
 
 ```bash
-conda env create -f conda.yml -n acanthophis-demo
+conda env create -f environment-setup.yml -n acanthophis-demo
 conda activate acanthophis-demo
 # Install Acanthophis
 pip install -e ..
