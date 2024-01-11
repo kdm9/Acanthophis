@@ -37,7 +37,11 @@ snakemake -j 16 -p --use-conda --conda-frontend mamba --ri
 snakemake --profile ./ebio-cluster/
 ```
 
+# Contribution & Assistance
 
+If you have anything (advice, docs, code) you'd like to contibute, pull requests are more than welcome. Please discuss any major contribution in a new issue before implementing it, to avoid wasted effort.
+
+If you need any assistance, or have other questions or comments, please make an issue on github, or open a discussion. Unfortunately both need an account on github, so alternatively you can email me (`foss  <usual email symbol> kdmurray.id.au`).
 
 ## About & Authors
 
