@@ -65,8 +65,10 @@ rule all:
 rule ncbitax:
     output:
         directory("rawdata/ncbitax/")
+    log:
+        "rawdata/ncbitax/get.log"
     shell:
-        "mkdir -p {output} && cd {output} && wget -c ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz && tar -zxvf taxdump.tar.gz"
+        "(mkdir -p {output} && cd {output} && wget -c ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz && tar -zxvf taxdump.tar.gz) &>{log}"
 
 
 rule centrifuge:
@@ -77,14 +79,17 @@ rule centrifuge:
         map="rawdata/lambda/centrifuge-map.txt",
     output:
         directory("rawdata/centrifuge/lambda")
+    log:
+        "rawdata/centrifuge/lambda/build.log",
     shell:
-        "mkdir -p {output} && "
+        "( mkdir -p {output} && "
         "centrifuge-build"
         "   --conversion-table {input.map}"
         "   --taxonomy-tree {input.nodes}"
         "   --name-table {input.names}"
         "   {input.ref}"
         "   {output}/lambda"
+        ") &> {log}"
 
 
 rule kaijudb:
@@ -92,27 +97,35 @@ rule kaijudb:
         "rawdata/kaiju/Viral/kaiju_db_viruses.fmi",
         "rawdata/kaiju/Viral/nodes.dmp",
         "rawdata/kaiju/Viral/names.dmp",
+    log:
+        "rawdata/kaiju/Viral/build.log",
     shell:
-            "mkdir -p {output}"
+            "( mkdir -p {output}"
             " && curl -L https://kaiju.binf.ku.dk/database/kaiju_db_viruses_2020-05-25.tgz"
             "  | tar xzv -C rawdata/kaiju/Viral"
+            ") &>{log}"
 
 rule krakendb:
     output:
         directory("rawdata/kraken/Viral"),
+    log:
+        "rawdata/kraken/build.log",
     shell:
-            "mkdir -p {output}"
+            "(mkdir -p {output}"
             " && curl -L https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20201202.tar.gz"
             "  | tar xzv -C {output}"
+            ") &>{log}"
 
 rule faidx:
     input:
         "{path}.fa"
     output:
         "{path}.fa.fai"
+    log:
+        "{path}.fa.fai.log"
     priority: 10
     shell:
-        "samtools faidx {input}"
+        "samtools faidx {input} &> {log}"
 
 rule metadata:
     output:
@@ -189,6 +202,8 @@ rule reads:
     output:
         r1="rawdata/reads/{run}/{lib}_R1.fastq",
         r2="rawdata/reads/{run}/{lib}_R2.fastq",
+    log:
+        "rawdata/reads/{run}/{lib}.wgsim.log",
     params:
         cov_per_run=cov_per_run,
         reads_per_rl=reads_per_rl,
@@ -204,7 +219,7 @@ rule reads:
         "   {input}"
         "   {output.r1}"
         "   {output.r2}"
-        #">/dev/null 2>&1"
+        " &> {log}"
 
 
 rule gzipfq:

@@ -1,9 +1,7 @@
 name: acanthophis-tests
 channels:
-  - defaults
   - conda-forge
   - bioconda
-  - kdm801
 dependencies:
   - python
   - snakemake
@@ -13,5 +11,4 @@ dependencies:
   - wgsim
   - centrifuge-core
   - samtools
-  - pip:
-    - msprime
+  - msprime
