@@ -1,9 +1,8 @@
 name: acanthophis
 channels:
-  - defaults
   - conda-forge
   - bioconda
-  - kdm801
 dependencies:
-  - snakemake
+  - snakemake=8
+  - singularity
   - natsort

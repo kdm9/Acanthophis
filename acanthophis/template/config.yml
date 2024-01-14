@@ -114,6 +114,7 @@ samplesets:
       callers:
         - mpileup
         - freebayes
+        - deepvariant
       # Which short read aligners to use for variant calling? (can be
       # more/less/different to the align section above)
       aligners:
@@ -124,7 +125,9 @@ samplesets:
       refs:
         - lambda
 
-      # Which set of filter expressions to use? (see tool_settings section below)
+      # Which set of filter expressions to use? (see tool_settings section
+      # below). CRITICAL NOTE: deepvariant calls will not be subject to these
+      # filters.
       filters:
         - default
 
@@ -152,6 +155,8 @@ samplesets:
       # had better luck with bcftools csq, which will be supported here soon.
       snpeff: false
 
+      # Calling model to use with deepvariant
+      deepvariant_model: WGS
 
 tool_settings:
   # Compression level. This sets a trade-off between compression time and disk

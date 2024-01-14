@@ -324,8 +324,11 @@ wildcard_constraints:
     lib="[^/~]+",
     aligner="[^/~]+",
     sample="[^/~]+",
+    sampleset="[^/~]+",
     ref="[^/~]+",
     type="[^/~]+",
 
 resource_scopes:
     runtime="local",
+
+container: "docker://quay.io/condaforge/miniforge3"

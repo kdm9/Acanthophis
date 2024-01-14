@@ -1,0 +1,6 @@
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - deepvariant=1.5

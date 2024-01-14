@@ -160,6 +160,7 @@ properties:
                 enum:
                   - mpileup
                   - freebayes
+                  - deepvariant
             aligners:
               type: array
               items:
@@ -178,6 +179,14 @@ properties:
             snpeff:
               type: boolean
               default: false
+            deepvariant_model:
+              type: string
+              enum:
+                - WGS
+                - WES
+                - ONT_R104
+                - HYBRID_PACBIO_ILLUMINA
+                - PACBIO
   tool_settings:
     type: object
     properties:

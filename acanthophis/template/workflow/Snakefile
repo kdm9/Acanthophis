@@ -9,6 +9,7 @@ include: "rules/reads.rules"
 include: "rules/align.rules"
 include: "rules/denovo.rules"
 include: "rules/varcall.rules"
+include: "rules/deepvariant.rules"
 include: "rules/taxonid.rules"
 include: "rules/metagenome.rules"
 include: "rules/sampleset.rules"
@@ -18,6 +19,7 @@ rule all:
         rules.all_reads.input,
         rules.all_align.input,
         rules.all_varcall.input,
+        rules.all_deepvariant.input,
         rules.all_denovo.input,
         rules.all_taxonid.input,
         rules.all_megahit.input,
