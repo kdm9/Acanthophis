@@ -17,9 +17,9 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           mamba-version: "*"
-          channels: bioconda,kdm801,conda-forge
+          channels: bioconda,conda-forge
           channel-priority: true
-          auto-update-conda: false
+          auto-update-conda: true
             
       - name: Cache generated inputs
         id: cache-inputs
@@ -28,12 +28,17 @@ jobs:
           path: tests/rawdata
           key: rawdata-${{ hashFiles('tests/Snakefile.generate-rawdata') }}-${{ hashFiles('acanthophis/template/environment.yml') }}-${{ hashFiles('acanthophis/template/workflow/rules/envs/*.yml') }}
       
+      - name: setup mamba
+        shell: bash -el {0}
+        run: |
+          mamba init
+
       - name: setup data
         shell: bash -el {0}
         run: |
           mamba info
           pushd tests
-          source setup.sh
+          bash setup.sh
           popd
 
       - name: run workflow
