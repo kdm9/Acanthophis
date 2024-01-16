@@ -4,7 +4,7 @@ channels:
   - bioconda
 dependencies:
   - python>=3.11
-  - snakemake>=8
+  - snakemake=8.1.2
   - tree
   - pip
   - numpy

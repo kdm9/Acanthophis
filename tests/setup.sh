@@ -6,5 +6,6 @@ mkdir -p output/ tmp/ rawdata/
 touch output/nobackup tmp/nobackup rawdata/nobackup
 python3 -m pip install -e ../
 set -xeuo pipefail
+snakemake --version
 snakemake --snakefile Snakefile.generate-rawdata -j 4 --software-deployment-method conda
 tree rawdata
