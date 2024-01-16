@@ -4,8 +4,7 @@
 [![DOI](https://zenodo.org/badge/345496657.svg)](https://zenodo.org/badge/latestdoi/345496657)
 
 
-A reusable, comprehensive, opinionated plant hologenomics and variant calling
-pipeline in Snakemake
+A reusable, comprehensive, opinionated Snakemake pipeline for plant-microbe genomics and plant variant calling.
 
 <img src=".github/logo.jpg" width="320">
 
@@ -39,7 +38,7 @@ snakemake --profile ./ebio-cluster/
 
 # Contribution & Assistance
 
-If you have anything (advice, docs, code) you'd like to contibute, pull requests are more than welcome. Please discuss any major contribution in a new issue before implementing it, to avoid wasted effort.
+If you have anything (advice, docs, code) you'd like to contribute, pull requests are more than welcome. Please discuss any major contribution in a new issue before implementing it, to avoid wasted effort.
 
 If you need any assistance, or have other questions or comments, please make an issue on github, or open a discussion. Unfortunately both need an account on github, so alternatively you can email me (`foss  <usual email symbol> kdmurray.id.au`).
 
