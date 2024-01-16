@@ -114,7 +114,8 @@ samplesets:
       callers:
         - mpileup
         - freebayes
-        - deepvariant
+        # Deepvariant is disabled for Github actions tests, as it requires too much disk space
+        #- deepvariant
       # Which short read aligners to use for variant calling? (can be
       # more/less/different to the align section above)
       aligners:
