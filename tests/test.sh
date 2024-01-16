@@ -15,6 +15,7 @@ conda activate acanthophis
 
 # Clear outputs
 rm -fr output tmp
+mkdir -p output/ tmp/
 touch output/nobackup tmp/nobackup
 
 # If quick, overwrite config with cut-back version
