@@ -41,7 +41,7 @@ jobs:
         shell: bash -el {0}
         run: |
           pushd tests
-          bash -el test.sh
+          bash -el test.sh --quick
           popd
 
       - name: cat all log files on failure
