@@ -33,18 +33,16 @@ jobs:
       - name: setup data
         shell: bash -el {0}
         run: |
-          export BASH_ENV=~/.bashrc
           mamba info
           pushd tests
-          bash setup.sh
+          bash -el setup.sh
           popd
 
       - name: run workflow
         shell: bash -el {0}
         run: |
-          export BASH_ENV=~/.bashrc
           pushd tests
-          bash test.sh
+          bash -el test.sh
           popd
 
       - name: cat all log files on failure
