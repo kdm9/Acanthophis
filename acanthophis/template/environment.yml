@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - snakemake=8
+  - python>=3.11
+  - snakemake>=8
   - singularity
   - natsort
