@@ -3,7 +3,7 @@
 ![](.github/logo.jpg)
 
 
-Acanthophis is a flexible and performant analysis pipeline for short read resequencing data. At its core, Acanthophis is a reference-based mapping and variant calling pipeline, with optional modules for hologenomics, *de novo* distance estimation, and various further analyses of population resequencing data.
+Acanthophis is a flexible and performant analysis pipeline for short read resequencing data. At its core, Acanthophis is a reference-based mapping and variant calling pipeline, with optional modules for hologenomics (the combined analysis of genomes from some host and its microbial pathogens or symbionts), *de novo* distance estimation, and various further analyses of population resequencing data.
 
 Acanthophis aims for maximal flexibility and performance, and therefore presents the user with an at first dazzling number of knobs to twiddle. The aim of this tutorial is to show you what the various moving pieces of Acanthophis do, how they interact, and how they are configured.
 
@@ -11,11 +11,11 @@ Acanthophis aims for maximal flexibility and performance, and therefore presents
 
 ```bash
 # create conda env, activate it
-mamba create -n someproject python snakemake pip natsort
+mamba create -n someproject python snakemake=8 pip natsort
 mamba activate someproject
 
 # Install acanthophis itself
-pip install acanthophis
+python3 -m pip install acanthophis
 
 # Generate a workspace. This copies all files the workflow will need to your
 # workspace directory.
