@@ -104,7 +104,7 @@ def parse_metadata(s2rl_file):
             if not run["library"] or run["library"].lower().startswith("blank"):
                 # Skip blanks
                 continue
-            if run.get("include", "Y").upper() != "Y":
+            if run.get("include", "Y").upper() != "Y" or run.get("exclude", "N").upper() == "Y":
                 # Remove non-sequenced ones
                 continue
             meta.append({k.lower(): v for k, v in run.items()})

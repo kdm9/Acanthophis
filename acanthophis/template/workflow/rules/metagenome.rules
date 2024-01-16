@@ -236,7 +236,7 @@ rule plass_diamond:
 
 rule taxonkit_lca:
     input:
-        db=R(config["data_paths"]["ncbi_taxonomy"]),
+        db=R(config["data_paths"].get("ncbi_taxonomy", "ERROR_PLEASE_INSTALL_NCBI_TAXONOMY")),
         blast=T("metagenome/plass/{path}.{db}.blasttab"),
     output:
         T("metagenome/plass/{path}.{db}.blasttab.lca.txt.zstd")

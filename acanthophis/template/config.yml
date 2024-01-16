@@ -135,28 +135,35 @@ samplesets:
       # this conservatively high, as the behaviour is different between variant
       # callers: Freebayes skips sites with more than this many reads per
       # sample on average, whereas mpileup subsamples to this many reads.
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       max_depth_per_sample: 400
 
       # Only genotype the N best alleles. A considerable performance tunable,
       # especially for freebayes.
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       best_n_alleles: 4
 
       # At least 4 reads in at least one sample to call it a variant
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       min_alt_count: 4
 
       # Organism's ploidy?
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       ploidy: 2
 
       # Prior on the proportion of variable sites (Θ)
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       theta_prior: 0.01
 
       # Use SNPEff to annotate variant effects? Requires a rather specific set
       # of precomputed references, refer to the SNPeff docs. Personally I've
       # had better luck with bcftools csq, which will be supported here soon.
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       snpeff: false
+      
+      # Not for Deepvariant
+      max_depth_per_sample: 1000
 
-      # Calling model to use with deepvariant
-      deepvariant_model: WGS
 
 tool_settings:
   # Compression level. This sets a trade-off between compression time and disk
@@ -194,6 +201,7 @@ tool_settings:
     sketch_size: 100000
 
   varcall:
+    deepvariant_model: "WGS"
     # Per-aligner minimum MAPQ thresholds for using a read.
     minmapq:
       # bwa scores approximately follow a PHRED scale (-10*log10(p))
