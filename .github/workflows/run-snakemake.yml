@@ -28,11 +28,6 @@ jobs:
           path: tests/rawdata
           key: rawdata-${{ hashFiles('tests/Snakefile.generate-rawdata') }}-${{ hashFiles('acanthophis/template/environment.yml') }}-${{ hashFiles('acanthophis/template/workflow/rules/envs/*.yml') }}
       
-      - name: setup mamba
-        shell: bash -el {0}
-        run: |
-          mamba init
-
       - name: setup data
         shell: bash -el {0}
         run: |
