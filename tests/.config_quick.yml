@@ -1,0 +1,231 @@
+#######################################################################
+#                             Data Paths                              #
+#######################################################################
+data_paths:
+  # Metadata locations.
+  metadata:
+    # This file maps the FASTQ files associated with a run of a library to a
+    # samplename, and to any other relevant metadata.
+    runlib2samp_file: "rawdata/rl2s.tsv"
+    # This is a shell glob pattern defining the text files containing lists of
+    # samplenames per sample set.
+    setfile_glob: "rawdata/samplesets/*.txt"
+
+  # Reference Genomes
+  references:
+    lambda:
+      fasta: "rawdata/reference/genome.fa"
+
+  # Taxon profiling databases
+  kraken:
+    Viral:
+      dir: "rawdata/kraken/Viral"
+      # If the database contains Bracken dbs, please uncomment the below and
+      # specify the bracken db sequence/kmer length to use
+      #bracken: 150
+  kaiju:
+    Viral:
+      nodes: "rawdata/kaiju/Viral/nodes.dmp"
+      fmi: "rawdata/kaiju/Viral/kaiju_db_viruses.fmi"
+  centrifuge:
+    lambda: "rawdata/centrifuge/lambda/lambda.1.cf"
+  # This directory should contain nodes.dmp and names.dmp from NCBI's taxdump.tar.gz
+  ncbi_taxonomy: "rawdata/ncbitax/"
+
+  # These are prefixes for output files, either temporary or persistent.
+  temp_prefix: "tmp/"
+  persistent_prefix: "output/"
+
+#######################################################################
+#                      Sample Set Configuration                       #
+#######################################################################
+#
+# This section is where we tell snakemake which files to generate for each set
+# of samples.  Samplesets are configured as files of sample names (see
+# setfile_glob above). 
+
+samplesets:
+
+  # `all_samples` is a inbuilt sample set, corresponding to all samples in the
+  # metadata file. If you only have one logical set of samples, you can use
+  # this as the sampleset name. If you have multiple sample sets, please
+  # duplicate this entire section for each sample set, and modify the settings
+  # accordingly.
+  all_samples:
+    
+    # Alignment of reads to a reference
+    align:
+      
+      # Which aligners should be used to map reads?
+      aligners:
+        - bwa
+        #- ngm
+      
+      # Against which references should we align?
+      references:
+        # Remember, each reference here must be defined in
+        # data_paths/references above.
+        - lambda
+
+      # Should we extract unmapped reads from each BAM?
+      unmapped_reads: true
+      # Should BAMs be kept longer than needed?
+      keep_bams: false 
+      # Generate samtools statistics?
+      stats: false
+      # Use qualimap to generate additional statistics?
+      qualimap: true
+
+    # Taxonomic classification
+    kraken:
+      dbs:
+        # Remember, each database here must be defined in data_paths/kraken
+        # above.
+        - Viral
+      # Output (un)-classified read fastqs from Kraken?
+      reads: false
+    #kaiju:
+    #  dbs:
+    #    # Remember, each database here must be defined in data_paths/kaiju
+    #    # above.
+    #    - Viral
+    #centrifuge:
+    #  dbs: []
+    #    # Centrifuge is disabled in this example as we use this in CI testing
+    #    # and centrifuge uses too much RAM, causing our tests to fail. To run
+    #    # centrifuge, supply an array/list of databases here as one does above
+    #    # for Kraken & Kaiju, for exampe:
+    #    #
+    #    # - lambda
+    
+    # Make a sample_R1/R2.fastq.gz file per sample?
+    persample_reads: false
+
+    # Run FastQC per input run/library?
+    fastqc: true
+
+    # Calculate distances with Mash/KWIP?
+    mash: true
+    kwip: false
+
+    # Variant calling
+    varcall:
+      # Which variant callers to use?
+      callers:
+        - mpileup
+        - freebayes
+        #- deepvariant
+      # Which short read aligners to use for variant calling? (can be
+      # more/less/different to the align section above)
+      aligners:
+        - bwa
+      # Which references to use for variant calling? (again can be
+      # more/less/different to the references used for read alignment based
+      # analyses above).
+      refs:
+        - lambda
+
+      # Which set of filter expressions to use? (see tool_settings section
+      # below). CRITICAL NOTE: deepvariant calls will not be subject to these
+      # filters.
+      filters:
+        - default
+
+      # Depth per sample before we either discard a site or thin reads. Set
+      # this conservatively high, as the behaviour is different between variant
+      # callers: Freebayes skips sites with more than this many reads per
+      # sample on average, whereas mpileup subsamples to this many reads.
+      max_depth_per_sample: 400
+
+      # Only genotype the N best alleles. A considerable performance tunable,
+      # especially for freebayes.
+      best_n_alleles: 4
+
+      # At least 4 reads in at least one sample to call it a variant
+      min_alt_count: 4
+
+      # Organism's ploidy?
+      ploidy: 2
+
+      # Prior on the proportion of variable sites (Θ)
+      theta_prior: 0.01
+
+      # Use SNPEff to annotate variant effects? Requires a rather specific set
+      # of precomputed references, refer to the SNPeff docs. Personally I've
+      # had better luck with bcftools csq, which will be supported here soon.
+      snpeff: false
+
+
+tool_settings:
+  # Compression level. This sets a trade-off between compression time and disk
+  # usage. If disk is limiting, increase, if CPUS expensive, decrease. Default
+  # should be 6.
+  ziplevel: 6
+
+  samtools:
+    # Sort memory per thread
+    sortmem_mb: 100
+
+  ngm:
+    # Alignment speed-sensitivity tradeoff, see NGM docs:
+    # https://github.com/Cibiv/NextGenMap/wiki/Documentation#general
+    sensitivity: 0.5
+
+  adapterremoval:
+    # This mapping is keyed by the qc_type column of the provided metadata,
+    # allowing for differing QC settings per input. If no such column is found,
+    # then we use the __default__ value as below.
+    
+    # global defaults.
+    __default__:
+      adapter_file: "rawdata/adapters.txt"
+      minqual: 20
+      qualenc: 33
+      maxqualval: 45
+
+  # Kwip and Mash settings, constant for all samplesets (TODO: move to per sampleset)
+  kwip:
+    kmer_size: 21
+    sketch_size: 300000000
+  mash:
+    kmer_size: 21
+    sketch_size: 100000
+
+  varcall:
+    # Per-aligner minimum MAPQ thresholds for using a read.
+    minmapq:
+      # bwa scores approximately follow a PHRED scale (-10*log10(p))
+      bwa: 30
+      # NGM scores are bonkers, and don't follow a particularly clear scale. In
+      # practice ~10 seems appropriate
+      ngm: 10
+
+    # Minimum base quality to count *base* in pileup
+    minbq: 15 
+    
+    # Coverage per region across all samples. This is used to partition the
+    # genome in a coverage-aware manner with goleft indexcov.
+    # The values below are stupidly low for testing purposes, you should
+    # increase the to at least the numbers in the comments.
+    region_coverage_threshold:
+      mpileup:    5  # 10000
+      freebayes:  5  #  1000
+
+    # Filters. These are series of command line arguments to pass to bcftools
+    # view. These filters apply while multiallelic variants have been
+    # decomposed into multiple overlapping variant calls. This allows e.g.
+    # allele frequency filters to be performed on a per-allele basis. Please
+    # only very lighly filter variants, as variant filtering is a highly task-
+    # and question-specific decision, and these variant files should be good
+    # for use in any downstream application.
+    filters:
+      default: >
+        -i 'QUAL >= 10 &&
+            INFO/DP >= 5 &&
+            INFO/AN >= 3'
+
+  # To avoid errors with overly long command lines, or "too many open files",
+  # we merge region bcfs in two rounds, first to per-group bcfs with each group
+  # containing this number of regions, then we merge the groups to the final
+  # global bcf.
+  bcf_merge_groupsize: 900
