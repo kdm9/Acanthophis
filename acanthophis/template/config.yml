@@ -16,18 +16,33 @@ data_paths:
     lambda:
       fasta: "rawdata/reference/genome.fa"
 
-  # Taxon profiling databases
+  # Taxon profiling databases. These can either be downloaded as a pre-compiled
+  # database, or built by the corresponding tool from some database. In the
+  # case of custom databases, obviously you'll need to create it yourself. See
+  # each tool's documetation on how todo that. Also note, that paths in these
+  # sections need not live within the Acanthophis directory, so if you have
+  # e.g. a directory of databases shared between many users/projects, you can
+  # provide an abosolute path to it here.
   kraken:
+    # Kraken databases can be downloaded from
+    # https://benlangmead.github.io/aws-indexes/k2 or built from local
+    # databases using `kraken2-build`.
     Viral:
       dir: "rawdata/kraken/Viral"
       # If the database contains Bracken dbs, please uncomment the below and
       # specify the bracken db sequence/kmer length to use
       #bracken: 150
   kaiju:
+    # Kaiju databases can be downloaded from
+    # https://bioinformatics-centre.github.io/kaiju/downloads.html or built
+    # from local databases using `kaiju-makedb`
     Viral:
       nodes: "rawdata/kaiju/Viral/nodes.dmp"
       fmi: "rawdata/kaiju/Viral/kaiju_db_viruses.fmi"
   centrifuge:
+    # Centrifuge databases can be downloaded from
+    # https://ccb.jhu.edu/software/centrifuge/ or `centrifuge-download`, and
+    # built from a local database using `centrifuge-build`.
     lambda: "rawdata/centrifuge/lambda/lambda.1.cf"
   # This directory should contain nodes.dmp and names.dmp from NCBI's taxdump.tar.gz
   ncbi_taxonomy: "rawdata/ncbitax/"
@@ -45,7 +60,6 @@ data_paths:
 # setfile_glob above). 
 
 samplesets:
-
   # `all_samples` is a inbuilt sample set, corresponding to all samples in the
   # metadata file. If you only have one logical set of samples, you can use
   # this as the sampleset name. If you have multiple sample sets, please
@@ -161,9 +175,6 @@ samplesets:
       # had better luck with bcftools csq, which will be supported here soon.
       # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       snpeff: false
-      
-      # Not for Deepvariant
-      max_depth_per_sample: 1000
 
 
 tool_settings:
@@ -202,7 +213,11 @@ tool_settings:
     sketch_size: 100000
 
   varcall:
+    # Inference model for DeepVariant. Can be WGS for whole genome shotgun
+    # short reads, or any of  [WGS,WES,PACBIO,ONT_R104,HYBRID_PACBIO_ILLUMINA].
+    # See the deepvariant documentation for more information.
     deepvariant_model: "WGS"
+
     # Per-aligner minimum MAPQ thresholds for using a read.
     minmapq:
       # bwa scores approximately follow a PHRED scale (-10*log10(p))

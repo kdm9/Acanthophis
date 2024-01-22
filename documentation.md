@@ -26,6 +26,9 @@ acanthophis-init /path/to/someproject/
 # issue on github.
 vim config.yml
 
+# You will of course need to copy/link in your input files and metadata, please
+# see documentation below.
+
 # Run snakemake
 snakemake -j 16 -p --use-conda --conda-frontend mamba --ri
 
@@ -111,15 +114,24 @@ Now, we have a complete workflow (minus software and input data of course), and 
 
 # Acanthophis setup
 
-Acanthophis is distributed as a python package. I recommend installing it using pip:
+Acanthophis is distributed as a python package, and can be installed with either conda or pip. Not that Acanthophis assumes one is using snakemake version 8, which requires at least python3.11. For this reason, I recommend using conda/mamba to install it.
+
+```
+mamba create -n someproject python snakemake=8 pip natsort
+mamba activate someproject
+python3 -m pip install acanthophis
+```
+
+Alternatively, with pip:
 
 ```bash
-python3 -m pip install acanthophis 'snakemake[all]' natsort
+python3 -m pip install acanthophis snakemake=8 natsort
 ```
+
 
 This should have also installed Snakemake along with the many dependencies of Snakemake.
 
-We should now have an `acanthophis-init` command:
+We will now have an `acanthophis-init` command:
 
 ```
 acanthophis-init --help
@@ -206,18 +218,33 @@ data_paths:
     lambda:
       fasta: "rawdata/reference/genome.fa"
 
-  # Taxon profiling databases
+  # Taxon profiling databases. These can either be downloaded as a pre-compiled
+  # database, or built by the corresponding tool from some database. In the
+  # case of custom databases, obviously you'll need to create it yourself. See
+  # each tool's documetation on how todo that. Also note, that paths in these
+  # sections need not live within the Acanthophis directory, so if you have
+  # e.g. a directory of databases shared between many users/projects, you can
+  # provide an abosolute path to it here.
   kraken:
+    # Kraken databases can be downloaded from
+    # https://benlangmead.github.io/aws-indexes/k2 or built from local
+    # databases using `kraken2-build`.
     Viral:
       dir: "rawdata/kraken/Viral"
       # If the database contains Bracken dbs, please uncomment the below and
       # specify the bracken db sequence/kmer length to use
       #bracken: 150
   kaiju:
+    # Kaiju databases can be downloaded from
+    # https://bioinformatics-centre.github.io/kaiju/downloads.html or built
+    # from local databases using `kaiju-makedb`
     Viral:
       nodes: "rawdata/kaiju/Viral/nodes.dmp"
       fmi: "rawdata/kaiju/Viral/kaiju_db_viruses.fmi"
   centrifuge:
+    # Centrifuge databases can be downloaded from
+    # https://ccb.jhu.edu/software/centrifuge/ or `centrifuge-download`, and
+    # built from a local database using `centrifuge-build`.
     lambda: "rawdata/centrifuge/lambda/lambda.1.cf"
   # This directory should contain nodes.dmp and names.dmp from NCBI's taxdump.tar.gz
   ncbi_taxonomy: "rawdata/ncbitax/"
@@ -231,13 +258,12 @@ data_paths:
 #######################################################################
 #
 # This section is where we tell snakemake which files to generate for each set
-# of samples. Samplesets are configured as files of sample names (see
+# of samples.  Samplesets are configured as files of sample names (see
 # setfile_glob above). 
 
 samplesets:
-
   # `all_samples` is a inbuilt sample set, corresponding to all samples in the
-  # runlib2samp_file from above. If you only have one logical set of samples, you can use
+  # metadata file. If you only have one logical set of samples, you can use
   # this as the sampleset name. If you have multiple sample sets, please
   # duplicate this entire section for each sample set, and modify the settings
   # accordingly.
@@ -304,6 +330,8 @@ samplesets:
       callers:
         - mpileup
         - freebayes
+        - deepvariant
+
       # Which short read aligners to use for variant calling? (can be
       # more/less/different to the align section above)
       aligners:
@@ -314,7 +342,9 @@ samplesets:
       refs:
         - lambda
 
-      # Which set of filter expressions to use? (see tool_settings section below)
+      # Which set of filter expressions to use? (see tool_settings section
+      # below). CRITICAL NOTE: deepvariant calls will not be subject to these
+      # filters.
       filters:
         - default
 
@@ -322,24 +352,30 @@ samplesets:
       # this conservatively high, as the behaviour is different between variant
       # callers: Freebayes skips sites with more than this many reads per
       # sample on average, whereas mpileup subsamples to this many reads.
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       max_depth_per_sample: 400
 
       # Only genotype the N best alleles. A considerable performance tunable,
       # especially for freebayes.
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       best_n_alleles: 4
 
       # At least 4 reads in at least one sample to call it a variant
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       min_alt_count: 4
 
       # Organism's ploidy?
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       ploidy: 2
 
       # Prior on the proportion of variable sites (Θ)
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       theta_prior: 0.01
 
       # Use SNPEff to annotate variant effects? Requires a rather specific set
       # of precomputed references, refer to the SNPeff docs. Personally I've
       # had better luck with bcftools csq, which will be supported here soon.
+      # CRITICAL NOTE: deepvariant calls will not be subject to these filters.
       snpeff: false
 
 
@@ -379,6 +415,11 @@ tool_settings:
     sketch_size: 100000
 
   varcall:
+    # Inference model for DeepVariant. Can be WGS for whole genome shotgun
+    # short reads, or any of  [WGS,WES,PACBIO,ONT_R104,HYBRID_PACBIO_ILLUMINA].
+    # See the deepvariant documentation for more information.
+    deepvariant_model: "WGS"
+
     # Per-aligner minimum MAPQ thresholds for using a read.
     minmapq:
       # bwa scores approximately follow a PHRED scale (-10*log10(p))
@@ -494,6 +535,8 @@ snakemake \
     --use-conda \
     --conda-frontend mamba
 ```
+
+
 
 One can adjust the number of local cores or cluster jobs used with the `-j` flag.
 
