@@ -11,30 +11,8 @@ pipelines from Acanthophis to call variants in this simulated dataset.
 
 To run this test pipeline, one must:
 
-### Quick mode: the core pipeline using the CI suite.
-
-Two scripts 
-```bash
-
-## Complete version
-
-Either `bash setup.sh && bash test.sh`, or:
-
-```bash
-conda env create -f environment-setup.yml -n acanthophis-demo
-conda activate acanthophis-demo
-# Install Acanthophis
-pip install -e ..
-
-# Initalise Acanthophis
-acanthophis-init .
-
-# the generate the fake dataset
-snakemake --snakefile Snakefile.generate-rawdata -j 8 --use-conda
-
-# and run the actual test dataset
-snakemake -j 8 --use-conda
-```
+1. **Generate the test dataset: `bash setup.sh`**. Uses a population genetic simulation & then read simulation to generate a fake dataset.  
+2. **Run the tests: `bash test.sh --quick`**. Deploys the Acanthophis pipeline, and runs a slightly reduced pipeline that requires only conda (every single step of the entire pipeline can be run by omitting `--quick`, but this can take some time)
 
 
 To initialise your own workflow, [follow the main
