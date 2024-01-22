@@ -74,7 +74,7 @@ Acanthophis uses `bcftools mpileup` and/or `freebayes` to call raw variants, usi
 
 ## Stage 4: Taxon profiling
 
-Acanthophis uses any of Kraken 2 [@wood19_improved], Bracken [@lu17_brackenestimating], Kaiju [@menzel16_fastsensitive], Centrifuge [@kim16_centrifugerapid], and Diamond [@buchfink15_fastsensitive] to create taxonomic profiles for each sample against any number of taxon identification databases (e.g. those provided with aforementioned methods, or from public sequence databases). We then use taxpasta [@beber23_taxpastataxonomic] to combine multiple profiles into tables for easy downstream use.
+Acanthophis can create taxonomic profiles of each sample with reference to either public sequence databases (e.g. NCBI's `nt` or `refseq`), or user-supplied databases. Acanthophis can utilise any of Kraken 2 [@wood19_improved], Bracken [@lu17_brackenestimating], Kaiju [@menzel16_fastsensitive], Centrifuge [@kim16_centrifugerapid], and Diamond [@buchfink15_fastsensitive] to create taxonomic profiles for each sample against any number of taxon identification databases; most tools supply pre-computed indices for public databases. Acanthophis can then optionally use taxpasta [@beber23_taxpastataxonomic] to combine multiple profiles into combined tables for easy downstream use.
 
 
 ## Stage 5: *De novo* Estimates of Genetic Dissimilarity
@@ -84,7 +84,7 @@ Acanthophis can use either `kWIP` [@murray17_kwipkmer] or Mash [@ondov16_mashfas
 
 ## Stage 6: Reporting and Statistics
 
-Throughout all pipeline stages, various tools output summaries of their actions and/or outputs. We optionally combine these into unified reports by pipeline stage and sample set using MultiQC [@ewels16_multiqcsummarize].
+Throughout all pipeline stages, various tools output summaries of their actions and/or outputs. We optionally combine these into unified reports by pipeline stage and sample set using MultiQC [@ewels16_multiqcsummarize], allowing plotting of raw sequence QC statistics, alignment QC statistics, variant QC statistics, and summarisation of taxonomic identification analyses.
 
 # Acknowledgements
 
