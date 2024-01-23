@@ -36,6 +36,10 @@ snakemake -j 16 -p --use-conda --conda-frontend mamba --ri
 snakemake --profile ./ebio-cluster/
 ```
 
+### Compatablity
+
+While snakemake and Acanthophis are cross-platform, most of the underlying tools are only packaged for and/or only operate on  Linux `x68_64`. Therefore, I only support users on Linux systems. In theory, everything *should* run on OSX or WSL, but the vast majority of users will want to utilise a high performance linux workstation (at least, probably more likely a cluster).
+
 # Contribution & Assistance
 
 If you have anything (advice, docs, code) you'd like to contribute, pull requests are more than welcome. Please discuss any major contribution in a new issue before implementing it, to avoid wasted effort.
