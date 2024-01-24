@@ -19,7 +19,7 @@ mkdir -p output/ tmp/
 touch output/nobackup tmp/nobackup
 
 # If quick, overwrite config with cut-back version
-if [[ "$1" == "--quick" ]]
+if [[ "${1:-notquick}" == "--quick" ]]
 then
     cp .config_quick.yml config.yml
     shift
