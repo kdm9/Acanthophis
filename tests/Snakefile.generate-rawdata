@@ -68,7 +68,7 @@ rule ncbitax:
     log:
         "rawdata/ncbitax/get.log"
     shell:
-        "(mkdir -p {output} && cd {output} && wget -c ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz && tar -zxvf taxdump.tar.gz) &>{log}"
+        "(mkdir -p {output} && cd {output} && wget -O taxdump.tar.gz https://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz && tar -zxvf taxdump.tar.gz) &>{log}"
 
 
 rule centrifuge:
