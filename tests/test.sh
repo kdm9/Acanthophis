@@ -19,11 +19,14 @@ mkdir -p output/ tmp/
 touch output/nobackup tmp/nobackup
 
 # If quick, overwrite config with cut-back version
+SDM=(conda)
 if [[ "${1:-notquick}" == "--quick" ]]
 then
     cp .config_quick.yml config.yml
     shift
+else
+    SDM+=(apptainer)
 fi
 
 # Run pipeline
-snakemake -j $(nproc 2>/dev/null || echo 2)  --software-deployment-method conda --ri "${@}"
+snakemake -j $(nproc 2>/dev/null || echo 2)  --software-deployment-method "${SDM[@]}" --ri "${@}"
