@@ -22,17 +22,10 @@ jobs:
           channel-priority: true
           auto-update-conda: true
           activate-environment: true
-      - name: Cache generated inputs
-        id: cache-inputs
-        uses: actions/cache@v3
-        with:
-          path: tests/rawdata
-          key: rawdata-${{ hashFiles('tests/Snakefile.generate-rawdata') }}-${{ hashFiles('acanthophis/template/environment.yml') }}-${{ hashFiles('acanthophis/template/workflow/rules/envs/*.yml') }}
       
       - name: setup data
         shell: bash -el {0}
         run: |
-          mamba info
           pushd tests
           bash -el setup.sh
           popd
