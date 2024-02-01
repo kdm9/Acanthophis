@@ -58,7 +58,7 @@ Across the entire pipeline, Acanthophis operates on 'sample sets', named groups 
 
 ## Stage 1: Raw reads to per-sample reads
 
-Input data consists of FASTQ files per **run** of each **library** corresponding to a **sample**. For each **runlib** (one run of one library), Acanthophis uses `AdapterRemoval` [@schubert16_adapterremoval] to remove low quality and adaptor sequences, and optionally to merge overlapping read pairs. It then uses `FastQC` to summarise sequence QC before and after `AdaptorRemoval`. 
+Input data consists of FASTQ files per **run** of each **library** corresponding to a **sample**. For each **run** of each **library**, Acanthophis uses `AdapterRemoval` [@schubert16_adapterremoval] to remove low quality and adaptor sequences, and optionally to merge overlapping read pairs. It then uses `FastQC` to summarise sequence QC before and after `AdaptorRemoval`. 
 
 
 ## Stage 2: Alignment to reference(s)
