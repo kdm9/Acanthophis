@@ -25,7 +25,7 @@ authors:
     affiliation: "2,3"
     corresponding: true
 affiliations:
- - name: Max Planck Institute for Biology, Tübingen, Deutschland
+ - name: Max Planck Institute for Biology Tübingen, 72076 Tübingen, Germany
    index: 1
  - name: Research School of Biology, Australian National University, Canberra, Australia
    index: 2
@@ -37,7 +37,7 @@ bibliography: paper.bib
 
 # Summary
 
-Acanthophis is a comprehensive pipeline for the joint analysis of both plant genetic variation and variation in the composition and abundance of plant-associated microbiomes (together, the "hologenome").
+Acanthophis is a comprehensive pipeline for the joint analysis of both host genetic variation and variation in the composition and abundance of host-associated microbiomes (together, the "hologenome").
 Implemented in Snakemake [@koster12_snakemakescalable], Acanthophis handles data from raw FASTQ read files through quality control, alignment of the reads to a plant reference, variant calling, taxonomic classification and quantification of microbes, and metagenome analysis.
 The workflow contains numerous practical optimisations, both to reduce disk space usage and maximise utilisation of computational resources. 
 Acanthophis is available under the Mozilla Public Licence v2 at <https://github.com/kdm9/Acanthophis> as a python package installable from conda or PyPI (`pip install acanthophis`).
@@ -45,14 +45,14 @@ Acanthophis is available under the Mozilla Public Licence v2 at <https://github.
 # Statement of Need
 
 Understanding plant biology benefits from ecosystem-scale analysis of genetic variation, and increasingly demands the characterisation of not only plant genomes but also the genomes of their associated microbes.
-Such analyses are often data intensive, particularly at the scale required for quantitative analyses, i.e. hundreds to thousands of host individuals [@regalado20_combining].
+Such analyses are often data intensive, particularly at the scale required for quantitative analyses, i.e. hundreds to thousands of samples [@regalado20_combining].
 They demand computationally-efficient pipelines that perform both host genotyping and host-associated microbiome characterisation in a consistent, flexible, and reproducible fashion.
 
 Currently, no such unified pipelines exist. Previous pipelines perform only a subset of these tasks (e.g. Snakemake's variant calling pipeline; @koster21_snakemakeworkflows). In addition, most host-aware microbiome analysis pipelines do not allow for genotyping and/or assume an animal host (e.g. Taxprofiler; @yates23_nfcore). Acanthophis has attracted many users, and has been used in peer-reviewed journal articles and preprints (e.g. @murray19_landscapedrivers; @ahrens21_genomicconstraints).
 
 # Components and Features
 
-Acanthophis is a pipeline for the analysis of plant population resequencing data. It expects short-read shotgun whole (meta-)genome sequencing data, typically of plants collected in the field (nothing fundamentally prevents Acanthophis operating on long-read data, however additional tools would need to be incorporated, which will happen given sufficient user demand). A typical dataset might be 10s-1000s of samples from one or multiple closely related species, sequenced with 2x150bp paired-end short read sequencing. In a plant-microbe interaction genomics study, these plants and therefore sequencing libraries can contain microbes (a "hologenome"), however datasets focusing only on host genome variation are also catered for. Acanthophis can be configured to do any of the following analyses: mapping reads to a reference, calling variants, annotating variant effects, estimating genetic distances directly from sequence reads (*de novo*), and profiling and/or assembling metagenomes. While we developed Acanthophis to handle plant data, there is no reason why it cannot be applied to other taxa, however some parameters may need adjustment (see below). Philosophically, Acanthophis aims for maximum efficiency and flexibility, and therefore does not bake any particular biological question into its outputs. As such, each user should for example filter the resulting variant files as appropriate for their biological question(s), and likewise apply other post-processing as needed.
+Acanthophis is a pipeline for the analysis of plant population resequencing data. It expects short-read shotgun whole (meta-)genome sequencing data, typically of plants collected in the field (nothing fundamentally prevents Acanthophis operating on long-read data, however additional tools would need to be incorporated, which will happen given sufficient user demand). A typical dataset might be 10s-1000s of samples from one or multiple closely related species, sequenced with 2x150bp paired-end short read sequencing. In a plant-microbe interaction genomics study, these plants and therefore sequencing libraries can contain microbial DNA (a "hologenome"), but datasets focusing only on host genome variation are also possible. Acanthophis can be configured to do any of the following analyses: mapping reads to a reference, calling variants, annotating variant effects, estimating genetic distances directly from sequence reads (*de novo*), and profiling and/or assembling metagenomes. While we developed Acanthophis to handle plant data, there is no reason why it cannot be applied to other taxa, although some parameters may need adjustment (see below). Philosophically, Acanthophis aims for maximum efficiency and flexibility, and therefore does not bake any particular biological question into its outputs. As such, each user should for example filter the resulting variant files as appropriate for their biological question(s), and likewise apply other post-processing as needed.
 
 Across the entire pipeline, Acanthophis operates on 'sample sets', named groups of one or more samples, and each sample can be in any number of sample sets. The pipeline is configured via a global `config.yaml` file, in which one can configure the pipeline per sample-set. This way, one can configure the analyses to be run (most of the below analysis stages can be skipped if not needed), as well as tool-specific settings or thresholds. We provide a documented template as well as a reproducible workflow to simulate test data, which can be used as a basis for customisation. While Acanthophis is cross-platform, most of the underlying tools are only packaged for and/or only operate on GNU/Linux operating systems. Therefore, Acanthophis is only actively supported for users on Linux systems.
 
@@ -78,7 +78,7 @@ Acanthophis can create taxonomic profiles of each sample with reference to eithe
 
 ## Stage 5: *De novo* Estimates of Genetic Dissimilarity
 
-Acanthophis can use either `kWIP` [@murray17_kwipkmer] or Mash [@ondov16_mashfast] to estimate genetic distances between samples without alignment to a reference genome. These features first sketch reads into k-mer sketches, and then calculate pairwise distances among samples.
+Acanthophis can use either `kWIP` [@murray17_kwipkmer] or Mash [@ondov16_mashfast] to estimate genetic distances between samples without alignment to a reference genome. These features first count reads into k-mer sketches, and then calculate pairwise distances among samples.
 
 
 ## Stage 6: Reporting and Statistics
