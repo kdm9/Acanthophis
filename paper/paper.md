@@ -58,7 +58,7 @@ Across the entire pipeline, Acanthophis operates on 'sample sets', named groups 
 
 ## Stage 1: Raw reads to per-sample reads
 
-Input data consists of FASTQ files per **run** of each **library** corresponding to a **sample**. For each **run** of each **library**, Acanthophis uses `AdapterRemoval` [@schubert16_adapterremoval] to remove low quality and adaptor sequences, and optionally to merge overlapping read pairs. It then uses `FastQC` to summarise sequence QC before and after `AdaptorRemoval`. 
+Input data consists of FASTQ files per **run** of each **library** corresponding to a **sample**. For each **run** of each **library**, Acanthophis uses `AdapterRemoval` [@schubert16_adapterremoval] to remove low quality and adapter sequences, and optionally to merge overlapping read pairs. It then uses `FastQC` to summarise sequence QC before and after `AdapterRemoval`. 
 
 
 ## Stage 2: Alignment to reference(s)
@@ -68,7 +68,7 @@ To align reads to reference genomes, Acanthophis can use any of `BWA MEM` [@li13
 
 ## Stage 3: Variant Calling
 
-Acanthophis uses `bcftools mpileup` and/or `freebayes` to call raw variants, using priors and thresholds configurable for each sample set. It then normalises variants with `bcftools norm`, splits multi-allelic variants, filters each allele with per-sample set filters, and combines filter-passing bialelic sites back into single multi-allelic sites, merges region-level VCFs, indexes, and calculates statistics on these final VCF files. Acanthophis provides two alternative approaches to parallelize variant calling: either a static list of non-overlapping genome windows (supplied in a BED file), or genome bins with approximately equal amounts of data, which are automatically generated using mosdepth [@pedersen_mosdepth_2018].
+Acanthophis uses `bcftools mpileup` and/or `freebayes` to call raw variants, using priors and thresholds configurable for each sample set. It then normalises variants with `bcftools norm`, splits multi-allelic variants, filters each allele with per-sample set filters, and combines filter-passing bialelic sites back into single multi-allelic sites, merges region-level VCFs, indexes, and calculates statistics on these final VCF files. Acanthophis provides two alternative approaches to parallelise variant calling: either a static list of non-overlapping genome windows (supplied in a BED file), or genome bins with approximately equal amounts of data, which are automatically generated using mosdepth [@pedersen_mosdepth_2018].
 
 
 ## Stage 4: Taxon profiling
