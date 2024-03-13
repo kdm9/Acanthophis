@@ -45,10 +45,10 @@ Acanthophis is available under the Mozilla Public Licence v2 at <https://github.
 # Statement of Need
 
 Understanding plant biology benefits from ecosystem-scale analysis of genetic variation, and increasingly demands the characterisation of not only plant genomes but also the genomes of their associated microbes.
-Such analyses are often data intensive, particularly at the scale required for quantitative analyses, i.e. hundreds to thousands of samples [@regalado_combining_2020].
+Such analyses are often data intensive, particularly at the scale required for quantitative analyses, i.e. hundreds to thousands of samples [@regalado20_combining].
 They demand computationally-efficient pipelines that perform both host genotyping and host-associated microbiome characterisation in a consistent, flexible, and reproducible fashion.
 
-Currently, no such unified pipelines exist. Previous pipelines perform only a subset of these tasks (e.g. Snakemake's variant calling pipeline; @koster21_snakemakeworkflows). In addition, most host-aware microbiome analysis pipelines do not allow for genotyping and/or assume an animal host (e.g. Taxprofiler; @yates23_nfcore). Acanthophis has attracted many users, and has been used in peer-reviewed journal articles and preprints (e.g. @murray_landscape_2019; @ahrens_genomic_2021).
+Currently, no such unified pipelines exist. Previous pipelines perform only a subset of these tasks (e.g. Snakemake's variant calling pipeline; @koster21_snakemakeworkflows). In addition, most host-aware microbiome analysis pipelines do not allow for genotyping and/or assume an animal host (e.g. Taxprofiler; @yates23_nfcore). Acanthophis has attracted many users, and has been used in peer-reviewed journal articles and preprints (e.g. @murray19_landscapedrivers; @ahrens21_genomicconstraints).
 
 # Components and Features
 
@@ -68,17 +68,17 @@ To align reads to reference genomes, Acanthophis can use any of `BWA MEM` [@li13
 
 ## Stage 3: Variant Calling
 
-Acanthophis uses `bcftools mpileup` and/or `freebayes` to call raw variants, using priors and thresholds configurable for each sample set. It then normalises variants with `bcftools norm`, splits multi-allelic variants, filters each allele with per-sample set filters, and combines filter-passing bialelic sites back into single multi-allelic sites, merges region-level VCFs, indexes, and calculates statistics on these final VCF files. Acanthophis provides two alternative approaches to parallelise variant calling: either a static list of non-overlapping genome windows (supplied in a BED file), or genome bins with approximately equal amounts of data, which are automatically generated using mosdepth [@pedersen_mosdepth_2018].
+Acanthophis uses `bcftools mpileup` and/or `freebayes` to call raw variants, using priors and thresholds configurable for each sample set. It then normalises variants with `bcftools norm`, splits multi-allelic variants, filters each allele with per-sample set filters, and combines filter-passing bialelic sites back into single multi-allelic sites, merges region-level VCFs, indexes, and calculates statistics on these final VCF files. Acanthophis provides two alternative approaches to parallelise variant calling: either a static list of non-overlapping genome windows (supplied in a BED file), or genome bins with approximately equal amounts of data, which are automatically generated using mosdepth [@pedersen18_mosdepthquick].
 
 
 ## Stage 4: Taxon profiling
 
-Acanthophis can create taxonomic profiles of each sample with reference to either public sequence databases (e.g. NCBI's `nt` or `refseq`), or user-supplied databases. Acanthophis can utilise any of Kraken 2 [@wood_improved_2019], Bracken [@lu17_brackenestimating], Kaiju [@menzel16_fastsensitive], Centrifuge [@kim16_centrifugerapid], and Diamond [@buchfink_sensitive_2021] to create taxonomic profiles for each sample against any number of taxon identification databases; most tools supply pre-computed indices for public databases. Acanthophis can then optionally use taxpasta [@beber23_taxpastataxonomic] to merge multiple profiles into a single combined table for easy downstream use.
+Acanthophis can create taxonomic profiles of each sample with reference to either public sequence databases (e.g. NCBI's `nt` or `refseq`), or user-supplied databases. Acanthophis can utilise any of Kraken 2 [@wood19_improved], Bracken [@lu17_brackenestimating], Kaiju [@menzel16_fastsensitive], Centrifuge [@kim16_centrifugerapid], and Diamond [@buchfink21_sensitive] to create taxonomic profiles for each sample against any number of taxon identification databases; most tools supply pre-computed indices for public databases. Acanthophis can then optionally use taxpasta [@beber23_taxpastataxonomic] to merge multiple profiles into a single combined table for easy downstream use.
 
 
 ## Stage 5: *De novo* Estimates of Genetic Dissimilarity
 
-Acanthophis can use either `kWIP` [@murray_kwip:_2017] or Mash [@ondov_mash:_2016] to estimate genetic distances between samples without alignment to a reference genome. These features first count reads into k-mer sketches, and then calculate pairwise distances among samples.
+Acanthophis can use either `kWIP` [@murray17_kwipkmer] or Mash [@ondov16_mashfast] to estimate genetic distances between samples without alignment to a reference genome. These features first count reads into k-mer sketches, and then calculate pairwise distances among samples.
 
 
 ## Stage 6: Reporting and Statistics
