@@ -1,8 +1,7 @@
 # Acanthophis
 
 
-[![DOI](https://zenodo.org/badge/345496657.svg)](https://zenodo.org/badge/latestdoi/345496657)
-
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.06062/status.svg)](https://doi.org/10.21105/joss.06062)
 
 A reusable, comprehensive, opinionated Snakemake pipeline for plant-microbe genomics and plant variant calling.
 
