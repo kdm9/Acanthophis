@@ -1,0 +1,54 @@
+cff-version: "1.2.0"
+authors:
+- email: kdmpapers@gmail.com
+  family-names: Murray
+  given-names: Kevin D.
+  orcid: "https://orcid.org/0000-0002-2466-1917"
+- family-names: Borevitz
+  given-names: Justin O.
+  orcid: "https://orcid.org/0000-0001-8408-3699"
+- family-names: Weigel
+  given-names: Detlef
+  orcid: "https://orcid.org/0000-0002-2114-7963"
+- family-names: Warthmann
+  given-names: Norman
+  orcid: "https://orcid.org/0000-0002-1178-8409"
+contact:
+- email: kdmpapers@gmail.com
+  family-names: Murray
+  given-names: Kevin D.
+  orcid: "https://orcid.org/0000-0002-2466-1917"
+- family-names: Warthmann
+  given-names: Norman
+  orcid: "https://orcid.org/0000-0002-1178-8409"
+doi: 10.5281/zenodo.10795245
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - email: kdmpapers@gmail.com
+    family-names: Murray
+    given-names: Kevin D.
+    orcid: "https://orcid.org/0000-0002-2466-1917"
+  - family-names: Borevitz
+    given-names: Justin O.
+    orcid: "https://orcid.org/0000-0001-8408-3699"
+  - family-names: Weigel
+    given-names: Detlef
+    orcid: "https://orcid.org/0000-0002-2114-7963"
+  - family-names: Warthmann
+    given-names: Norman
+    orcid: "https://orcid.org/0000-0002-1178-8409"
+  date-published: 2024-03-25
+  doi: 10.21105/joss.06062
+  issn: 2475-9066
+  issue: 95
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 6062
+  title: "Acanthophis: a comprehensive plant hologenomics pipeline"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.06062"
+  volume: 9
+title: "Acanthophis: a comprehensive plant hologenomics pipeline"
