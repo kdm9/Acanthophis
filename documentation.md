@@ -217,6 +217,18 @@ data_paths:
   references:
     lambda:
       fasta: "rawdata/reference/genome.fa"
+      # By default, Acanthophis automatically generates bins of equal coverage
+      # for parallelising variant calling. However, due to some arcane
+      # snakemake issues, it's sometimes desireable to disable this feature as
+      # it relies on checkpointing. One can alternatively provide a BED file
+      # that Acanthophis will use as regions when variant calling with a given
+      # caller. These should be 4-column bed files (chr, start0, end, name;
+      # with name ignored). These regions need not all be the same size, and
+      # can even be used to only call variants within certain regions, e.g.
+      # when using exon capture or other reduced representation methods.
+      #
+      #region_beds:
+      #  mpileup: "rawdata/reference/genome.fa.1kbp.bed"
 
   # Taxon profiling databases. These can either be downloaded as a pre-compiled
   # database, or built by the corresponding tool from some database. In the
