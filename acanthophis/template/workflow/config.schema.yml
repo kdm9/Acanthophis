@@ -32,10 +32,10 @@ properties:
         additionalProperties:
           type: object
           properties:
-            nodes:
+            dir:
               type: string
-            fmi:
-              type: string
+            bracken:
+              type: integer
             required:
               - dir
               - bracken

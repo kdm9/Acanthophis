@@ -3,7 +3,7 @@
 # please, if you find a bug, raise an issue on github so the fix gets shared
 # with everyone.
 #
-# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+# Copyright 2016-2024 Kevin Murray/Gekkonid Consulting
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -118,6 +118,7 @@ rule mpileup:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     resources: **rule_resources(config, "mpileup", runtime=120, mem_gb=4, cores=1)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     group: "varcall_oneregion"
     shell:
         "( bcftools mpileup"
@@ -168,6 +169,7 @@ rule freebayes:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     resources: **rule_resources(config, "freebayes", runtime=240, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     shell:
         "( freebayes"
         "   --theta {params.theta}"
@@ -199,14 +201,15 @@ rule bcffilter:
         ref=lambda wc: R(config["data_paths"]["references"][wc.ref]["fasta"], keep_local=True),
     output:
         # Not a pipe! can't run all regions separately if this is a pipe into merge
-        bcf=temp(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf")),
+        bcf=temp(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~{filter}/{region}.bcf")),
     log:
-        L("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf.log"),
+        L("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~{filter}/{region}.bcf.log"),
     params:
         filtarg=lambda wc: config["tool_settings"]["varcall"]["filters"][wc.filter].replace('\n', ' ')
     group: "varcall_oneregion"
     resources: **rule_resources(config, "bcffilter", runtime=120, mem_gb=4, cores=1)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     shell:
         "( bcftools norm"
         "   --fasta-ref {input.ref}"
@@ -228,13 +231,14 @@ rule bcffilter:
 
 rule premergevariantidx:
     input:
-        T("variants/filter_split/{path}")
+        T("variants/{stage}_split/{path}")
     output:
-        temp(T("variants/filter_split/{path}.csi"))
+        temp(T("variants/{stage}_split/{path}.csi"))
     log:
-        T("variants/filter_split/{path}.csi.log")
+        T("variants/{stage}_split/{path}.csi.log")
     resources: **rule_resources(config, "variantidx", runtime=720, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     group: "varcall_oneregion"
     shell:
         "bcftools index -f {input}"
@@ -265,7 +269,7 @@ def get_regions(wc, chunked=False):
     regions = []
     with open(regbed) as fh:
         for line in fh:
-            region_chr, region_start, region_stop, _ = line.rstrip("\n").split("\t")
+            region_chr, region_start, region_stop, = line.rstrip("\n").split("\t")[:3]
             region_start = int(region_start) + 1
             regions.append(f"{region_chr}:{region_start}-{region_stop}")
     if chunked:
@@ -275,20 +279,25 @@ def get_regions(wc, chunked=False):
 
 rule bcfmerge2group:
     input:
-        bcf=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf"),
-                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+        bcf=lambda wc: expand(T("variants/{stage}_split/{caller}~{aligner}~{ref}~{sampleset}{filter}/{region}.bcf"),
+                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset,
+                    filter=(f"~{wc.filter}" if wc.filter != "raw" else ""),
+                    stage=("filter" if wc.filter != "raw" else "raw"),
                     region=get_regions(wc, chunked=True)[wc.group]),
-        bcfi=lambda wc: expand(T("variants/filter_split/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}/{region}.bcf.csi"),
-                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
+        bcfi=lambda wc: expand(T("variants/{stage}_split/{caller}~{aligner}~{ref}~{sampleset}{filter}/{region}.bcf.csi"),
+                    caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset,
+                    filter=(f"~{wc.filter}" if wc.filter != "raw" else ""),
+                    stage=("filter" if wc.filter != "raw" else "raw"),
                     region=get_regions(wc, chunked=True)[wc.group]),
         regbed=lambda wc: config["samplesets"][wc.sampleset].get("varcall", {}).get("region_beds", {}).get(wc.ref, {}).get(wc.caller, [])
     output:
-        bcf=T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf"),
-        bcfi=T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf.csi"),
+        bcf=T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~{filter}~{group}.bcf"),
+        bcfi=T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~{filter}~{group}.bcf.csi"),
     log:
-        T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf.log"),
+        T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~{filter}~{group}.bcf.log"),
     resources: **rule_resources(config, "bcfmerge2group", runtime=1440, mem_gb=12, cores=4)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     params:
     shell:
         "( bcftools concat"
@@ -304,16 +313,17 @@ rule bcfmerge2group:
 
 rule bcfmerge:
     input:
-        bcf=lambda wc: expand(T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~{group}.bcf"),
+        bcf=lambda wc: expand(T("variants/group_merged/{caller}~{aligner}~{ref}~{sampleset}~{filter}~{group}.bcf"),
                     caller=wc.caller, aligner=wc.aligner, ref=wc.ref, sampleset=wc.sampleset, filter=wc.filter,
                     group=get_regions(wc, chunked=True)),
         regbed=lambda wc: config["samplesets"][wc.sampleset].get("varcall", {}).get("region_beds", {}).get(wc.ref, {}).get(wc.caller, [])
     output:
-        vcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz"),
+        vcf=P("variants/final/{caller}~{aligner}~{ref}~{sampleset}~{filter}.vcf.gz"),
     log:
-        L("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.vcf.gz.log"),
+        L("variants/final/{caller}~{aligner}~{ref}~{sampleset}~{filter}.vcf.gz.log"),
     resources: **rule_resources(config, "bcfmerge", runtime=1440, mem_gb=12, cores=64)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
@@ -336,6 +346,7 @@ rule vcfstats:
         P("variants/{path}.vcf.gz.stats")
     log: L("variants/{path}.vcf.gz.stats.log")
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     resources: **rule_resources(config, "vcfstats", runtime=720, mem_gb=4, cores=4)
     shell:
         "bcftools stats -s - -d 0,1000,1 --threads {threads} {input} >{output}"
@@ -352,6 +363,7 @@ rule vcf2bcf:
     log: L("{path}.vcf.gz.log"),
     resources: **rule_resources(config, "vcf2bcf", runtime=720, mem_gb=8, cores=8)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
@@ -370,6 +382,7 @@ rule finalvarianttbi:
         P("variants/final/{path}.vcf.gz.tbi"),
     resources: **rule_resources(config, "finalvarianttbi", runtime=720, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     shell:
         "bcftools index -t -f {input}"
 
@@ -381,6 +394,7 @@ rule finalvariantidx:
         P("variants/final/{path}.csi")
     resources: **rule_resources(config, "finalvariantidx", runtime=720, mem_gb=8, cores=1)
     conda: "envs/varcall.yml"
+    container: "docker://ghcr.io/kdm9/varcall:latest"
     shell:
         "bcftools index -f {input}"
 
@@ -390,7 +404,7 @@ rule finalvariantidx:
 #######################################################################
 rule all_filtered_variants:
     input:
-        [P(expand("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
+        [P(expand("variants/final/{caller}~{aligner}~{ref}~{sampleset}~{filter}.{ext}",
                ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "vcf.gz.stats"] if config["tool_settings"].get("varcall", {}).get("make_bcfs", False)
                 else ["vcf.gz", "vcf.gz.csi", "vcf.gz.stats"],
                caller=filter(lambda x: x in ["mpileup", "freebayes"], config["samplesets"][sampleset]["varcall"]["callers"]),

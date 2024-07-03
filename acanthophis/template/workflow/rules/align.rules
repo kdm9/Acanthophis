@@ -3,7 +3,7 @@
 # please, if you find a bug, raise an issue on github so the fix gets shared
 # with everyone.
 #
-# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+# Copyright 2016-2024 Kevin Murray/Gekkonid Consulting
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -22,6 +22,7 @@ rule ngmap_idx:
         L("{path}-index.log"),
     resources: **rule_resources(config, "ngmap_idx", runtime=40, mem_gb=2, cores=1)
     conda: "envs/align.yml"
+    container: "docker://ghcr.io/kdm9/align:latest"
     shell:
         "( ngm"
         "   -r {input.ref}"
@@ -39,6 +40,7 @@ rule ngmap:
     resources: **rule_resources(config, "ngmap", runtime=240, mem_gb=16, cores=8)
     params:
         sensitivity=config["tool_settings"]["ngm"]["sensitivity"],
+    container: "docker://ghcr.io/kdm9/align:latest"
     conda: "envs/align.yml"
     shell:
         "( ngm"
@@ -66,6 +68,7 @@ rule bwaidx:
         R("{path}.pac"),
         R("{path}.sa"),
     conda: "envs/align.yml"
+    container: "docker://ghcr.io/kdm9/align:latest"
     log: L("{path}_index.log"),
     resources: **rule_resources(config, "bwaidx", runtime=20, mem_gb=8)
     shell:
@@ -85,6 +88,7 @@ rule bwamem:
         bam=temp(T("alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam")),
     log: L("alignments/byrun.raw/bwa/{ref}/{run}~{lib}~{sample}.bam.log")
     resources: **rule_resources(config, "bwamem", runtime=240, mem_gb=10, cores=8)
+    container: "docker://ghcr.io/kdm9/align:latest"
     conda: "envs/align.yml"
     shell:
         "( bwa mem"
@@ -112,6 +116,7 @@ rule bam_merge_markdups_sort:
     resources: **rule_resources(config, "bam_merge_markdups_sort", runtime=240, mem_gb=16, disk_gb=50, cores=8)
     log: L("alignments/samples/{aligner}~{ref}~{sample}.bam.log")
     conda: "envs/align.yml"
+    container: "docker://ghcr.io/kdm9/align:latest"
     priority: 2
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
@@ -169,6 +174,7 @@ rule mergebam_set:
     log:
         L("alignments/sets/{aligner}~{ref}~{sampleset}.bam.log"),
     resources: **rule_resources(config, "mergebam_set", runtime=2880, mem_gb=16, disk_gb=1000, cores=64)
+    container: "docker://ghcr.io/kdm9/align:latest"
     conda: "envs/align.yml"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
@@ -195,6 +201,7 @@ rule bamstat_sample:
         L("alignments/bamstats/sample/{aligner}~{ref}~{sample}.samtools.stats.log")
     resources: **rule_resources(config, "bamstat_sample", runtime=120, mem_gb=4, cores=1)
     conda: "envs/align.yml"
+    container: "docker://ghcr.io/kdm9/align:latest"
     shell:
         "(samtools stats -i 5000 -x {input} >{output}) >{log} 2>&1"
 
@@ -208,6 +215,7 @@ rule multiqc_samstats:
         log=L("stats/multiqc/bamstats_{aligner}~{ref}~{sampleset}_multiqc.log"),
     resources: **rule_resources(config, "multiqc_samstats", runtime=30, mem_gb=2, cores=1)
     conda: "envs/qcstats.yml"
+    container: "docker://multiqc/multiqc:v1.20"
     shell:
         "multiqc"
         "   --no-megaqc-upload"
@@ -251,6 +259,7 @@ rule multiqc_qualimap:
         log=L("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.log"),
     resources: **rule_resources(config, "multiqc_qualimap", runtime=30, mem_gb=2, cores=1)
     conda: "envs/qcstats.yml"
+    container: "docker://multiqc/multiqc:v1.20"
     shell:
         "multiqc"
         "   --no-megaqc-upload"
@@ -276,6 +285,7 @@ rule extract_unmapped:
         L("alignments/unmapped_reads/{aligner}~{ref}~{sample}.fastq.gz.log"),
     resources: **rule_resources(config, "extract_unmapped", runtime=120, mem_gb=1, cores=8)
     conda: "envs/align.yml"
+    container: "docker://ghcr.io/kdm9/align:latest"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:

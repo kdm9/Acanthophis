@@ -1,3 +1,14 @@
+# These rules are part of Acanthophis. See https://github.com/kdm9/Acanthophis.
+# This file *could* be modified, but then be careful when you update them. And
+# please, if you find a bug, raise an issue on github so the fix gets shared
+# with everyone.
+#
+# Copyright 2020-2024 Kevin Murray/Gekkonid Consulting
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
+
 
 def PL(fns):
     ret = P(fns)
@@ -16,7 +27,7 @@ def all_sampleset_files(wc):
     if config["samplesets"][wc.sampleset].get("varcall", {}).get("snpeff", False):
         print("  - snpeff")
         everything.update(
-                PL(expand("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}~snpEff.vcf.gz",
+                PL(expand("variants/annotated/{caller}~{aligner}~{ref}~{sampleset}~{filter}~snpEff.vcf.gz",
                  caller=config["samplesets"][wc.sampleset]["varcall"]["callers"],
                  aligner=config["samplesets"][wc.sampleset]["varcall"]["aligners"],
                  ref=config["samplesets"][wc.sampleset]["varcall"]["refs"],
@@ -27,15 +38,23 @@ def all_sampleset_files(wc):
     if "varcall" in config["samplesets"][wc.sampleset]:
         print("  - varcall")
         everything.update(
-               PL(expand("variants/final/{caller}~{aligner}~{ref}~{sampleset}~filtered-{filter}.{ext}",
+               PL(expand("variants/final/{caller}~{aligner}~{ref}~{sampleset}~{filter}.{ext}",
                       ext=["bcf", "bcf.csi", "vcf.gz", "vcf.gz.csi", "vcf.gz.stats"] if config["tool_settings"].get("varcall", {}).get("make_bcfs", False)
                        else ["vcf.gz", "vcf.gz.csi", "vcf.gz.stats"],
-                      caller=config["samplesets"][wc.sampleset]["varcall"]["callers"],
+                      caller=filter(lambda x: x in ["mpileup", "freebayes"], config["samplesets"][wc.sampleset]["varcall"]["callers"]),
                       aligner=config["samplesets"][wc.sampleset]["varcall"]["aligners"],
                       ref=config["samplesets"][wc.sampleset]["varcall"]["refs"],
                       filter=config["samplesets"][wc.sampleset]["varcall"]["filters"],
                       sampleset=wc.sampleset))
         )
+
+        if "deepvariant" in config["samplesets"][wc.sampleset].get("varcall", {}).get("callers", []):
+            everything.update(
+                TL(expand("deepvariant/{aligner}~{ref}~{sampleset}.vcf.gz",
+                       aligner=config["samplesets"][wc.sampleset]["varcall"]["aligners"],
+                       ref=config["samplesets"][wc.sampleset]["varcall"]["refs"],
+                       sampleset=wc.sampleset))
+            )
 
     if "graftm" in config["samplesets"][wc.sampleset]:
         print("  - graftm")
@@ -176,6 +195,8 @@ def all_sampleset_files(wc):
                       aligner=config["samplesets"][wc.sampleset].get("align", {}).get("aligners", []),
                       sampleset=wc.sampleset))
         )
+    if config["samplesets"][wc.sampleset].get("align", {}).get("qualimap", False):
+        print("  - qualimap")
         everything.update(
             PL(expand("stats/multiqc/qualimap_{aligner}~{ref}~{sampleset}_multiqc.html",
                        ref=config["samplesets"][wc.sampleset].get("align", {}).get("references", []),

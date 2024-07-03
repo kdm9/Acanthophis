@@ -3,7 +3,7 @@
 # please, if you find a bug, raise an issue on github so the fix gets shared
 # with everyone.
 #
-# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+# Copyright 2016-2024 Kevin Murray/Gekkonid Consulting
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -101,11 +101,10 @@ def parse_metadata(s2rl_file):
         if s2rl_file.endswith(".tsv"):
             dialect = "excel-tab"
         for run in csv.DictReader(fh, dialect=dialect):
-            if not run["library"] or run["library"].lower().startswith("blank"):
-                # Skip blanks
-                continue
             if run.get("include", "Y").upper() != "Y" or run.get("exclude", "N").upper() == "Y":
                 # Remove non-sequenced ones
+                continue
+            if run.get("exclude_why", ""):
                 continue
             meta.append({k.lower(): v for k, v in run.items()})
     return meta
@@ -119,6 +118,7 @@ def make_runlib2samp(rl2s_meta):
         samp = run["sample"]
         rl2s[rl] = samp
         s2rl[samp].append(rl)
+    print(f"Parsed {len(rl2s)} run-libs from {len(s2rl)} samples")
     return dict(rl2s), dict(s2rl)
 
 

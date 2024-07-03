@@ -3,7 +3,7 @@
 # please, if you find a bug, raise an issue on github so the fix gets shared
 # with everyone.
 #
-# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+# Copyright 2016-2024 Kevin Murray/Gekkonid Consulting
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -53,12 +53,13 @@ rule diamondx_reads2db:
         db=lambda wc: R(config["data_paths"]["diamond"][wc.db]),
         reads=diamondx_reads2db_input,
     output:
-        tsv=P("metagenome/diamondx/{type}/{sample}~{db}.tsv.xz"),
+        tsv=P("metagenome/diamondx/{type}/{sample}~{db}.tsv.zstd"),
     log:
         L("metagenome/diamondx/{type}/{sample}~{db}.tsv.log"),
     benchmark: 
         L("metagenome/diamondx/{type}/{sample}~{db}.tsv.bench.csv"),
     conda: "envs/diamond.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-diamond:latest"
     resources: **rule_resources(config, "diamondx_reads2db", runtime=7200, mem_gb=72, disk_gb=5, cores=24)
     shell:
         'T=/tmp/holopipe_$RANDOM; mkdir -p $T; trap "rm -rf $T" INT EXIT TERM;'
@@ -73,7 +74,7 @@ rule diamondx_reads2db:
         "   --index-chunks 4"
         "   --tmpdir $T"
         "   --ignore-warnings"
-        "   --out >(xz -T{threads} >{output.tsv})"
+        "   --out >(zstd -T{threads} >{output.tsv})"
         " &> {log}"
 
 rule humann:
@@ -196,6 +197,7 @@ rule plass_quant_diamond:
         L("metagenome/plass/{type}/{samplelike}~renamed.faa.quant.blast.tsv.log"),
     benchmark: L("metagenome/plass/{type}/{samplelike}~renamed.faa.quant.blast.tsv.bench.csv"),
     conda: "envs/diamond.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-diamond:latest"
     resources: **rule_resources(config, "plass_quant_diamond", runtime=1440, mem_gb=90, disk_gb=16, cores=32)
     shell:
         "diamond blastx"
@@ -220,6 +222,7 @@ rule plass_diamond:
         L("metagenome/plass/{path}.{db}.blasttab.log")
     benchmark: P("metagenome/plass/{path}.{db}.blasttab.bench.csv")
     conda: "envs/diamond.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-diamond:latest"
     resources: **rule_resources(config, "plass_diamond", runtime=1440, mem_gb=90, disk_gb=16, cores=32)
     shell:
         "diamond blastp"
@@ -298,7 +301,7 @@ rule all_megahit:
 
 rule all_diamondx:
     input:
-        [P(f"metagenome/diamondx/{type}/{sample}~{db}.tsv.xz")
+        [P(f"metagenome/diamondx/{type}/{sample}~{db}.tsv.zstd")
            for sampleset in config["samplesets"]
            for sample in config["SAMPLESETS"][sampleset]
            for type in config["samplesets"][sampleset].get("diamondx", {}).get("types", [])

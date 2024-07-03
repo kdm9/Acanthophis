@@ -3,7 +3,7 @@
 # please, if you find a bug, raise an issue on github so the fix gets shared
 # with everyone.
 #
-# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+# Copyright 2016-2024 Kevin Murray/Gekkonid Consulting
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -26,6 +26,7 @@ rule kraken_noreads:
     log: L("taxonid/kraken/{db}~{sample}.log"),
     benchmark: L("taxonid/kraken/{db}~{sample}.bench.csv"),
     resources: **rule_resources(config, "kraken_noreads", runtime=90, mem_gb=100, disk_gb=24, cores=4)
+    container: "docker://ghcr.io/kdm9/kraken2:latest"
     conda: "envs/kraken.yml"
     params:
         ziplevel=int(config.get("tool_settings", {}).get('ziplevel', 6)) + 2,
@@ -56,6 +57,7 @@ rule kraken_reads:
     benchmark: L("taxonid/kraken/{db}~{sample}.bench.csv"),
     resources: **rule_resources(config, "kraken_reads", runtime=90, mem_gb=100, disk_gb=24, cores=4)
     conda: "envs/kraken.yml"
+    container: "docker://ghcr.io/kdm9/kraken2:latest"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
@@ -83,6 +85,7 @@ rule bracken:
     benchmark: L("taxonid/bracken/{db}~{sample}~k{len}.bench.csv"),
     resources: **rule_resources(config, "bracken", runtime=10, mem_gb=20, disk_gb=24, cores=1)
     conda: "envs/kraken.yml"
+    container: "docker://ghcr.io/kdm9/kraken2:latest"
     shell:
         "bracken"
         "   -d {input.db}"
@@ -106,6 +109,7 @@ rule multiqc_kraken:
     log: L("stats/multiqc/kraken_{db}~{sampleset}_multiqc.log"),
     benchmark: L("stats/multiqc/kraken_{db}~{sampleset}_multiqc.bench.csv"),
     conda: "envs/qcstats.yml"
+    container: "docker://multiqc/multiqc:v1.20"
     resources: **rule_resources(config, "multiqc_kraken", runtime=30, mem_gb=2)
     shell:
         "multiqc"

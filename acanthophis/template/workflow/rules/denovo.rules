@@ -3,7 +3,7 @@
 # please, if you find a bug, raise an issue on github so the fix gets shared
 # with everyone.
 #
-# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+# Copyright 2016-2024 Kevin Murray/Gekkonid Consulting
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -65,6 +65,7 @@ rule mash_sketch_set:
     log: L("mash/{set}~k{ksize}~s{sketchsize}.sketch.msh.log")
     resources: **rule_resources(config, "mash_sketch_set", runtime=2880, mem_gb=16, cores=48)
     conda: "envs/mash.yml"
+    container: "docker://ghcr.io/kdm9/mash:latest"
     shell:
         " mash sketch"
         "   -k {wildcards.ksize}"
@@ -84,6 +85,7 @@ rule mash_dist_set:
         L("mash/{set}~k{ksize}~s{sketchsize}.dist.log")
     resources: **rule_resources(config, "mash_dist_set", runtime=2880, mem_gb=16, cores=48)
     conda: "envs/mash.yml"
+    container: "docker://ghcr.io/kdm9/mash:latest"
     shell:
         "mash dist"
         "   -p {threads}"

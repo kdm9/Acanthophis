@@ -3,7 +3,7 @@
 # please, if you find a bug, raise an issue on github so the fix gets shared
 # with everyone.
 #
-# Copyright 2016-2022 Kevin Murray/Gekkonid Consulting
+# Copyright 2016-2024 Kevin Murray/Gekkonid Consulting
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -33,6 +33,7 @@ rule qcreads_paired_il:
         maxqualval=lambda wc: _qcparam(wc, "maxqualval"),
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     conda: "envs/reads.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-qc:latest"
     shell:
         "( AdapterRemoval"
         "   --file1 {input.reads}"
@@ -68,6 +69,7 @@ rule qcreads_paired_r12:
         maxqualval=lambda wc: _qcparam(wc, "maxqualval"),
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     conda: "envs/reads.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-qc:latest"
     shell:
         "( AdapterRemoval"
         "   --file1 {input.r1}"
@@ -104,6 +106,7 @@ rule qcreads_se:
         maxqualval=lambda wc: _qcparam(wc, "maxqualval"),
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     conda: "envs/reads.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-qc:latest"
     shell:
         "( AdapterRemoval"
         "   --file1 {input.se}"
@@ -133,6 +136,7 @@ rule merge_qcd_reads:
         L("reads/runs/{run}~{lib}.fastq.gz.log"),
     resources: **rule_resources(config, "merge_qcd_reads", runtime=30, mem_gb=1, disk_gb=1, cores=1)
     conda: "envs/reads.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-qc:latest"
     shell:
         "(cat {input} >{output} ) >{log} 2>&1"
 
@@ -145,6 +149,7 @@ rule read_count_librun_indiv:
     log:
         L("stats/reads/readnum_librun/{run}~{lib}.tsv.log"),
     conda: "envs/reads.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-qc:latest"
     resources: **rule_resources(config, "read_count_librun_indiv", runtime=10, mem_gb=1, disk_gb=1)
     shell:
         "( seqhax stats"
@@ -206,6 +211,7 @@ rule split_pair_sample:
         L("reads/samples/{sample}_split.log"),
     resources: **rule_resources(config, "split_pair_sample", runtime=30, mem_gb=1, disk_gb=1, cores=8)
     conda: "envs/reads.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-qc:latest"
     params:
         ziplevel=config.get("tool_settings", {}).get('ziplevel', 6),
     shell:
@@ -236,6 +242,7 @@ rule fastqc_preqc:
         fqczip=P("stats/fastqc/preqc/{run}~{lib}_fastqc.zip"),
     log: L("stats/fastqc/preqc/{run}~{lib}_fastqc.log"),
     resources: **rule_resources(config, "fastqc_preqc", runtime=30, mem_gb=1, cores=1)
+    container: "docker://ghcr.io/kdm9/acanthophis-qc:latest"
     conda: "envs/qcstats.yml"
     shell:
         "(T=$(mktemp -d);"
@@ -256,6 +263,7 @@ rule fastqc_postqc:
         fqczip=P("stats/fastqc/postqc/{run}~{lib}_fastqc.zip"),
     log: L("stats/fastqc/postqc/{run}~{lib}_fastqc.zip.log"),
     resources: **rule_resources(config, "fastqc_postqc", runtime=30, mem_gb=1, cores=1)
+    container: "docker://ghcr.io/kdm9/acanthophis-qc:latest"
     conda: "envs/qcstats.yml"
     shell:
         "set -x; (T=$(mktemp -d);"
@@ -279,6 +287,7 @@ rule multiqc_fastqc:
         log=L("stats/multiqc/reads-{prepost}~{sampleset}_multiqc.log"),
     resources: **rule_resources(config, "multiqc_fastqc", runtime=30, mem_gb=2)
     conda: "envs/qcstats.yml"
+    container: "docker://multiqc/multiqc:v1.20"
     shell:
         "multiqc"
         "   --no-megaqc-upload"
