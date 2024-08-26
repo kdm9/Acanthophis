@@ -9,49 +9,48 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+def metagenome_reads(wc):
+    if wc.type.startswith("unmapped"):
+        key = re.sub("^unmapped~", "", wc.type)
+        return {r: T(f"alignments/unmapped_reads/{key}~{wc.sample}_{R}.fastq.gz") for r in ["R1", "R2", "se"]}
+    elif wc.type == "qcd":
+        return {r: P(f"reads/samples/{wc.sample}_{r}.fastq.gz") for r in ["R1", "R2", "se"]}
+    else:
+        raise ValueError(f"Unknown type '{wc.type}'")
+
 
 rule megahit:
     input:
-        r1=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R1.fastq.gz"),
-        r2=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R2.fastq.gz"),
-        rs=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_se.fastq.gz"),
+        unpack(metagenome_reads),
     output:
-        contigs=P("metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa"),
-    log: L("metagenome/megahit/{aligner}~{ref}~{sample}.log"),
-    benchmark: L("metagenome/megahit/{aligner}~{ref}~{sample}.bench.csv"),
+        contigs=P("metagenome/megahit/{type}/{sample}.contigs.fa"),
+    log: L("metagenome/megahit/{type}~{sample}.log"),
+    benchmark: L("metagenome/megahit/{type}~{sample}.bench.csv"),
     resources: **rule_resources(config, "megahit", runtime=180, mem_gb=16, disk_gb=16, cores=16)
     conda: "envs/megahit.yml"
+    container: "docker://vout/megahit"
     params:
         mem_bytes = lambda wc, resources: resources.mem_mb * 1024,
     shell:
-        "( O=$(dirname {output.contigs})/workdir;"
+        "( O=$(dirname {output.contigs})/workdir_{wildcards.type}_{wildcards.sample};"
         " rm -rf $O;"
         " megahit"
         "   --out-dir $O"
         "   --out-prefix {wildcards.sample}"
         "   --memory {params.mem_bytes}"
-        "   -1 {input.r1}"
-        "   -2 {input.r2}"
-        "   -r {input.rs}"
+        "   -1 {input.R1}"
+        "   -2 {input.R2}"
+        "   -r {input.se}"
         "   --num-cpu-threads {threads}"
         "; cp $O/*.contigs.fa {output.contigs}"
         ") &>{log}"
 
 
-def diamondx_reads2db_input(wc):
-    if wc.type.startswith("unmapped"):
-        key = re.sub("^unmapped~", "", wc.type)
-        return [T(f"alignments/unmapped_reads/{key}~{wc.sample}_{R}.fastq.gz") for r in ["R1", "R2", "se"]]
-    elif wc.type == "qcd":
-        return [P(f"reads/samples/{wc.sample}_{r}.fastq.gz")
-                for r in ["R1", "R2", "se"]]
-    else:
-        raise ValueError(f"Unknown type '{wc.type}'")
 
 rule diamondx_reads2db:
     input:
+        unpack(metagenome_reads),
         db=lambda wc: R(config["data_paths"]["diamond"][wc.db]),
-        reads=diamondx_reads2db_input,
     output:
         tsv=P("metagenome/diamondx/{type}/{sample}~{db}.tsv.zstd"),
     log:
@@ -66,7 +65,7 @@ rule diamondx_reads2db:
         "diamond blastx"
         "   --threads {threads}"
         "   --db {input.db}"
-        "   --query <(zcat {input.reads} | blsl pairslash)"
+        "   --query <(blsl pairs {input.R1} {input.R2} {input.se})"
         "   --fast"
         "   --unal 1"
         "   --outfmt tab qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore"
@@ -77,72 +76,21 @@ rule diamondx_reads2db:
         "   --out >(zstd -T{threads} >{output.tsv})"
         " &> {log}"
 
-rule humann:
-    input:
-        db=lambda wc: R(config["data_paths"]["humann"]),
-        reads=diamondx_reads2db_input,
-    output:
-        gf=P("metagenome/humann/{type}/{sample}/{sample}_genefamilies.tsv"),
-        pa=P("metagenome/humann/{type}/{sample}/{sample}_pathabundance.tsv"),
-        pc=P("metagenome/humann/{type}/{sample}/{sample}_pathcoverage.tsv"),
-    log:
-        tool=L("metagenome/humann/{type}/{sample}/{sample}.log"),
-        std=L("metagenome/humann/{type}/{sample}/{sample}.stdout.log"),
-    benchmark: 
-        L("metagenome/humann/{type}/{sample}/{sample}.bench.csv"),
-    conda: "envs/bakery.yml"
-    resources: **rule_resources(config, "humann", runtime=14400, mem_gb=48, disk_gb=1, cores=8)
-    shell:
-        '( T=/tmp/holopipe_$RANDOM; mkdir -p $T; trap "rm -rf $T" INT EXIT TERM;'
-        "zcat {input.reads} | blsl pairslash >$T/{wildcards.sample}.fastq"
-        " && "
-        "humann3"
-        "   -i $T/{wildcards.sample}.fastq"
-        "   -o $(dirname {output.gf})"
-        "   --threads {threads}"
-        "   --search-mode uniref90"
-        "   --nucleotide-database {input.db}/chocophlan/"
-        "   --protein-database {input.db}/uniref/"
-        "   --o-log {log.tool}"
-        ") &> {log.std}"
 
-rule plass_unmapped:
+rule plass:
     input:
-        r1=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R1.fastq.gz"),
-        r2=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_R2.fastq.gz"),
-        se=T("alignments/unmapped_reads/{aligner}~{ref}~{sample}_se.fastq.gz"),
+        unpack(metagenome_reads),
     output:
-        contigs=P("metagenome/plass/unmapped/{aligner}~{ref}~{sample}.faa"),
-        dir=directory(T("metagenome/plass/unmapped/{aligner}~{ref}~{sample}")),
-    log:
-        L("metagenome/plass/unmapped/{aligner}~{ref}~{sample}.log"),
-    benchmark: L("metagenome/plass/unmapped/{aligner}~{ref}~{sample}.bench.csv"),
-    resources: **rule_resources(config, "plass_unmapped", runtime=360, mem_gb=64, disk_gb=16, cores=24)
-    #conda: "envs/plass.yml"
-    shell:
-        "( zcat {input} |"
-        " ./scripts/plass " # TODO: fixme by packaging it properly
-        "   assemble"
-        "   stdin"
-        "   {output.contigs}"
-        "   {output.dir}"
-        "   --threads {threads}"
-        ") &>{log}"
-
-
-rule plass_qcreads:
-    input:
-        reads=lambda wc: [T(f"reads/runs/{run}~{lib}.fastq.gz") for run, lib in config["SAMP2RUNLIB"][wc.sample]],
-    output:
-        contigs=P("metagenome/plass/qcreads/{sample}.faa"),
-        dir=directory(temp(T("metagenome/plass/qcreads/{sample}"))),
-    log: L("metagenome/plass/qcreads/{sample}.log"),
-    benchmark: L("metagenome/plass/qcreads/{sample}.bench.csv"),
+        contigs=P("metagenome/plass/{type}/{sample}.faa"),
+        dir=directory(T("metagenome/plass/{type}/{sample}")),
+    log: L("metagenome/plass/{type}/{sample}.log"),
+    benchmark: L("metagenome/plass/{type}/{sample}.bench.csv"),
     resources: **rule_resources(config, "plass", runtime=360, mem_gb=64, disk_gb=16, cores=24)
     #conda: "envs/plass.yml"
+    container: "docker://ghcr.io/kdm9/acanthophis-plass:latest"
     shell:
-        "( zcat {input.reads} |"
-        " ./scripts/plass " # TODO: fixme by packaging it properly
+        "( blsl pairs {input.R1} {input.R2} {input.se} |"
+        " plass"
         "   assemble"
         "   stdin"
         "   {output.contigs}"
@@ -151,152 +99,21 @@ rule plass_qcreads:
         ") &>{log}"
 
 
-rule plass_qcreads_sampleset_coasm:
-    input:
-        reads=lambda wc: [T(f"reads/runs/{run}~{lib}.fastq.gz")
-                for sample in config["SAMPLESETS"][wc.sampleset]
-                for run, lib in config["SAMP2RUNLIB"][sample]],
-    output:
-        contigs=P("metagenome/plass/qcreads-coasm/{sampleset}.faa"),
-        dir=directory(temp(T("metagenome/plass/qcreads-coasm/{sampleset}"))),
-    log: L("metagenome/plass/qcreads-coasm/{sampleset}.log"),
-    benchmark: P("metagenome/plass/qcreads-coasm/{sampleset}.bench.csv"),
-    resources: **rule_resources(config, "plass", runtime=2880, mem_gb=1000, disk_gb=16, cores=128)
-    #conda: "envs/plass.yml"
-    shell:
-        "( zcat {input.reads} |"
-        "   ./scripts/plass " # TODO: fixme by packaging it properly
-        "   assemble"
-        "   stdin"
-        "   {output.contigs}"
-        "   {output.dir}"
-        "   --threads {threads}"
-        ") &>{log}"
 
-localrules: plass_persamp_rename
-rule plass_persamp_rename:
-    input:
-        contigs=P("metagenome/plass/{type}/{samplelike}.faa"),
-    output:
-        contigs=P("metagenome/plass/{type}/{samplelike}~renamed.faa"),
-    log: L("metagenome/plass/{type}/{samplelike}~renamed.faa.log"),
-    benchmark: L("metagenome/plass/{type}/{samplelike}~renamed.faa.bench.csv"),
-    resources: **rule_resources(config, "plass_persamp_rename", runtime=30, mem_gb=2, disk_gb=1, cores=1)
-    #conda: "envs/plass.yml"
-    shell:
-        "blsl farename -p {wildcards.samplelike}_ {input} > {output} 2>{log}"
-
-rule plass_quant_diamond:
-    input:
-        faa=P("metagenome/plass/{type}/{samplelike}~renamed.faa"),
-        reads=lambda wc: ([T(f"alignments/unmapped_reads/{wc.samplelike}_{r}.fastq.gz" for r in ["R1", "R2", "se"])] if wc.type == "unmapped" else
-                         [T(f"reads/runs/{run}~{lib}.fastq.gz") for run, lib in config["SAMP2RUNLIB"][wc.samplelike]]),
-    output:
-        tsv=P("metagenome/plass/{type}/{samplelike}~renamed.faa.quant.blast.tsv"),
-    log:
-        L("metagenome/plass/{type}/{samplelike}~renamed.faa.quant.blast.tsv.log"),
-    benchmark: L("metagenome/plass/{type}/{samplelike}~renamed.faa.quant.blast.tsv.bench.csv"),
-    conda: "envs/diamond.yml"
-    container: "docker://ghcr.io/kdm9/acanthophis-diamond:latest"
-    resources: **rule_resources(config, "plass_quant_diamond", runtime=1440, mem_gb=90, disk_gb=16, cores=32)
-    shell:
-        "diamond blastx"
-        "   --threads {threads}"
-        "   --db {input.faa}"
-        "   --query {input.reads}"
-        "   --unal 1"
-        "   --outfmt tab qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore"
-        "   --index-chunks 4"
-        "   --ignore-warnings"
-        "   --out {output}"
-        " &> {log}"
-
-
-rule plass_diamond:
-    input:
-        faa=P("metagenome/plass/{path}.faa"),
-        db=lambda wc: R(config["data_paths"]["diamond"][wc.db]),
-    output:
-        T("metagenome/plass/{path}.{db}.blasttab")
-    log:
-        L("metagenome/plass/{path}.{db}.blasttab.log")
-    benchmark: P("metagenome/plass/{path}.{db}.blasttab.bench.csv")
-    conda: "envs/diamond.yml"
-    container: "docker://ghcr.io/kdm9/acanthophis-diamond:latest"
-    resources: **rule_resources(config, "plass_diamond", runtime=1440, mem_gb=90, disk_gb=16, cores=32)
-    shell:
-        "diamond blastp"
-        "   --threads {threads}"
-        "   --db {input.db}"
-        "   --query {input.faa}"
-        "   --unal 1"
-        "   --outfmt tab qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames"
-        "   --index-chunks 4"
-        "   --ignore-warnings"
-        "   --out {output}"
-        " &> {log}"
-
-
-rule taxonkit_lca:
-    input:
-        db=R(config["data_paths"].get("ncbi_taxonomy", "ERROR_PLEASE_INSTALL_NCBI_TAXONOMY")),
-        blast=T("metagenome/plass/{path}.{db}.blasttab"),
-    output:
-        T("metagenome/plass/{path}.{db}.blasttab.lca.txt.zstd")
-    log:
-        L("metagenome/plass/{path}.{db}.blasttab.lca.txt.log")
-    benchmark: L("metagenome/plass/{path}.{db}.blasttab.lca.txt.bench.csv")
-    conda: "envs/plass.yml"
-    resources: **rule_resources(config, "taxkit_lca", runtime=60, mem_gb=32, disk_gb=1, cores=16)
-    shell:
-        "taxonkit lca"
-        "   --data-dir {input.db}"
-        "   --taxids-field 13"
-        "   --separator ';'"
-        "   <{input.blast}"
-        "   >(zstd -T{threads} -9 >{output})"
-        "   2>{log}"
-        # from this, one the does the folowing to match the diamond lca output (fmt102)
-        # awk 'BEGIN{FS=OFS="\t"}{print $1,$15,($11 == -1? 0: $11)}'
-        # FIXME: make this a rule, or a second output of the above rule at least.
-
-
-def all_plass_input(wc):
-    ret = []
-    for sampleset, sdat in config["samplesets"].items():
-        p = sdat.get("plass")
-        if not p:
-            continue
-        if p.get("coassembly"):
-           ret.append(P(f"metagenome/plass/qcreads-coasm/{sampleset}.faa"))
-           for db in p.get("diamond_dbs", []):
-               #ret.append(P(f"metagenome/plass/qcreads-coasm/{sampleset}.{db}.blasttab.lca.txt"))
-               ret.append(P(f"metagenome/plass/qcreads-coasm/{sampleset}.{db}.blasttab"))
-        for sample in config["SAMPLESETS"][sampleset]:
-            for umr in p.get("unmapped_reads", []):
-                ret.append(P(f"metagenome/plass/unmapped/{umr['aligner']}~{umr['reference']}~{sample}~renamed.faa"))
-                ret.append(P(f"metagenome/plass/unmapped/{umr['aligner']}~{umr['reference']}~{sample}~renamed.faa.quant.blast.tsv"))
-                for db in p.get("diamond_dbs", []):
-                    #ret.append(P(f"metagenome/plass/unmapped/{umr['aligner']}~{umr['reference']}~{sample}.{db}.blasttab.lca.txt"))
-                    ret.append(P(f"metagenome/plass/unmapped/{umr['aligner']}~{umr['reference']}~{sample}.{db}.blasttab"))
-            if p.get("qcd_reads", False):
-                ret.append(P(f"metagenome/plass/qcreads/{sample}~renamed.faa"))
-                ret.append(P(f"metagenome/plass/qcreads/{sample}~renamed.faa.quant.blast.tsv"))
-                for db in p.get("diamond_dbs", []):
-                    #ret.append(P(f"metagenome/plass/qcreads/{sample}.{db}.blasttab.lca.txt"))
-                    ret.append(P(f"metagenome/plass/qcreads/{sample}.{db}.blasttab"))
-    return ret
 rule all_plass:
-    input: all_plass_input
-
+    input:
+        [P(f"metagenome/plass/{type}/{sample}.faa")
+           for sampleset in config["samplesets"]
+           for sample in config["SAMPLESETS"][sampleset]
+           for type in config["samplesets"][sampleset].get("plass", {}).get("types", [])
+           ],
 
 rule all_megahit:
     input:
-        [P(f"metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa")
+        [P(f"metagenome/megahit/{type}/{sample}.contigs.fa")
            for sampleset in config["samplesets"]
            for sample in config["SAMPLESETS"][sampleset]
-           for aligner in config["samplesets"][sampleset].get("megahit", {}).get("aligners", [])
-           for ref in config["samplesets"][sampleset].get("megahit", {}).get("references", [])
+           for type in config["samplesets"][sampleset].get("megahit", {}).get("types", [])
            ],
 
 rule all_diamondx:
@@ -306,13 +123,4 @@ rule all_diamondx:
            for sample in config["SAMPLESETS"][sampleset]
            for type in config["samplesets"][sampleset].get("diamondx", {}).get("types", [])
            for db in config["samplesets"][sampleset].get("diamondx", {}).get("dbs", [])
-           ],
-
-rule all_humann:
-    input:
-        [P(f"metagenome/humann/{type}/{sample}/{sample}_{outtype}.tsv")
-           for outtype in ["genefamilies", "pathabundance", "pathcoverage"]
-           for sampleset in config["samplesets"]
-           for sample in config["SAMPLESETS"][sampleset]
-           for type in config["samplesets"][sampleset].get("humann", {}).get("types", [])
            ],

@@ -72,6 +72,9 @@ rule glnexus_call:
     resources: **rule_resources(config, "glnexus_call", runtime=180, mem_gb=512, cores=128)
     shell:
         "( glnexus_cli"
+        "   --threads {threads}"
+        "   --mem-gb 500"
+        "   --dir $TMPDIR/{wildcards.aligner}~{wildcards.ref}~{wildcards.sampleset}"
         "   --config DeepVariant"
         "   --list"
         "   {input.fofn}"

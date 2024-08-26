@@ -134,31 +134,30 @@ def all_sampleset_files(wc):
     if "diamondx" in config["samplesets"][wc.sampleset]:
         print("  - diamondx")
         everything.update(
-            PL([f"metagenome/diamondx/{type}/{sample}~{db}.tsv.xz"
+            PL([f"metagenome/diamondx/{type}/{sample}~{db}.tsv.zstd"
                for sample in config["SAMPLESETS"][wc.sampleset]
                for type in config["samplesets"][wc.sampleset].get("diamondx", {}).get("types", [])
                for db in config["samplesets"][wc.sampleset].get("diamondx", {}).get("dbs", [])
                ]),
         )
 
-    if "humann" in config["samplesets"][wc.sampleset]:
-        print("  - humann")
-        everything.update(PL([
-           f"metagenome/humann/{type}/{sample}/{sample}_{outtype}.tsv"
-           for outtype in ["genefamilies", "pathabundance", "pathcoverage"]
-           for sample in config["SAMPLESETS"][wc.sampleset]
-           for type in config["samplesets"][wc.sampleset].get("humann", {}).get("types", [])
-           ]))
 
     if "megahit" in config["samplesets"][wc.sampleset]:
         print("  - megahit")
         everything.update(
-            PL([f"metagenome/megahit/{aligner}~{ref}~{sample}/{sample}.contigs.fa"
-               for sample in config["SAMPLESETS"][wc.sampleset]
-               for aligner in config["samplesets"][wc.sampleset].get("megahit", {}).get("aligners", [])
-               for ref in config["samplesets"][wc.sampleset].get("megahit", {}).get("references", [])
-            ])
-        )
+                PL([f"metagenome/megahit/{type}/{sample}.contigs.fa"
+                    for sample in config["SAMPLESETS"][wc.sampleset]
+                    for type in config["samplesets"][wc.sampleset].get("megahit", {}).get("types", [])
+       ]))
+
+    if "plass" in config["samplesets"][wc.sampleset]:
+        print("  - plass")
+        everything.update(
+                PL([f"metagenome/plass/{type}/{sample}.faa"
+                    for sample in config["SAMPLESETS"][wc.sampleset]
+                    for type in config["samplesets"][wc.sampleset].get("plass", {}).get("types", [])
+       ]))
+
 
     if config["samplesets"][wc.sampleset].get("kwip", False):
         print("  - kwip")

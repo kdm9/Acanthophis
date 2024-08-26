@@ -72,12 +72,15 @@ def populate_metadata(config, runlib2samp=None, sample_meta=None, setfile_glob=N
         ret = {}
         if r1 and r2:
             ret["r12"] = {"r1": r1, "r2": r2}
-        if r1 and not r2 or r2 and not r1:
+        if rs:
+            ret["se"] = rs
+        if r1 and not r2:
+            print(f"WARNING: {r1} comes without an R2 read, treating it as SE", file=stderr)
+            ret["se"] = r1
+        if r2 and not r1:
             raise ValueError(f"R1 path given without R2 or vice versa for Run/Library {rl}")
         if il:
             ret["il"] = il
-        if rs:
-            ret["se"] = rs
         if ret == {}:
             raise ValueError(f"No data paths given for Run/Library {rl}")
         config["RAWDATA_PATHS"][rl] = ret
